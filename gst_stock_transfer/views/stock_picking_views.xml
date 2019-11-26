@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="view_picking_form_custom_inherit">
+            <field name="name">stock.picking.form</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>  
+            <field name="arch" type="xml">
+            	<field name="origin" position="after">
+            		<field name="z_interstate_bool"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="z_amount_tax" invisible="1"/>
+                    <field name="z_stock_transfer" invisible="1"/>
+            	</field>
+
+                <xpath expr="//sheet/notebook/page[2]//field[@name='move_ids_without_package']/tree/field[@name='product_id']" position="after">
+                    <field name="z_price_unit" attrs="{'column_invisible': [('parent.z_stock_transfer', '=', False)]}"/>
+                    <field name="z_tax_id" widget="many2many_tags" attrs="{'column_invisible': ['|',('parent.z_stock_transfer', '=', False),('parent.z_interstate_bool', '=', False)]}"/>
+                    <field name="igst_intransit_account" attrs="{'column_invisible': ['|',('parent.z_stock_transfer', '=', False),('parent.z_interstate_bool', '=', False)]}"/>
+                    <field name="z_price_tax" attrs="{'column_invisible': ['|',('parent.z_stock_transfer', '=', False),('parent.z_interstate_bool', '=', False)]}"/>
+                    <field name="z_price_subtotal" attrs="{'column_invisible': [('parent.z_stock_transfer', '=', False)]}"/>
+                    <field name="z_price_total" attrs="{'column_invisible': [('parent.z_stock_transfer', '=', False)]}"/>
+                    <field name="currency_id" invisible="1"/>
+                </xpath>
+                <xpath expr="//sheet/notebook/page[1]/field[@name='move_line_ids_without_package']/tree/field[@name='product_id']" position="after">
+                    <field name="z_price_unit" invisible="1"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_picking_type_form_custom_inherit">
+            <field name="name">Operation Types</field>
+            <field name="model">stock.picking.type</field>
+            <field name="inherit_id" ref="stock.view_picking_type_form"/>  
+            <field name="arch" type="xml">
+                <field name="show_reserved" position="after">
+                    <field name="z_interstate_bool"/>
+                    <field name="z_stock_transfer"/>
+                </field>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_location_form_custom_inherit">
+            <field name="name">stock.location.form</field>
+            <field name="model">stock.location</field>
+            <field name="inherit_id" ref="stock.view_location_form"/>  
+            <field name="arch" type="xml">
+                <field name="usage" position="after">
+                    <field name="z_internal_transfer_bool"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</odoo>
