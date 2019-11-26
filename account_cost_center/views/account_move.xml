@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="move_form_cost_center" model="ir.ui.view">
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook//field[@name='line_ids']/tree/field[@name='analytic_account_id']" position="after">
+            	<field name="z_cost_center_bool" invisible="1"/>
+                <field name="cost_center_id" options="{'no_create': True}" attrs="{'required': [('z_cost_center_bool', '=', True)]}"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
