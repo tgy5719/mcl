@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+	<data>
+        <record model="ir.ui.view" id="view_sale_calculation_detail_tree">
+          <field name="name">detail.calculation.line.tree</field>
+          <field name="model">detail.calculation.line</field>
+          <field name="arch" type="xml">
+            <tree editable="bottom">
+                <field name='user_id'/>
+                <field name="invoice"/>
+                <field name="invoice_amount"/>
+                <field name="z_partner_id"/>
+                <field name  = "collection_amount"/>
+                <field name = "collectio_date"/>
+                <field name = "date_of_deposite"/>
+                <field name="z_payment_method"/>
+                <field name = "z_reference"/>
+                <field name  = "refference"/>
+                <field name="payment_id"/>
+                <field name = "z_state"/>
+                <field name="z_payment_ref" invisible="1"/>
+                <field name="z_name"/>
+                <field name="z_seq" invisible="1"/>
+            </tree>
+          </field>
+        </record>
+        <record model="ir.ui.view" id="view_sale_calculation_detail_form">
+          <field name="name">detail.calculation.line.form</field>
+          <field name="model">detail.calculation.line</field>
+          <field name="arch" type="xml">
+               <form string="Detail Calculation"> 
+               <group>
+                   <group>
+                       
+                       <field name  = 'user_id'/>
+                                    <field name="invoice"/>
+                                    <field name="invoice_amount"/> 
+                                    <field name  = "collection_amount"/>
+                                    <field name = "collectio_date"/>
+                                    <field name = "date_of_deposite"/>
+                                    <field name="z_payment_method"/>
+                                    <field name = "refference"/>
+                                    <field name="payment_id"/>
+                                    <field name = "z_state"/>
+                   </group>
+               </group>
+               </form>
+          </field>
+        </record>
+
+        <record model="ir.actions.act_window" id="action_view_sale_calculation_detail">
+            <field name="name">Collection Summary</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">detail.calculation.line</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+<menuitem name="Collection Summary" id="menu_root_detail" parent="menu_root_sale" sequence = "2"  action="action_view_sale_calculation_detail"/>
+
+
+	</data>
+</odoo>

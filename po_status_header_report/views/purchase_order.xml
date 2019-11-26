@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data> 
+    	<record id="view_purchase_order_tree_inherited" model="ir.ui.view">
+            <field name="name">purchase.order.tree</field>
+            <field name="model">purchase.order</field>
+            <field name="priority">8</field>
+            <field name="inherit_id" ref="purchase.purchase_order_tree"/>
+            <field name="arch" type="xml">
+                <field name="amount_untaxed" position="after">
+                    <field name="z_sum_orderqty"/>
+                    <field name="z_sum_recevqty"/>
+                    <field name="z_sum_invoiceqty"/>
+                    <field name="z_status"/>
+                </field>
+            </field>
+        </record>
+
+
+    </data>
+</odoo>

@@ -1,0 +1,623 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<template id="report_sale_q" inherit_id = "stock.report_delivery_document">
+     <xpath expr="//t[@t-call='web.external_layout']" position="replace">
+        <t t-call="web.external_layout">
+            <t t-set="o" t-value="o.with_context(lang=o.partner_id.lang)"/>
+            <t t-set="partner" t-value="o.partner_id or (o.move_lines and o.move_lines[0].partner_id) or False"/>
+            <t t-if="partner" name="partner_header">
+                <!--t t-set="address"><div t-esc="partner" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;, &quot;phone&quot;], &quot;no_marker&quot;: True}"/></t-->
+            </t>
+
+            <t t-if="o.z_interstate_bool == false">
+            <table class="table table-sm" style="border:1px solid black;max-width:100%;margin-top:0px;">
+                <thead>
+                    <style>html * { font-size:14px;
+            }
+            </style>
+                    <tr>
+                        <td colspan="4" class="text-center" style="border:1px solid black">
+                            <t class="col-3 mb4 pull-left">
+                                <img src="/delivery_slip_mcl/static/src/img/shiva.jpg" style="max-height:120px;max-width:130px;padding-left:0;margin-right:110px;margin-left:-250px;margin-top:0px" alt="Logo"/>
+                            </t>
+                            <t class="col-md-6 text-center" style="margin-right:10px;margin-left:200px;">
+                                <b>
+                                    <font style="font-size:20px;" t-field="o.company_id.partner_id"/>
+                                </b>
+                                <br/>
+                                <span t-field="o.company_id.partner_id.street"/>, 
+                
+                                
+                                <span t-field="o.company_id.partner_id.street2"/>
+                                <br/>
+                                <span style="text-transform:uppercase" t-field="o.company_id.city"/>-
+                
+                                
+                                <span style="text-transform:uppercase" t-field="o.company_id.partner_id.zip"/>
+                                <span style="text-transform:uppercase" t-field="o.company_id.state_id"/>,
+                            
+                
+                                
+                                <span style="text-transform:uppercase" t-field="o.company_id.country_id"/>
+                                <br/>
+                                <t class="text-center">
+                                    <strong>
+                                        <t t-esc="'GSTIN:'"/>
+                                    </strong>
+                                    <span t-field="o.company_id.vat"/>
+                                    <strong>
+                                        <t t-esc="'CIN:'"/>
+                                    </strong>
+                                    <span t-field="o.company_id.company_registry"/>
+                                    <br/>
+                                    <strong>
+                                        <t t-esc="'WEBSITE:'"/>
+                                    </strong>
+                                    <span t-field="o.company_id.website"/>
+                                </t>
+                            </t>
+                            <t class="col-3 mb4 pull-right">
+                                <img t-att-src="image_data_uri(o.company_id.logo)" style="max-height:120px;max-width:130px;margin-left:180px;margin-right:-280px;margin-top:-150px" alt="Logo"/>
+                            </t>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="4" style="border:1px solid black">
+                            <strong>
+                                <font style="font-size:20px;padding-left:300px;"> DELIVERY CHALLAN </font>
+                            </strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="width:50%;border:1px solid black">
+                            <strong>Delivery Number:</strong>
+                            <span t-field="o.name"/>
+                            <br/>
+                            <!-- <strong>Order:</strong>
+                            <span t-field="o.origin"/>
+                            <br/>
+                            <strong>Date:</strong>
+                            <t t-if="o.state == 'done'">
+                                <span t-field="o.date_done"/>
+                            </t>
+                            <t t-if="o.state != 'done'">
+                                <span t-field="o.scheduled_date"/>
+                            </t>
+                            <br/> -->
+                            <strong>From Address:</strong>
+                            <t t-if="o.picking_type_id.warehouse_id.partner_id.street">
+                                <span t-esc="o.picking_type_id.warehouse_id.partner_id" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;, &quot;phone&quot;], &quot;no_marker&quot;: True}"/>
+                                <!-- <span t-field="o.picking_type_id.warehouse_id.partner_id.street"/> -->
+                            </t>
+                            <div name="transporter" t-if="o.transporter">
+                                <strong>Dispatched Through:</strong>
+                                <span t-field="o.transporter"/>
+                            </div>
+                            <div name="e_way_no" t-if="o.e_way_no">
+                                <strong>E-Way Bill No:</strong>
+                                <span t-field="o.e_way_no"/>
+                            </div>
+                        </td>
+                        <td colspan="2" style="width:50%;border:1px solid black">
+                            <strong>To Address:</strong>
+                            <span t-esc="partner" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;, &quot;phone&quot;], &quot;no_marker&quot;: True}"/>
+                            <strong>Order:</strong>
+                            <span t-field="o.origin"/>
+                            <br/>
+                            <strong>Date:</strong>
+                            <t t-if="o.state == 'done'">
+                                <span t-field="o.date_done"/>
+                            </t>
+                            <t t-if="o.state != 'done'">
+                                <span t-field="o.scheduled_date"/>
+                            </t>
+                            <div name="z_delivered_to" t-if="o.z_delivered_to">
+                                <strong>Destination:</strong>
+                                <span t-field="o.z_delivered_to"/>
+                            </div>
+                            <div name="vehicle">
+                                <t t-if="o.vehicle">
+                                <strong>Vehicle No:</strong>
+                                <span t-field="o.vehicle"/>
+                               </t><br/>
+                            <t t-if="o.ext_vehicle_no">
+                                <strong>External Vehicle No:</strong>
+                                <span t-field="o.ext_vehicle_no"/>
+                            </t>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr t-if="o.state!='done'">
+                        <th class="text-center" style="border:1px solid black;">
+                            <strong>Product</strong>
+                        </th>
+                        <th class="text-center" style="border:1px solid black;">
+                            <strong>Quantity</strong>
+                        </th>
+                    </tr>
+                    <tr t-if="o.move_line_ids and o.state=='done'">
+                        <t t-set="has_serial_number" t-value="o.move_line_ids.mapped('lot_id')"/>
+                        <th style="border:1px solid black;">
+                            <strong>Product</strong>
+                        </th>
+                        <th style="border:1px solid black;" name="lot_serial" t-if="has_serial_number" groups="stock.group_lot_on_delivery_slip">
+                                    Lot/Serial Number
+                                </th>
+                        <th class="text-center" style="border:1px solid black;">
+                            <strong>Qty in Boxes</strong>
+                        </th>
+                        <th class="text-center" style="border:1px solid black;">
+                            <strong>Quantity</strong>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <t t-set="dn_qty" t-value="0.0"/>
+                    <t t-set="qty" t-value="0.0"/>
+                    <t t-set="lines" t-value="o.move_lines.filtered(lambda x: x.product_uom_qty)"/>
+                    <tr t-if="o.state!='done'" t-foreach="lines" t-as="move">
+                        <td style="border:1px solid black;">
+                            <span t-field="move.product_id"/>
+                            <p t-if="o.picking_type_code == 'outgoing'">
+                                <span t-field="move.product_id.sudo().description_pickingout"/>
+                            </p>
+                            <p t-if="o.picking_type_code == 'incoming'">
+                                <span t-field="move.product_id.sudo().description_pickingin"/>
+                            </p>
+                        </td>
+                        <td style="border:1px solid black;">
+                            <span t-field="move.product_uom_qty"/>
+                            <span t-field="move.product_uom"/>
+                        </td>
+                    </tr>
+                    <tr t-if="o.move_line_ids and o.state=='done'" t-foreach="o.move_line_ids" t-as="move_line">
+                        <td style="border:1px solid black;">
+                            <span t-field="move_line.product_id"/>
+                            <p t-if="o.picking_type_code == 'outgoing'">
+                                <span t-field="move_line.product_id.sudo().description_pickingout"/>
+                            </p>
+                            <p t-if="o.picking_type_code == 'incoming'">
+                                <span t-field="move_line.product_id.sudo().description_pickingin"/>
+                            </p>
+                        </td>
+                        <td t-if="has_serial_number and move_line.lot_name" groups="stock.group_lot_on_delivery_slip" style="border:1px solid black;">
+                            <span t-field="move_line.lot_name"/>
+                        </td>
+                        <td t-else="" groups="stock.group_lot_on_delivery_slip" style="border:1px solid black;">
+                            <span t-field="move_line.lot_id.name"/>
+                        </td>
+                        <td class="text-center" style="border:1px solid black;">
+                            <span t-esc="'%.2f'%(move_line.z_done_qty_in_boxes)"/>
+                            <t t-set="dn_qty" t-value="dn_qty+move_line.z_done_qty_in_boxes"/>
+                        </td>
+                        <td class="text-center" style="border:1px solid black;">
+                            <span t-field="move_line.qty_done"/>
+                            <span t-field="move_line.product_uom_id"/>
+                            <t t-set="qty" t-value="qty + move_line.qty_done"/>
+
+                        </td>
+                    </tr>
+                    <tr t-if="o.move_line_ids and o.state=='done'">
+                        <td colspan="1">
+                            <strong>Grand Total</strong>
+                        </td>
+                        <td>
+                        </td>
+                        <td colspan="1" class="text-center" style="border:1px solid black;">
+                            <!-- <t t-foreach="o.move_line_ids" t-as="move_line">
+                                <t t-set="total" t-value="o.zstock_total_amount"/>
+                            </t> -->
+                            <t t-esc="'%.2f'%dn_qty"/>
+                           
+                        </td>
+                        <td colspan="1" class="text-center"  style="border:1px solid black;">
+                            <!-- <t t-foreach="o.move_line_ids" t-as="move_line">
+                                <t t-set="total" t-value="o.zstock_total_amount"/>
+                            </t> -->
+                            <t t-esc="'%.2f'%qty"/>
+                        </td>
+                        
+                        
+                        <!-- <t t-set="total" t-value="0"/>
+                        <td colspan="2" class="text-center"  style="border:1px solid black;">
+                            <t t-foreach="o.move_line_ids" t-as="move_line">
+                                <t t-set="total" t-value="o.zstock_total_amount"/>
+                            </t>
+                            <t t-esc="total"/>
+                        </td> -->
+                    </tr>
+                    <!-- <tr>
+                        <td colspan="7" style="width:50%;border:1px solid black">
+                           <strong>Amount In Words: </strong>
+                                <span t-field="o.stromb"/>
+                        </td>
+                    </tr> -->
+                </tbody>
+            </table>
+          </t>
+
+          <!-- for interstate -->
+
+           <t t-if="o.z_interstate_bool == true">
+            <table class="table table-sm" style="border:1px solid black;margin-top:0px;">
+                <thead>
+                    <style>html * { font-size:14px;
+            }
+            </style>
+                    <tr>
+                        <td colspan="11" class="text-center" style="border:1px solid black">
+                            <t class="col-md-3 mb4 pull-left">
+                                <img src="/delivery_slip_mcl/static/src/img/shiva.jpg" style="max-height:120px;max-width:130px;padding-left:0;margin-right:110px;margin-left:-250px;margin-top:0px" alt="Logo"/>
+                            </t>
+                            <t class="col-md-6 text-center" style="margin-right:10px;margin-left:200px;">
+                                <b>
+                                <font style="font-size:20px;" t-field="o.company_id.partner_id"/>
+                                </b>
+                                <br/>
+                                <span t-field="o.company_id.partner_id.street"/>, 
+                
+                                
+                                <span t-field="o.company_id.partner_id.street2"/>
+                                <br/>
+                                <span style="text-transform:uppercase" t-field="o.company_id.city"/>-
+                
+                                
+                                <span style="text-transform:uppercase" t-field="o.company_id.partner_id.zip"/>
+                                <span style="text-transform:uppercase" t-field="o.company_id.state_id"/>,   
+                                <span style="text-transform:uppercase" t-field="o.company_id.country_id"/>
+                            <t t-if="o.company_id.company_registry" class="text-center">
+                                <strong><t t-esc="'CIN'"/>:</strong> 
+                                <span t-field="o.company_id.company_registry"/>
+                   
+                             </t>
+
+                                <br/>
+                                <strong>Branch Office:</strong>
+                               <span t-field="o.picking_type_id.warehouse_id.partner_id.street"/><br/>
+                               <span t-if="o.picking_type_id.warehouse_id.partner_id.street2" t-field="o.picking_type_id.warehouse_id.partner_id.street2"/>
+                               <span t-if="o.picking_type_id.warehouse_id.partner_id.city" t-field="o.picking_type_id.warehouse_id.partner_id.city"/>
+                                <span t-if="o.picking_type_id.warehouse_id.partner_id.state_id" t-field="o.picking_type_id.warehouse_id.partner_id.state_id"/>
+                                 <span t-if="o.picking_type_id.warehouse_id.partner_id.zip" t-field="o.picking_type_id.warehouse_id.partner_id.zip"/>
+                                 <span t-if="o.picking_type_id.warehouse_id.partner_id.country_id" t-field="o.picking_type_id.warehouse_id.partner_id.country_id"/>
+                                 <strong><t t-esc="'GSTIN'"/>:</strong>
+                                 <span t-field="o.picking_type_id.warehouse_id.partner_id.vat"/>
+
+                            </t>
+                            <t class="col-md-3 mb4 ">
+                                <img t-att-src="image_data_uri(o.company_id.logo)" style="max-height:120px;max-width:130px;margin-top:-110px;float:right;" alt="Logo"/>
+                            </t>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="11" class="text-center" style="border:1px solid black">
+                            <strong>
+                                <font style="font-size:20px;"> TAX INVOICE</font>
+                            </strong>
+                        </td>
+                    </tr>
+                <tr>
+                    
+                    <br/>
+                
+                        <td colspan="5" style="width:50%;border:1px solid black;">
+                            <strong>Customer Code:</strong>
+                            <span t-esc="o.partner_id.ref"/>
+                            <br/>
+                            <strong>Customer (Billed to): </strong>
+                            <!--div t-field="o.partner_id" t-options="{&quot;widget&quot;: &quot;contact&quot;, &quot;fields&quot;: [&quot;address&quot;, &quot;name&quot;], &quot;no_marker&quot;: True}"/-->
+                             <span t-if="o.partner_id.name" t-field="o.partner_id.name"/><br/>
+                            <span t-if="o.partner_id.street" t-field="o.partner_id.street"/><br/>
+                            <span t-if="o.partner_id.street2" t-field="o.partner_id.street2"/><br/>
+                            <span t-if="o.partner_id.city" t-field="o.partner_id.city"/>
+                            <span t-if="o.partner_id.state_id" t-field="o.partner_id.state_id"/>
+                            <span t-if="o.partner_id.zip" t-field="o.partner_id.zip"/>
+                            <span t-if="o.partner_id.country_id" t-field="o.partner_id.country_id"/>
+                           <br/>
+                            <t t-if="o.partner_id.vat">
+                                <strong>
+                                    <t t-esc="o.company_id.country_id.vat_label or 'TIN'"/>: 
+                                </strong>
+                                <span t-field="o.partner_id.vat"/>
+                            </t>
+                            <br/>
+                            <t t-if="o.partner_id.phone">
+                                <strong>  Ph No:</strong>
+                                <span t-field="o.partner_id.phone"/>
+                            </t>
+                        </td>
+                        <td colspan="6" style="width:50%;border:1px solid black;">
+                            <t class="div-move" t-if="o.name">
+                                <strong>Invoice No:</strong>
+                                <span t-field="o.name"/>
+                            </t>
+                            <br/>
+                            <t class="div-move" t-if="o.name">
+                                <strong>Invoice Date:</strong>
+                                <span t-field="o.date_done"/>
+                            </t>
+                            <br/>                           
+                        </td>
+                    
+                </tr>
+                <tr>
+                   
+                        <td colspan="5" style="width:50%;border:1px solid black;padding-top:0px;">
+                            <strong>Shipping Address: </strong>
+
+                            <span t-if="o.partner_id.street" t-field="o.partner_id.street"/><br/>
+                            <span t-if="o.partner_id.street2" t-field="o.partner_id.street2"/><br/>
+                            <span t-if="o.partner_id.city" t-field="o.partner_id.city"/>
+                            <span t-if="o.partner_id.state_id" t-field="o.partner_id.state_id"/>
+                            <span t-if="o.partner_id.zip" t-field="o.partner_id.zip"/>
+                            <span t-if="o.partner_id.country_id" t-field="o.partner_id.country_id"/><br/>
+                            <t t-if="o.partner_id.vat">
+                                <strong>
+                                    <t t-esc="o.company_id.country_id.vat_label or 'TIN'"/>: 
+                            
+                                </strong>
+                                <span t-field="o.partner_id.vat"/>
+                            </t>
+                            <br/>
+                            <t t-if="o.partner_id.phone">
+                                <strong>  Ph No:</strong>
+                                <span t-field="o.partner_id.phone"/>
+                            </t>
+                        </td>
+                        <td colspan="6" style="width:50%;border:1px solid black;">
+
+                             <div name="currency" t-if="o.currency_id">
+                                <strong>Currency:</strong>
+                                <span t-field="o.currency_id"/>
+                            </div>
+                            <div name="transporter" t-if="o.transporter">
+                                <strong>Dispatched Through:</strong>
+                                <span t-field="o.transporter"/>
+                            </div>
+                            <div name="e_way_no" t-if="o.e_way_no">
+                                <strong>E-Way Bill No:</strong>
+                                <span t-field="o.e_way_no"/>
+                            </div>
+                            <div name="z_delivered_to" t-if="o.z_delivered_to">
+                                <strong>Destination:</strong>
+                                <span t-field="o.z_delivered_to"/>
+                            </div>
+                            <div name="vehicle">
+                                <t t-if="o.vehicle">
+                                <strong>Vehicle No:</strong>
+                                
+                                <span t-field="o.vehicle"/>
+                               </t><br/>
+                            <t t-if="o.ext_vehicle_no">
+                                <strong>External Vehicle No:</strong>
+                                <span t-field="o.ext_vehicle_no"/>
+                            </t>
+                            </div>
+                        </td>
+                   
+                </tr>
+                <tr>
+                    <t t-set="colspan" t-value="6"/>
+                    <th class="text-center" style="width:1%;border:1px solid black;">Sl No</th>
+                    <th class="text-center" style="width:8%;border:1px solid black;">Item Code</th>
+                    <th class="text-center" style="width:30%;border:1px solid black;">Description</th>
+                    <th class="text-center" style="width:3%;border:1px solid black;">Size</th>
+                    <th class="text-center" style="width:3%;border:1px solid black;">Lot No</th>
+                    <th class="text-center" style="width:7%;border:1px solid black;">HSN/SAC Code</th>
+                    <th class="text-center" style="width:1%;border:1px solid black;">Boxes</th>
+                    <th class="text-center" style="width:3%;border:1px solid black;">Qty</th>
+                    <th class="text-center" style="width:4%;border:1px solid black;">
+                        <strong>PER</strong>
+                    </th>
+                    <th class="text-center" style="width:5%;border:1px solid black;">Unit Price</th>
+                    <th t-if="display_discount" style="display:none;" t-attf-class="text-right {{ 'd-none d-md-table-cell' if report_type == 'html' else '' }}">
+                        <span>Disc.(%)</span>
+                        <t t-set="colspan" t-value="colspan+1"/>
+                    </th>
+                    
+                    <th class="text-center" style="width:3%;border:1px solid black;">Amount</th>
+                </tr>
+
+                </thead>
+                <tbody>
+                <t t-set="current_subtotal" t-value="0"/>
+                <t t-set="i" t-value="1"/>
+                <t t-set="test_variable" t-value="0"/>
+      
+
+                <t t-set="igst_amount" t-value="0.0"/>
+                <t t-set="amount" t-value="0"/>
+                <t t-set="taxableamt" t-value="0"/>
+                <t t-set="test" t-value="0"/>
+                <t t-foreach="o.move_ids_without_package" t-as="line">
+                    <t t-set="current_subtotal" t-value="current_subtotal + line.z_price_subtotal"/>
+                    <t t-set="igst_amount" t-value="igst_amount + line.z_price_tax"/>
+
+                    <tr>
+
+                            <td class="text-center" style="width:1%;border:1px solid black;">
+                                <span t-esc="i"/>
+                            </td>
+                            <t t-set="i" t-value="i+1"/>
+                            <td class="text-left" style="width:8%;border:1px solid black;">
+                                <t t-if="line.product_id.default_code">
+                                    <span t-field="line.product_id.default_code"/>
+                                </t>
+                            </td>
+                            <td name="account_invoice_line_name" class="text-left" style="width:30%;border:1px solid black;">
+                                <span t-field="line.product_id.name"/>
+                            </td>
+                            <td class="text-center" style="width:3%;border:1px solid black;">
+                                <span t-field="line.product_id.attribute_value_ids.name"/>
+                            </td>
+                             <td class="text-center" style="width:3%;border:1px solid black;">
+                                <t t-foreach="o.move_line_ids_without_package" t-as="m">
+                                    <t t-if="m.product_id == line.product_id">
+                                        <span t-field="m.lot_id"/>
+                                        <br/>
+                                    </t>
+                                 </t>
+                            </td>
+                            <td class="text-center" style="width:7%;border:1px solid black;">
+                                <t t-if="line.product_id.l10n_in_hsn_code">
+                                    <span t-field="line.product_id.l10n_in_hsn_code"/>
+                                </t>
+                            </td>
+                           
+                            <td class="text-right" style="border:1px solid black;width:1%;">
+                                    <span t-field="line.z_done_qty_in_boxes"/>
+                             </td>
+                      <!--       <t t-set="test_variable" t-value="test_variable+line.quantity"/> -->
+                            <td class="text-right" style="width:3%;border:1px solid black;">
+                                <span t-esc="'%.2f'%(line.quantity_done)"/>
+                            </td>
+                            <td class="text-right" style="width:4%;border:1px solid black;">
+                                <span t-field="line.product_uom"/>
+                            </td>
+                            <td t-attf-class="text-right {{ 'd-none d-md-table-cell' if report_type == 'html' else '' }}" style="border:1px solid black;width:5%">
+                                <span t-field="line.z_price_unit"/>
+                            </td>
+                         <!--    <t t-set="current_subtotal" t-value="line.quantity_done * line.z_price_unit"/> -->
+                        <td class="text-right" style=" border:1px solid black;width:3%;">
+                            <span t-field="line.z_price_subtotal" t-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.currency_id}"/>
+                        </td>
+                           
+                    </tr>
+                </t>
+
+                <tr>
+                    <td colspan="10" style="border:1px solid black;width:54%;">
+                        <strong>Taxable Amount</strong>
+                    </td>
+
+                    <td class="text-right" style="width:114px;border:1px solid black;width:10%;">
+                        <strong>
+                            <t t-esc="'%.2f'%(current_subtotal)"/>
+                        </strong>
+                    </td>
+                </tr>
+
+                 <tr>
+                   
+                    <t t-if="len(o.move_ids_without_package) &gt; 0">
+                    <th rowspan="2" colspan="2" class="text-center" style="width:10px;border:1px solid black;">Taxes</th>
+
+                    </t>
+                    <th rowspan="2" colspan="2" class="text-center" style="width:10%;border:1px solid black;">Taxable Amount</th>
+                 
+ 
+                     <th rowspan="1" colspan="6" class="text-center" style="border:1px solid black;width:3%;" >IGST</th>
+                  
+                    <th rowspan="2" colspan="1" class="text-center" style="width:10px;border:1px solid black;">Amount</th>  
+
+                </tr>
+                 <tr>
+                    <th rowspan="1" colspan="3" class="text-center" style="width:10%;border:1px solid black;" >Rate</th>
+                    <th rowspan="1" colspan="3" class="text-center" style="width:10%;border:1px solid black;" >Amount</th>
+                </tr>
+
+                <tr t-foreach="o.move_ids_without_package[:1]" t-as="line">
+
+                        <t t-set="igst_name" t-value="line.z_tax_id.name"/> 
+<!--                         <t t-set="igst_amount" t-value="tax.amount_total"/>  -->
+                    <td class="text-center" colspan="2" style="border:1px solid black;width:5%;">
+                        
+                       <t t-esc="igst_name"/>           
+                     
+                    </td>
+                     <td colspan="2" class="text-center" style="border:1px solid black;width:10%">
+
+                        <t t-esc="'%.2f'%(current_subtotal)"/>
+                        
+                    </td>
+                    <td class="text-center" colspan="3" style="border:1px solid black;width:5%;">
+                        
+                       <t t-esc="igst_name"/>
+
+                    
+                     
+                    </td>
+<!--                     <t t-set="igst_amount" t-vale="igst_amount + line.z_price_tax"/> -->
+                    <td class="text-center" colspan="3" style="border:1px solid black;width:5%;">
+                        
+                       <t t-esc="'%.2f'%(igst_amount)"/>
+                    
+                     
+                    </td>
+                    <t t-set="total_amount" t-value="'%.2f'%(current_subtotal+igst_amount)"/>
+                    <td class="text-right" colspan="1" style="border:1px solid black;width:10%;">
+                    
+                        <t t-esc="total_amount"/>
+                    </td>
+                </tr>
+<!--                 <tr>
+                    <td colspan="9" style="border:1px solid black;">
+                            <strong>Round Off</strong>
+                    </td>
+                    <td colspan="2" class="text-right" style="width:10%;border:1px solid black;">
+                        <strong>
+                            <span t-esc="'%.2f'%(o.round_off_value)"/>
+                        </strong>
+                    </td>
+                </tr> -->
+                <tr style="border:1px solid black;">
+                    <t style="border:1px solid black;width:90%;" class="text-right">
+                        <td colspan="9" style="border:1px solid black;">
+                            <strong>Grand Total</strong>
+                        </td>
+                    </t>
+                     <td colspan="2" class="text-right" style="width:10%;border:1px solid black;">
+                        <strong>
+                           <t t-esc="'%.2f'%(current_subtotal+igst_amount)" />
+                        </strong>
+                    </td>
+                </tr>
+                 <tr>
+                    <td colspan="11" style="border:1px solid black;width:100%;">
+                       
+                         
+                                    <strong>Amount In Words: </strong>
+                                    <span t-field="o.strom"/>
+                             
+                          
+                    </td>
+                </tr>
+
+                <tr>
+                    <td colspan="11" style="border:1px solid black;width:100%;">
+                        <strong>Terms and Conditions</strong>
+                        <br/>
+                        <p>
+                        1. Interest @24% per annum will be charged if payment is not made within the due date.<br/>
+                        2. Certified that the particulars given above are true and correct and the amount indicated represents the price actually charged and that there is no flow of additional consideration directly or indirectly from buyer.<br/>
+                        3. Complaints will not be entertained after laying of tiles<br/>
+                        4. Goods Once supplied will not be Taken Back Or Exchanged.<br/>
+                        5. Subject to Hubli Jurisdiction
+                        </p>
+
+                    </td>
+                </tr>
+
+            <tr>
+                <td colspan="11" class="text-left;col-xs-8 pull left;" style="height:25%;border:1px solid black;">
+                
+                        <b>Declaration:</b>
+                        <br/>We declare that this invoice shows the actual price of the service described and that all particulars are true and correct.
+                                
+                    
+                  
+                </td>
+            </tr>                
+
+
+            </tbody>
+            </table>
+          </t>
+
+
+
+
+
+        </t>
+    </xpath>
+</template>
+</odoo>

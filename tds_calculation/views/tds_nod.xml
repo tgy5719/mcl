@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+		<record id="tds_nod_form_view" model="ir.ui.view">
+			<field name="name">TDS NOD form view</field>
+			<field name="model">account.tds.nod</field>
+			<field name="arch" type="xml">
+                <form string="TDS NOD">
+                    <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                        <field name="name"/>
+                    </group>
+                    <group>
+                        <field name="tds_nod_name"/>
+                    </group>             
+                    </group>
+                   
+                </sheet>
+                </form>
+              </field>
+		</record>
+
+		<record model="ir.ui.view" id="tds_nod_tree_view">
+            <field name="name">TDS NOD tree view</field>
+            <field name="model">account.tds.nod</field>
+            <field name="arch" type="xml">
+                <tree string="TDS NOD">
+                	<field name="name"/>
+                    <field name="tds_nod_name"/>
+                	<field name="active"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_tds_nod">
+            <field name="name">TDS NOD</field>
+            <field name="res_model">account.tds.nod</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+
+
+        <menuitem name="TDS NOD" id="menu_tds_nod" parent="tds_configuration" action="action_tds_nod"/>
+	</data>
+</odoo>

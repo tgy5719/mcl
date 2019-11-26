@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="product_category_form_view_xander">
+            <field name="name">product category</field>
+            <field name="model">product.category</field>
+            <field name="inherit_id" ref="product.product_category_form_view"/> 
+            <field name="arch" type="xml">
+                <field name="parent_id" position="after">
+                    <field name="xander" groups = "customer_vendor_product_assets_number.group_product_external_box"/>
+                </field>
+                <label for="name" position="replace">
+                    <label for="name"  string="Category Name"/>
+                </label>
+            </field>                   
+        </record>
+    </data>
+</odoo>    
+        

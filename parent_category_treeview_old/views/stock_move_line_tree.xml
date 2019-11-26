@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data> 
+        <record id="view_stock_inventory_inherit" model="ir.ui.view">
+           <field name="model">stock.move.line</field>
+            <field name="inherit_id" ref="stock.view_move_line_form"/>
+            <field name="arch" type="xml">
+                <field name="product_id" position="after">
+                    <field name="z_parent_id"/>
+                    <field name = "z_product_category"/>
+                </field>        
+                <xpath expr="//form/sheet/group/group[2]" position="inside">
+                    <field name="z_status"/>
+                    <field name="z_production_routing"/>
+                    <field name="z_consumption_routing"/>
+                    <field name="z_item_category"/>
+                    <field name="z_pg_primary"/>
+                    <field name="z_pg_secondary"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_quotation_tree_inherit_custom_fields" model="ir.ui.view">
+            <field name="name">stock.move.line.tree</field>
+            <field name="model">stock.move.line</field>
+            <field name="priority">4</field>
+            <field name="inherit_id" ref="stock.view_move_line_tree"/>
+            <field name="arch" type="xml">
+                <field name="product_id" position="after">
+                    <field name="z_parent_id"/>
+                    <field name = "z_product_category"/>
+                </field>        
+                <field name="location_dest_id" position="after">
+                    <field name="z_status"/>
+                </field>
+            </field>
+        </record>
+
+
+        <record id="view_stock_quant_form_custom_inherited" model="ir.ui.view">
+            <field name="name">stock.quant.tree</field>
+            <field name="model">stock.quant</field>
+            <field name="priority">10</field>
+            <field name="inherit_id" ref="stock.view_stock_quant_form"/>
+            <field name="arch" type="xml">
+                <field name="product_id" position="after">
+                    <field name="z_parent_id"/>
+                    <field name="z_product_category"/>
+                </field>
+            </field>
+        </record>
+
+        <record id="view_stock_quant_tree_custom_inherited" model="ir.ui.view">
+            <field name="name">stock.quant.tree</field>
+            <field name="model">stock.quant</field>
+            <field name="priority">10</field>
+            <field name="inherit_id" ref="stock.view_stock_quant_tree"/>
+            <field name="arch" type="xml">
+                <field name="product_id" position="after">
+                    <field name="z_parent_id"/>
+                    <field name="z_product_category"/>
+                </field>
+            </field>
+        </record>
+
+        <record id="product_product_tree_view_custom_inherited" model="ir.ui.view">
+            <field name="name">product.product.tree</field>
+            <field name="model">product.product</field>
+            <field name="priority">7</field>
+            <field name="inherit_id" ref="product.product_product_tree_view"/>
+            <field name="arch" type="xml">
+                <field name="name" position="before">
+                    <field name="z_parent_id"/>
+                </field>
+            </field>
+        </record>
+
+        <record id="view_stock_product_tree2_inherit" model="ir.ui.view">
+            <field name="name">product.valuation.tree</field>
+            <field name="model">product.product</field>
+            <field name="inherit_id" ref="stock_account.view_stock_product_tree2"/>
+            <field name="arch" type="xml">
+    
+                    <field name="display_name" position="after">
+                        <field name="z_parent_id"/>
+                        <field name="z_product_category"/>
+                    </field>
+    
+            </field>
+        </record>
+    </data>
+</odoo>

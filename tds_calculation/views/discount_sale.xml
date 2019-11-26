@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+		<record id="discount_sale_invoice_view_form" model="ir.ui.view">
+			<field name="name">Discount View form</field>
+			<field name="model">account.discount</field>
+			<field name="arch" type="xml">
+                <form string="Account Tax">
+                    <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <label for="amount"/>
+                                    <div>
+                                        <field name="amount" class="oe_inline" />
+                                        <label string="₹" class="oe_inline" />
+                                    </div>
+                        </group>
+                       
+                    </group>
+                    <notebook>
+                        <page string="Account Group">
+                            <group>
+                                
+                                <group groups="account.group_account_user">
+                                    <field name="account_id"/>
+                                    <field name="refund_account_id"/>
+                                </group>
+                                <group>
+                                    
+                                    
+                                </group>
+                            </group>
+                            
+                        </page>
+                        <page string="Advanced Options">
+                            <group>
+                                <group>
+                                    <field name="description" />
+                                    <field name="analytic" groups="analytic.group_analytic_accounting" />
+                                    <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>
+                                </group>
+                                <group name="advanced_booleans">
+                                    <field name="price_include"/>
+                                    <field name="include_base_amount" />
+                                    <field name="tax_adjustment" groups="account.group_account_user"/>
+                                    <field name="hide_tax_exigibility" invisible="1"/>
+                                    <field name="tax_exigibility" widget="radio" groups="account.group_account_user"/>
+                                    <field name="cash_basis_account" groups="account.group_account_user"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                </form>
+              </field>
+		</record>
+
+		<record model="ir.ui.view" id="discount_sale_invoice_view_tree">
+            <field name="name">Discount view tree</field>
+            <field name="model">account.discount</field>
+            <field name="arch" type="xml">
+                <tree string="Discount Coupon">
+                	<field name="name"/>
+                    <field name="account_id"/>
+                    <field name="refund_account_id"/>
+                    <field name="discount"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_discount_sale_invoice_view_tree">
+            <field name="name">Discount Coupon</field>
+            <field name="res_model">account.discount</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem name="Generate Discounts" id="menu_discount_generate" parent="sale.sale_menu_root" />
+        <menuitem name="Discount Type" id="menu_discount_type" parent="menu_discount_generate" action="action_discount_sale_invoice_view_tree"/>
+	</data>
+</odoo>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_order_form_uom" model="ir.ui.view">
+            <field name="name">sale.order.form.uom</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <!--Making default size variable invisible -->
+                <xpath expr="//sheet/notebook/page/field[@name='order_line']/form/group/group[1]/div/field[@name='product_uom_qty']" position="replace">
+                    <field name="product_uom_qty" invisible="1"/>
+                </xpath>
+                <xpath expr="//sheet/notebook/page/field[@name='order_line']/form/group/group[1]/div/field[@name='product_uom']" position="replace">
+                    <field name="product_uom" invisible="1"/>
+                </xpath>
+                <xpath expr="//sheet/notebook/page/field[@name='order_line']/form/group/group[1]/label[@for='product_uom_qty']" position="replace">
+                    <label for="product_uom_qty" invisible="1"/>
+                </xpath>
+
+                <xpath expr="//page/field[@name='order_line']/form/group/group/field[@name='product_packaging']" position="replace">
+                    <field name="product_packaging" attrs="{'invisible': [('product_id', '=', False)]}" context="{'default_product_id': product_id, 'tree_view_ref':'product.product_packaging_tree_view', 'form_view_ref':'product.product_packaging_form_view'}" domain="[('product_id','=',product_id)]" groups="product.group_stock_packaging" invisible="1"/>
+                </xpath>
+                <xpath expr="//page/field[@name='order_line']/form/group/group/field[@name='product_id']" position="after">
+                    <field name="product_packaging" attrs="{'invisible': [('product_id', '=', False)]}" context="{'default_product_id': product_id, 'tree_view_ref':'product.product_packaging_tree_view', 'form_view_ref':'product.product_packaging_form_view'}" domain="[('product_id','=',product_id)]" groups="product.group_stock_packaging" />
+                    <field name="z_no_of_package"/>
+                    <field name="z_quantity_ft"/>
+                    <field name="z_sales_price_sqft"/>
+                    <field name="product_uom_qty"/>
+                    <field name="price_unit"/>
+                </xpath>
+                <!--xpath expr="//form/sheet/notebook/page[1]/field[@name='order_line']/form[1]/group/group[1]/field[@name='price_unit']" position="before">
+                    <field name="z_no_of_package"/>
+                    <field name="z_uom_ratio" invisible="1"/>
+
+                </xpath> 
+
+                 <xpath expr="//form/sheet/notebook/page[1]/field[@name='order_line']/form[1]/group/group[2]" position="inside">
+                    <field name="z_quantity_ft"/>
+                    <field name="z_uom_so_id" invisible="1"/>
+                    <field name="z_sales_price_sqft"/>
+                    <field name="z_sales_price" invisible="1"/>
+                    <field name="price_unit"/>
+                </xpath-->  
+                  
+                <xpath expr="//field[@name='order_line']/tree/field[@name='name']" position="after">
+                    <field name="z_uom_ratio" invisible="1"/>
+                    <field name="product_packaging"/> 
+                    <field name="z_no_of_package"/>
+                    <field name="z_quantity_ft"/>
+                    <field name="z_uom_so_id" invisible="1"/>
+
+
+                    <!--field name="z_prod_uom_qty" invisible="1"/-->
+
+                </xpath> 
+                <xpath expr="//field[@name='order_line']/tree/field[@name='z_quantity_ft']" position="after">
+                         <field name="z_sales_price_sqft"/>
+                </xpath>
+                <xpath expr="//field[@name='order_line']/tree/field[@name='name']" position="replace">
+                    <field name="name" widget="section_and_note_text" invisible="1"/>
+                    
+                </xpath> 
+                <xpath expr="//field[@name='order_line']/tree/field[@name='product_uom_qty']" position="replace">
+                    <field
+                                        name="product_uom_qty"
+                                        string="Qt. in Sq. Mt"
+                                        context="{
+                                            'partner_id': parent.partner_id,
+                                            'quantity': product_uom_qty,
+                                            'pricelist': parent.pricelist_id,
+                                            'uom': product_uom,
+                                            'company_id': parent.company_id
+                                        }"
+                                    />
+
+                </xpath> 
+
+                <xpath expr="//field[@name='order_line']/tree/field[@name='product_uom']" position="replace">
+                    <field
+                        name="product_uom" invisible="1"
+                        attrs="{
+                            'readonly': [('state', 'in', ('sale','done', 'cancel'))],
+                            'required': [('display_type', '=', False)],
+                        }"
+                        context="{'company_id': parent.company_id}"
+                        groups="uom.group_uom"
+                        options='{"no_open": True}'
+                    />
+                </xpath>
+                <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="after">
+                   
+                     <field name="z_sales_price" invisible="1"/>
+                     <!--field name="z_delivered_boxes" invisible="1"/-->
+                    <!--field name="z_prod_uom_qty" invisible="1"/-->
+
+                </xpath>
+            </field>
+    </record>
+</odoo>

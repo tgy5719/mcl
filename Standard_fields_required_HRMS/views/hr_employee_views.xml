@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+	<data>
+		<record model="ir.ui.view" id="standard_view_employee_form">
+			<field name="name">standard view employee</field>
+			<field name="model">hr.employee</field>
+			<field name="inherit_id" ref="hr.view_employee_form"/>
+			<field name="arch" type="xml">
+				<field name="address_home_id" position="after">
+					<field name="alternative_address"/>
+				</field>
+				<field name="birthday" position="after">
+					<field name="age" invisible="1"/>
+					<field name="z_age"/>
+				</field>
+				<field name="work_phone" position="after">
+					<field name="date_of_joining"/>
+				</field>
+				<field name="date_of_joining" position="after">
+					<field name="date_of_relieving"/>
+					<field name="date_of_resignation"/>
+				</field>
+				<field name="user_id" position="after">
+					<field name="esi_applicable"/>
+				</field>
+				<field name="passport_id" position="after">
+					<field name="z_pf_no"/>
+					<field name="z_esi_no"/>
+					<field name="z_epf_uan_no"/>
+				</field>
+				<field name="age" position="after">
+					<field name="z_blood_group"/>
+				</field>
+				<notebook>
+					<page name="language_known" string="Language known">
+						<field name="one" widget="one2many_list">
+							<tree string="Language Lines" editable="bottom">
+								<field name="languages"/>
+					            <field name="rite"/>
+					            <field name="wr"/>
+					            <field name="speak"/>
+					        </tree>
+					    </field>
+					</page>
+				</notebook>
+				<notebook>
+					<page name="Employee_Family_details" string="Employee's Family Details">
+						<field name="two" widget="one2many_list">
+							<tree string="bondage" editable="bottom">
+								<field name="relation"/>
+								<field name="name"/>
+					            <field name="the_age"/>
+					            <field name="qualification"/>
+					            <field name="occupation"/>
+					        </tree>
+					    </field>
+					</page>
+				</notebook>
+				<notebook>
+					<page name="employee's_education_" string="Employee's Education Details">
+						<field name="three" widget="one2many_list">
+							<tree string="Education" editable="bottom">
+								<field name="qualification"/>
+					            <field name="college"/>
+					            <field name="year_of_passing"/>
+					            <field name="percentage"/>
+					        </tree>
+					    </field>
+					</page>
+				</notebook>
+				<notebook>
+					<page name="employee_experience_" string="Details of previous experience">
+						<field name="four" widget="one2many_list">
+							<tree string="Experience" editable="bottom">
+								<field name="period_from"/>
+					            <field name="period_to"/>
+					            <field name="organization"/>
+					            <field name="designation"/>
+					            <field name="ctc"/>
+					            <field name="reason_for_leaving"/>
+					        </tree>
+					    </field>
+					</page>
+				</notebook>
+				<notebook>
+					<page name="employee_transfer" string="Employee Transfer">
+						<field name="five" widget="one2many_list">
+							<tree string="Transfer" editable="bottom">
+								<field name="z_job_position"/>
+					            <field name="z_period_from"/>
+					            <field name="z_period_to"/>
+					            <field name="z_location"/>
+					        </tree>
+					    </field>
+					</page>
+				</notebook>
+			</field>
+		</record>
+	</data>
+</odoo>

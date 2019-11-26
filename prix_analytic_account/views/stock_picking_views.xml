@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+	<data>
+    	<record id="view_picking_form_custom_inherit" model="ir.ui.view">
+            <field name="name">stock.picking.form</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                <field name="picking_type_id" position="after">
+                	<field name="analytic_account_id"/>
+                    <field name="z_analytic_account_id" invisible="1"/>
+                    <field name="sale_id" invisible="1"/>
+                    <field name="z_disp_fetch_button" invisible="1"/>
+                    <field name="z_disp_fetch_tags" invisible="1"/>
+                </field>
+                <xpath expr="//sheet/notebook/page[2]/field[@name='move_ids_without_package']/tree/field[@name='product_id']" position="after">
+                    <field name="z_analytic_tag_ids" widget="many2many_tags"/>
+                </xpath>
+                <xpath expr="//sheet/notebook/page[1]/field[@name='move_line_ids_without_package']/tree/field[@name='product_id']" position="after">
+                    <field name="z_analytic_tag_ids" widget="many2many_tags"/>
+                </xpath>
+
+                <button name="button_validate" position="after">
+                    <button name="change_analytical_tags" string="Fetch Analytical Tags" type="object" attrs="{'invisible':[('z_disp_fetch_button','=',False)]}"/>
+                </button>
+            </field>
+        </record>
+
+
+        <record id="view_stock_move_line_operation_tree_custom_inherit" model="ir.ui.view">
+            <field name="name">stock.move.line.operations.tree</field>
+            <field name="model">stock.move.line</field>
+            <field name="inherit_id" ref="stock.view_stock_move_line_operation_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='lot_id']" position="after">
+                    <field name="z_analytic_tag_ids" widget="many2many_tags"/>
+                    <field name="product_id"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record model="ir.ui.view" id="view_picking_type_form_custom_inherit_prix_analytic_account">
+            <field name="name">Operation Types</field>
+            <field name="model">stock.picking.type</field>
+            <field name="inherit_id" ref="stock.view_picking_type_form"/>  
+            <field name="arch" type="xml">
+                <field name="barcode" position="after">
+                    <field name="z_analytic_tag_ids" widget="many2many_tags"/>
+                </field>
+            </field>
+        </record>
+    </data>
+</odoo>

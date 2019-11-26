@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<data>
+		<record id="tds_group_settings_form_view" model="ir.ui.view">
+			<field name="name">TDS Group form view</field>
+			<field name="model">account.tds.group.settings</field>
+			<field name="arch" type="xml">
+                <form string="TDS Group Setting">
+                    <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_active" type="object" class="oe_stat_button" icon="fa-archive">
+                            <field name="active" widget="boolean_button" options='{"terminology": "archive"}'/>
+                        </button>
+                    </div>            
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="tds_group_name"/>
+                            <field name="tds_section"/>
+                        </group>
+                        <group>
+                            <field name="date"/>
+                            <field name="tds_threshold_amount"/>
+                            <field name="surcharge_threshold_amount"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="TDS GL Account">
+                            <group>
+                                <group>
+                                    <field name="account_id"/>
+                                    <field name="refund_account_id"/>
+                                </group>
+
+                                <group>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                </form>
+              </field>
+		</record>
+
+		<record model="ir.ui.view" id="tds_group_settings_tree_view">
+            <field name="name">TDS Group tree view</field>
+            <field name="model">account.tds.group.settings</field>
+            <field name="arch" type="xml">
+                <tree string="TDS Group Setting">
+                	<field name="name"/>
+                    <field name="tds_section"/>
+                    <field name="account_id"/>
+                    <field name="refund_account_id"/>
+                    <field name="active"/>
+                </tree>
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_tds_group_settings">
+            <field name="name">TDS Groups Settings</field>
+            <field name="res_model">account.tds.group.settings</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+
+        
+        <menuitem name="TDS Configuration" id="tds_configuration" parent="account.menu_finance"/>
+        <menuitem name="TDS Group Settings" id="menu_tds_group_settings" parent="tds_configuration" action="action_tds_group_settings"/>
+	</data>
+</odoo>

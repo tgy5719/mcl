@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+	<data>
+  <record id="view_picking_form_stock_quantity" model="ir.ui.view">
+            <field name="name">stock.picking</field>
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='move_line_ids_without_package']/tree/field[@name='product_id']" position="after">
+                    <field name="z_qunatity_on_hand"/>                   
+                </xpath> 
+                <xpath expr="//field[@name='move_line_ids_without_package']/tree/field[@name='lot_id']" position="replace">
+                    <field name="z_lot_id" domain="[('product_id', '=', product_id),('quant_ids.location_id','=',location_id)]"  groups="stock.group_production_lot" attrs="{'column_invisible': [('parent.show_lots_text', '=', True)], 'invisible': [('lots_visible', '=', False)]}" context="{'default_product_id': product_id}"/>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="view_production_lot_tree_inherit" model="ir.ui.view">
+            <field name="name">stock.production.lot.tree.inherit</field>
+            <field name="model">stock.production.lot</field>
+            <field name="inherit_id" ref="stock.view_production_lot_tree"/>
+            <field name="arch" type="xml">
+                <field name="product_id" position="after">
+                    <field name="z_qunatity_on_hand"/>
+                </field>
+            </field>
+        </record>
+
+        <!-- <record id="view_production_lot_form_inherit" model="ir.ui.view">
+            <field name="name">stock.production.lot.form.inherit</field>
+            <field name="model">stock.production.lot</field>
+            <field name="inherit_id" ref="stock.view_production_lot_form"/>
+            <field name="arch" type="xml">
+                <field name="ref" position="after">
+                    <field name="quant_ids"/>
+                    <field name="z_location_ids"/>
+                </field>
+            </field>
+        </record> -->
+
+	</data>
+</odoo>

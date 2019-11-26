@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<template id="payment_voucher_document" inherit_id = "account.report_payment_receipt_document">
+	<xpath expr="//t[@t-call='web.external_layout']" position="replace">
+		<t t-call="web.external_layout">
+            <t t-set="o" t-value="o.with_context({'lang': lang})"/>
+            <table class="table table-sm" style="border:1px solid black;max-width:100%;margin-top:0px;">
+                <tr>
+                <td class="text-center" style="border:1px solid black; width:100%">
+               
+                <t class="col-3 mb4 pull-left">
+                  
+                     <img src="/sale_order_template_mcl/static/src/img/shiva.jpg" style="max-height:120px;max-width:130px;padding-left:0;margin-right:100px;margin-left:-250px;margin-top:0px" alt="Logo"/>
+               
+                </t>
+                <t class="col-md-6 text-center" style="margin-right:10px;margin-left:200px;">
+                    <b>
+                  
+                        <font style="font-size:20px;" t-field="o.company_id.partner_id"/>
+                   
+                    </b>
+                    <br/>
+                    <span t-field="o.company_id.partner_id.street"/>, 
+                    <span t-field="o.company_id.partner_id.street2"/>
+                    <br/>
+                    <span style="text-transform:uppercase" t-field="o.company_id.city"/>-
+                    <span style="text-transform:uppercase" t-field="o.company_id.partner_id.zip"/>
+                    <span style="text-transform:uppercase" t-field="o.company_id.state_id"/>,
+                                
+                    <span style="text-transform:uppercase" t-field="o.company_id.country_id"/>
+                   
+                    <t t-if="o.company_id.company_registry" class="text-center">
+                        <strong><t t-esc="'GSTIN'"/>:</strong>
+                        <span t-field="o.company_id.vat"/>
+                        <strong><t t-esc="'CIN'"/>:</strong> 
+                        <span t-field="o.company_id.company_registry"/>
+                       
+                    </t>
+                    </t>
+                    <br/>
+                        
+                        <!-- <span t-field="o.warehouse_id.partner_id.street"/><br/>
+                        <span t-field="o.warehouse_id.partner_id.street2"/>
+                        <span t-field="o.warehouse_id.partner_id.city"/>
+                        <span t-field="o.warehouse_id.partner_id.state_id"/>
+                        <span t-field="o.warehouse_id.partner_id.zip"/>
+                        <span t-field="o.warehouse_id.partner_id.country_id"/>
+                        <strong><t t-esc="'GSTIN'"/>:</strong>
+                        <span t-field="o.warehouse_id.partner_id.vat"/> -->
+
+                     <t class="col-3 mb4 pull-right">
+                         <img t-att-src="image_data_uri(o.company_id.logo)" style="max-height:120px;max-width:130px;margin-left:400px;margin-right:-300px;margin-top:-130px" alt="Logo"/>
+                    </t>
+                </td>
+                </tr>
+            </table>
+            <div class="page">
+                
+                <center><h3><strong>Payment Voucher: <span t-field="o.name"/></strong></h3></center>
+                <div class="row mt64">
+                    <div class="col-6" t-if="o.payment_date">
+                        <strong>Payment Date: </strong> <span t-field="o.payment_date"/>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6" t-if="o.partner_type">
+                        <t t-if="o.partner_type == 'customer'">
+                            <strong style="color:red;">Customer: </strong>
+                        </t>
+                        <t t-if="o.partner_type == 'supplier'">
+                            <strong>Vendor: </strong>
+                        </t><span t-field="o.partner_id"/>
+                    </div>
+                    <div class="col-6" t-if="o.payment_method_id">
+                        <strong>Payment Method: <span t-field="o.payment_method_id.name"/></strong>
+                    </div>
+                </div>
+                <div class="row mb64">
+                    <div class="col-6" t-if="o.amount">
+                        <strong>Payment Amount: <span t-field="o.amount" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></strong>
+                     </div>
+                    <div class="col-6" t-if="o.communication">
+                        <strong>Memo: </strong><span t-field="o.communication"/><br/>
+                        <strong>Bank Acc. No: <span t-field="o.journal_id.bank_account_id"/></strong>
+                     </div>
+                </div>
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th><span>Vendor Ref.</span></th>
+                            <th><span>Invoice Number</span></th>
+                            <th><span>Invoice Date</span></th>
+                            <th><span>Gross Amount</span></th>
+                            <th><span>TDS/ITR</span></th>
+                            <th><span>Amount Paid</span></th>
+                            <th><span>Balance</span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="o.invoice_lines" t-as="inv">
+                            <td><span t-field="inv.z_vendor_reference"/></td>
+                            <td><span t-field="inv.invoice"/></td>
+                            <td><span t-field="inv.date"/></td>
+                            <td><span t-field="inv.open_amount"/></td>
+                            <td><span t-field="inv.z_tds"/></td>
+                            <td><span t-field="inv.allocation"/></td>
+                            <t t-set="bal" t-value="inv.open_amount - inv.allocation"/>
+                            <td><span t-esc="'%.2f'% bal"/></td>
+                        </tr>
+                        <tr>
+                            <th colspan="5" class="text-right">Total</th>
+                            <td><span t-field="o.amount" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/></td>
+                        </tr>
+                        <tr>
+                            <td colspan="7">
+                                <strong>Amount in Words: </strong><span t-field="o.amount_in_words"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="7">
+                                <strong>Created By- </strong><span t-esc="user.name"/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </t>
+    </xpath>
+</template>
+</odoo>

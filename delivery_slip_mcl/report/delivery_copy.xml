@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<template id="stock.report_sale_q" inherit_id = "stock.report_delivery_document">
+        <xpath expr="//t[@t-call='web.external_layout']" position="replace">
+       <t t-call="web.external_layout_delivery">
+       
+        <div class="page">
+            <div class="oe_structure"/>
+            <table class="table table-condensed table-bordered" style="margin-top:0px;height:15%;width:101.5%;border:1px solid black;">
+                <thead>
+                    <style>html * { font-size:13px;
+                }</style>
+                <tr>
+                        <td colspan="5" style="border:1px solid black;">
+                            <strong>
+                                <font style="font-size:20px;padding-left:350px;"> DELIVERY CHALLAN </font>
+                            </strong>
+                        </td>
+                </tr>
+                <tr>
+                <td colspan="3" style="border:1px solid black;">
+                    <t class="div-move" t-if="o.origin">
+                            <strong><span t-esc="o.name" style="font-size:30px;"/></strong>
+                        </t>
+                         <br/>
+                    <t class="div-move" t-if="o.origin">
+                            <strong>Sales Order No: </strong>
+                            <span t-esc="o.sale_id.name"/>
+                        </t>
+                    <br/>
+                    <t class="div-move" t-if="o.backorder_id">
+                        <strong>Date: </strong>
+                        <span t-field="o.z_date"/>
+                    </t>
+                    <t class="div-move" t-if="not o.backorder_id">
+                        <strong>Date: </strong>
+                        <span t-field="o.scheduled_date"/>
+                    </t>
+                    <br/>
+                    <t class="div-move" t-if="o.z_deliver_to">
+                        <strong>Deliver To: </strong>
+                        <span t-field="o.z_deliver_to"/>
+                    </t>
+                    <br/>
+                    <t class="div-move" t-if="o.z_vehicle_no">
+                        <strong>Vehicle No: </strong>
+                        <span t-field="o.z_vehicle_no"/>
+                    </t>
+                     <t class="div-move" t-if="o.z_vehicle">
+                        <strong>External Vehicle No: </strong>
+                        <span t-field="o.z_vehicle"/>
+                    </t>
+                </td>
+                <td colspan="2" style="border:1px solid black;">
+                        <strong>Customer Address: </strong>
+                        <div class="text-left" style="margin-top:0px;margin-left:120px;margin-left:3px;">
+                            <span t-field="o.z_customer_id"/>
+                            <br/>
+                            <span t-field="o.z_customer_id.street"/>
+                            <span t-field="o.z_customer_id.street2"/>
+                            <span t-field="o.z_customer_id.city"/>
+                            <span t-field="o.z_customer_id.zip"/>
+                            <br/>
+                            <span t-field="o.z_customer_id.state_id"/>
+                            <br/>
+                             <strong>GSTIN: </strong>
+                            <span t-field="o.z_customer_id.vat"/>
+                            <br/>
+                             <strong>Email: </strong>
+                            <span t-field="o.z_customer_id.email"/>
+                            <br/>
+                             <strong>Mobile: </strong>
+                            <span t-field="o.z_customer_id.mobile"/>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                <td colspan="3" style="border:1px solid black;">
+                        <strong>Delivery Address:</strong>
+                        <div class="text-left" style="margin-top:0px;margin-left:120px;margin-left:3px;">
+                            <span t-field="o.partner_id"/>
+                            <br/>
+                            <span t-field="o.partner_id.street"/>
+                            <span t-field="o.partner_id.street2"/>
+                            <span t-field="o.partner_id.city"/>
+                            <span t-field="o.partner_id.zip"/>
+                            <br/>
+                            <span t-field="o.partner_id.state_id"/>
+                            <br/>
+                             <strong>GSTIN: </strong>
+                            <span t-field="o.partner_id.vat"/>
+                            <br/>
+                             <strong>Email: </strong>
+                            <span t-field="o.partner_id.email"/>
+                            <br/>
+                             <strong>Mobile: </strong>
+                            <span t-field="o.partner_id.mobile"/>
+                        </div>
+                    </td>
+                    <td colspan="2" style="border:1px solid black;">
+                        <strong>Consignee Address: </strong>
+                        <div class="text-left" style="margin-top:0px;margin-left:120px;margin-left:3px;">
+                            <span t-field="o.part_id"/>
+                            <br/>
+                            <span t-field="o.part_id.street"/>
+                            <span t-field="o.part_id.street2"/>
+                            <span t-field="o.part_id.city"/>
+                            <span t-field="o.part_id.zip"/>
+                            <br/>
+                            <span t-field="o.part_id.state_id"/>
+                            <br/>
+                             <strong>GSTIN: </strong>
+                            <span t-field="o.part_id.vat"/>
+                            <br/>
+                             <strong>Email: </strong>
+                            <span t-field="o.part_id.email"/>
+                            <br/>
+                             <strong>Mobile: </strong>
+                            <span t-field="o.part_id.mobile"/>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th class="text-center" style="border:1px solid black;">Sl.No</th>
+                    <th class="text-center" style="border:1px solid black;">Products</th>
+                     <th class="text-center" style="border:1px solid black;">Initial Demand</th>
+                    <th class="text-center" style="border:1px solid black;">Delivered Quantity</th>
+                    <th class="text-center" style="border:1px solid black;">Amount</th>
+                </tr>
+            </thead>
+            <tbody class="invoice_tbody">
+             <t t-set="i" t-value="1"/>
+             <t t-set="j" t-value="0"/>
+             <t t-set="k" t-value="0"/>
+             <t t-set="n" t-value="0"/>
+            <tr t-foreach="o.move_lines" t-as="l">
+                    <td class="text-center" style="border:1px solid black;">
+                        <span t-esc="i"/>
+                    </td>
+                    <t t-set="i" t-value="i+1"/>
+                    <td class="hidden">
+                        <span t-field="l.origin"/>
+                    </td>
+                     <td class="text-left" style="border:1px solid black;">
+                        <strong><span t-field="l.name"/></strong>
+                    </td>
+                     <td class="text-right" style="border:1px solid black;">
+                        <strong><span t-esc="'%.2f'%(l.product_uom_qty)"/></strong>
+                        <t t-set="k" t-value="k+l.product_uom_qty"/>
+                    </td>
+                    <td class="text-right" style="border:1px solid black;">
+                        <strong><span t-esc="'%.2f'%(l.quantity_done)"/></strong>
+                        <t t-set="j" t-value="j+l.quantity_done"/>
+                    </td>
+                    <td class="text-left" style="border:1px solid black;">
+                        
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="1" style="border:1px solid black;"/>
+                    <t style="border:1px solid black;">
+                        <td colspan="1" style="border:1px solid black;">
+                            <strong>Total Quantity: </strong>
+                        </td>
+                        <th class="text-right" colspan="1" style="border:1px solid black;">
+                            <span t-esc="'%.2f'%(k)"/>
+                        </th>
+                        <th class="text-right" colspan="1" style="border:1px solid black;">
+                            <span t-esc="'%.2f'%(j)"/>
+                        </th>
+                        <td colspan="1" style="border:1px solid black;">
+                        </td>
+                    </t>
+                </tr>
+            </tbody>
+            </table>
+        </div>
+    </t>
+</xpath>
+</template>
+
+
+</odoo>

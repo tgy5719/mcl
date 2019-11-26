@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="account_payment_form_inherit_imp1">
+            <field name="name">account.payment.imp.form</field>
+            <field name="model">account.payment</field>
+            <field name="inherit_id" ref="account.view_account_payment_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//notebook/page/field[@name='invoice_lines']/tree/field[@name='open_amount']" position="after">
+                    <field name="z_seq"/>
+                </xpath> 
+            </field>
+        </record> 
+    </data>
+</odoo>

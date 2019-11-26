@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="cat_form">
+            <field name="name">hr category</field>
+            <field name="model">hr.category</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group>
+                        <field name="name"/>
+                        <field name="description"/>
+                    </group>    
+                </form>    
+            </field>               
+        </record>
+        <record model="ir.actions.act_window" id="action_emp_cat_form">
+            <field name="name">hr category</field>
+            <field name="res_model">hr.category</field>
+            <field name="view_mode">form</field>
+        </record>
+        <record model="ir.ui.view" id="cat_form_internal">
+            <field name="name">hr category internal</field>
+            <field name="model">hr.category.internal</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group>
+                        <field name="name"/>
+                        <field name="description"/>
+                    </group>    
+                </form>    
+            </field>               
+        </record>
+        <record model="ir.actions.act_window" id="action_emp_cat_form_internal">
+            <field name="name">hr category internal</field>
+            <field name="res_model">hr.category.internal</field>
+            <field name="view_mode">form</field>
+        </record>
+    </data>
+</odoo>  

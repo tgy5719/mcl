@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="business_type_form_view">
+            <field name="name">res partner form</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>  
+            <field name="arch" type="xml">
+            	<xpath expr="//group[@name='sale']/field[@name='customer']" position="after">
+            		<field name="z_cus_biz_type" attrs="{'invisible': [('customer', '=', False)]}"/>
+            	</xpath>
+            	<xpath expr="//group[@name='purchase']/field[@name='supplier']" position="after">
+            		<field name="z_ven_biz_type" attrs="{'invisible': [('supplier', '=', False)]}"/>
+            	</xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

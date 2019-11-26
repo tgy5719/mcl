@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+	<record id="sale_formz" model="ir.ui.view">
+		<field name="name">sale.order.formz</field>
+		<field name="model">sale.order</field>
+		<field name="inherit_id" ref="sale.view_order_form"/>
+		<field name="arch" type="xml">
+			<page name="other_information" position="after">
+				<page name="walk_in" string="WalkIn" attrs="{'invisible':[('z_walkin', '==', False)]}">
+					<group>
+						<group string="Address" name="address" attrs="{'invisible':[('z_walkin', '==', False)]}">
+							<div class="o_address_format">
+								<field name="z_street_walk" placeholder="Street..." class="o_address_street" attrs="{'invisible':[('z_walkin', '==', False)]}"/>
+								<field name="z_street2_walk" placeholder="Street 2..." class="o_address_street" attrs="{'invisible':[('z_walkin', '==', False)]}"/>
+								<field name="z_city_walk" placeholder="City" class="o_address_city" attrs="{'invisible':[('z_walkin', '==', False)]}"/>
+								<field name="z_state_id_walk" class="o_address_state" placeholder="State" options="{&quot;no_open&quot;: True}" context="{'country_id': z_country_id_walk, 'zip': z_zip_walk}" attrs="{'invisible':[('z_walkin', '==', False)]}"/>
+								<field name="z_zip_walk" placeholder="ZIP" class="o_address_zip" attrs="{'invisible':[('z_walkin', '==', False)]}"/>
+								<field name="z_country_id_walk" placeholder="Country" class="o_address_country" options="{&quot;no_open&quot;: True, &quot;no_create&quot;: True}" attrs="{'invisible':[('z_walkin', '==', False)]}"/>
+							</div>
+						</group>
+						<group string="Contact" name="contact" attrs="{'invisible':[('z_walkin', '==', False)]}">
+							<div>
+								<strong>Phone:</strong><field name="z_phone_walk" placeholder="phone number" attrs="{'invisible':[('z_walkin', '==', False)]}"/>
+								<strong>Mobile:</strong><field name="z_mobile_walk" placeholder="mobile number" attrs="{'invisible':[('z_walkin', '==', False)]}"/>
+								<strong>Email:</strong><field name="z_email_walk" placeholder="user@example.com" attrs="{'invisible':[('z_walkin', '==', False)]}"/>
+							</div>
+						</group>
+					</group>
+				</page>
+			</page>
+						
+			<field name="payment_term_id" position="after">
+				<field name="z_walkin" attrs="{'invisible':[('z_walkin', '==', False)],'editable':False}"/>
+			</field>
+		</field>
+	</record>
+</odoo>

@@ -1,0 +1,39 @@
+<odoo>
+	<data>
+		<record id="hr_contract_form_view_inherit_ctc" model="ir.ui.view">
+	        <field name="name">hr.contract.form.inherit</field>
+	        <field name="model">hr.contract</field>
+	        <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
+	        <field name="arch" type="xml">
+	            <xpath expr="//page[@name='information']" position="inside">
+	            	<group>
+	            		<field name="ctc_per_hour"/>
+	            	</group>
+	            </xpath>
+	        </field>
+	    </record>
+
+	    <record id="inherit_product_templ" model="ir.ui.view">
+	        <field name="name">inherit.product.tmpl</field>
+	        <field name="model">product.template</field>
+	        <field name="inherit_id" ref="product.product_template_form_view"/>
+	        <field name="arch" type="xml">
+	            <xpath expr="//sheet/div[2]/div[1]/div[2]" position="after">
+	            	<div>
+                        <field name="z_process_cost"/>
+                        <label for="z_process_cost"/>
+                    </div>
+                    <!--div>
+                        <field name="z_by_product"/>
+                        <label for="z_by_product"/>
+                    </div-->
+	            </xpath>
+
+	            <!--field name="list_price" position="before">
+	            	<field name="z_conversion_ratio"/>
+
+	            </field-->
+	        </field>
+	    </record>
+	</data>
+</odoo>

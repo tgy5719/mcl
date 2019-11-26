@@ -1,0 +1,30 @@
+<odoo>
+	<data>
+		<record model="ir.ui.view" id="view_payslip_inherit">
+			<field name="name">hr.payslip.form</field>
+			<field name="model">hr.payslip</field>
+			<field name="inherit_id" ref="hr_payroll.view_hr_payslip_form"/>
+			<field name="arch" type="xml">
+				<xpath expr="//notebook" position="inside">
+					<page string="Other Information">
+						<group string="Working Details">
+							<field name="no_days_month"/>
+							<field name="period_month" invisible="1"/>
+							<field name="no_days_working"/>
+						</group>
+					</page>
+				</xpath>
+			</field>
+		</record>
+	    <record model="ir.ui.view" id="view_holiday_inherited">
+	        <field name="name">hr holidays form</field>
+	            <field name="model">hr.leave</field>
+	            <field name="inherit_id" ref="hr_holidays.hr_leave_view_form_manager"/>
+	            <field name="arch" type="xml">
+	                <field name="payslip_status" position="after">
+	                    <field name="unpaid_condition" invisible="1"/>
+	                </field>
+	            </field>
+	    </record>
+	</data>
+</odoo>

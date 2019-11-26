@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_payslip_inherit" inherit_id="hr_payroll.report_payslip">
+    
+    <xpath expr="//t[@t-call='web.external_layout']" position="replace">
+        <t t-call="web.external_layout">
+            <div class="page">
+                <h2 style="display:none;">Pay Slip</h2>
+                <p t-field="o.name" style="display:none;"/>
+                <table class="table table-condensed table-bordered" style="border:1px solid black;width:100%;margin-top:10px;">
+                    <tr>
+                <td colspan="12" class="text-center" style="border:1px solid black">
+                    <div class="col-3 mb4 pull-right">
+                    <img t-att-src="image_data_uri(o.company_id.logo)" style="max-height:120px;max-width:130px;padding-left:0;" alt="Logo"/>
+                </div>
+                <div class="col-md-6 text-center" style="margin-right:10px;margin-left:200px;">
+                    <b>
+                  
+                        <font style="font-size:20px;" t-field="o.company_id.partner_id"/>
+                   
+                </b>
+                <br/>
+                <span t-field="o.company_id.partner_id.street"/>, 
+                <span t-field="o.company_id.partner_id.street2"/>
+                <br/>
+                <span style="text-transform:uppercase" t-field="o.company_id.city"/>-
+                <span style="text-transform:uppercase" t-field="o.company_id.partner_id.zip"/>
+                <span style="text-transform:uppercase" t-field="o.company_id.state_id"/>,
+                            
+                <span style="text-transform:uppercase" t-field="o.company_id.country_id"/>
+               
+                <t t-if="o.company_id.company_registry" class="text-center">
+                    <strong><t t-esc="'GSTIN'"/>:</strong>
+                    <span t-field="o.company_id.vat"/>
+                    <strong><t t-esc="'CIN'"/>:</strong> 
+                    <span t-field="o.company_id.company_registry"/>
+                   
+                </t>
+                </div>
+                
+            
+            </td>
+            </tr>
+                    <tr>
+                        <td colspan="12" class="text-center" style="border:1px solid black;">
+                            <b>
+                              <font style="font-size
+                              :18px;"> Payslip For the Month
+                                <span style="font-size
+                              :18px;" t-esc="datetime.datetime.strptime(str(o.date_from), '%Y-%m-%d').strftime('%B - %Y')"/></font>
+                            </b>
+                        </td>
+                    </tr>
+                </table>
+                <table class="table table-sm table-bordered" style="border:1px solid black;margin-top:-17px;">
+                    <style>html * { font-size:15px;
+                            }</style>
+                    <tr>
+                        <td style="border:1px solid black;width:24%;">
+                            <strong>EMPLOYEE ID</strong>
+                        </td>
+        
+                        <td style="border:1px solid black;width:25%;">
+                            <span t-field="o.employee_id.employee_code"/>
+                        </td>
+                        <td style="border:1px solid black;width:22%;">
+                            <strong>MODE OF PAY</strong>
+                        </td>
+                        <td style="border:1px solid black;">
+                            <span>Bank Transfer</span>
+                        </td>
+                    </tr>
+                    <tr>
+                          
+                        <td style="border:1px solid black;">
+                            <strong>EMPLOYEE NAME</strong>
+                        </td>
+                        <td style="border:1px solid black;">
+                            <span t-field="o.employee_id"/>
+                        </td>
+                        <td style="border:1px solid black;">
+                            <strong>BANK NAME</strong>
+                        </td>
+                        <td style="border:1px solid black;">
+                            <span t-field="o.employee_id.bank_account_id.bank_id"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border:1px solid black;">
+                            <strong>DESIGNATION</strong>
+                        </td>
+                        <td style="border:1px solid black;">
+                            <span t-field="o.employee_id.job_id"/>
+                        </td>
+                        <td style="border:1px solid black;">
+                            <strong>BANK ACCOUNT NO</strong>
+                        </td>
+                        <td style="border:1px solid black;">
+                            <span t-field="o.employee_id.bank_account_id"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border:1px solid black;">
+                            <strong>DEPARTMENT</strong>
+                        </td>
+                        <td style="border:1px solid black;">
+                            <span t-field="o.employee_id.department_id"/>
+                        </td>
+                        <td style="border:1px solid black;">
+                            <strong>PF NO</strong>
+                        </td>
+                        <td style="border:1px solid black;">
+                            <span t-field="o.employee_id.z_pf_no"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <t t-set="t" value="0"/>
+                        <td style="border:1px solid black;">
+                            <strong>PAYABLE DAYS</strong>
+                        </td>
+                        <td style="border:1px solid black;">
+                            <t t-esc="o.no_days_month"/>
+                        </td>
+                        <td style="border:1px solid black;">
+                            <strong>ESI NO</strong>
+                        </td>
+                        <td style="border:1px solid black;">
+                            <t t-esc="o.employee_id.z_esi_no"/>
+                        </td>
+                        
+                    </tr>
+                    <tr>
+                       <td style="border:1px solid black;">
+                            <strong>PAID DAYS</strong>
+                        </td>
+                        <td style="border:1px solid black;">
+                            <t t-esc="o.no_days_working"/>
+                        </td>
+                        
+                        <td style="border:1px solid black;">
+                            <strong>EPF UAN NO</strong>
+                        </td>
+                        <td style="border:1px solid black;">
+                           <t t-esc="o.employee_id.z_epf_uan_no"/>
+                        </td>
+                    </tr>
+                </table>
+                <table class="table table-condensed table-bordered">
+                    <table class="table table-sm table-bordered" style="float:left;width:60%;margin-top:-34px;margin-left:0px;padding-right:0px;border:1px solid black;">
+                        <thead>
+                            <tr>
+                                <td style="width:40%;border:1px solid black;">
+                                    <strong>EARNINGS</strong>
+                                </td>
+                                <td style="border:1px solid black;">
+                                    <strong>ACTUAL[INR]</strong>
+                                </td>
+                                <td style="border:1px solid black;">
+                                    <strong>PAYABLE[INR]</strong>
+                                </td>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-set="i" t-value="0"/>
+                            <t t-set="tot1" t-value="0"/>
+                            <t t-set="tot2" t-value="0"/>
+                            <tr t-foreach="o.line_ids.filtered(lambda line: line.appears_on_payslip)" t-as="line">
+                                <t t-if="line.total &gt;= 0">
+                                    <t t-if="line.name != 'Net' and line.name != 'Gross'">
+                                        <td style="border:1px solid black;">
+                                            <span t-field="line.name"/>
+                                            <t t-if="line.total &gt;= 0" t-set="i" t-value="i+1"/>
+                                        </td>
+                                        <t t-set="act" t-value="0"/>
+                                        <t t-foreach="o.pay_in_ids" t-as="l">
+                                            <t t-if="l.actual_amount &gt; 0">
+                                                <t t-if="l.name != 'Net Salary' and l.name != 'Gross'">
+                                                    <t t-if="l.name == line.name">
+                                                        <t t-set="act" t-value="l.total_id"/></t>
+                                                </t>
+                                            </t>
+                                        </t>
+                                        <td style="border:1px solid black;">
+                                            <span t-esc="act" t-esc-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.company_id.currency_id}"/>
+                                            <t t-set="tot2" t-value="tot2 + act"/>
+                                        </td>
+                                        <td style="border:1px solid black;">
+                                            <span t-esc="line.total" t-esc-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.company_id.currency_id}"/>
+                                            <t t-set="tot1" t-value="tot1 + line.total"/>
+                                        </td>
+                                    </t>
+                                </t>
+                            </tr>
+                            <tr>
+                                <td style="border:1px solid black;">
+                                    <strong>TOTAL</strong>
+                                </td>
+                                <td style="border:1px solid black;">
+                                    <b>
+                                        <t t-esc="tot2"/>
+                                    </b>
+                                </td>
+                                <td style="border:1px solid black;">
+                                    <b>
+                                        <t t-esc="tot1"/>
+                                    </b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <t t-foreach="o.line_ids.filtered(lambda line: line.appears_on_payslip)" t-as="line">
+                                    <t t-if="'Gross' in line.name">
+                                        <div class="col-xs-6 pull-left">
+                                            <td class="text-left" colspan="2" style="width:20%;border:1px solid black;">
+                                                <strong>GROSS EARNINGS</strong>
+                                            </td>
+                                            <td colspan="2" style="border:1px solid black;" class="text-left">
+                                                <b>
+                                                    <span t-field="line.total"/>
+                                                </b>
+                                            </td>
+                                        </div>
+                                    </t>
+                                </t>
+                            </tr>
+                            <tr t-foreach="o.line_ids.filtered(lambda line: line.appears_on_payslip)" t-as="line">
+                                <t t-if="'Net' in line.name">
+                                    <td class="text-left" style="border:1px solid black;">
+                                        <strong>NET PAY</strong>
+                                    </td>
+                                    <td colspan="2" style="border:1px solid black;">
+                                        <b>
+                                            <span t-field="line.total"/>
+                                        </b>
+                                    </td>
+                                </t>
+                            </tr>
+                            <tr>
+                                <td colspan="3" style="height:20mm;border:1px solid black;">
+                                    <strong>Amount in Words: </strong>
+                                    <span t-field="o.stromb"/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table class="table table-sm table-bordered" style="float:right;width:40%;margin-top:-34px;margin-right:0px;margin-left:-1px;padding-left:-2px;border:1px solid black;">
+                        <thead>
+                            <tr>
+                                <tr>
+                                    <td style="width:60%;border:1px solid black;">
+                                        <strong>DEDUCTIONS</strong>
+                                    </td>
+                                    <td style="border:1px solid black;">
+                                        <strong>AMT[INR]</strong>
+                                    </td>
+                                </tr>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-set="j" t-value="0"/>
+                            <t t-set="tot" t-value="0"/>
+                            <tr t-foreach="o.line_ids.filtered(lambda line: line.appears_on_payslip)" t-as="line">
+                                <t t-if="line.total &lt; 0">
+                                    <td style="border:1px solid black;">
+                                        <span t-field="line.name"/>
+                                        <t t-if="line.total &lt; 0" t-set="j" t-value="j+1"/>
+                                    </td>
+                                    <td style="border:1px solid black;">
+                                        <span t-esc="line.total" t-esc-options="{&quot;widget&quot;: &quot;monetary&quot;, &quot;display_currency&quot;: o.company_id.currency_id}"/>
+                                        <t t-set="tot" t-value="tot + line.total"/>
+                                    </td>
+                                </t>
+                            </tr>
+                            <tr t-foreach="o.line_ids.filtered(lambda line: line.appears_on_payslip)" t-as="line">
+                                <t t-if="j &lt; i">
+                                    <td style="border:1px solid black;">&amp;nbsp;</td>
+                                    <td style="border:1px solid black;">&amp;nbsp;</td>
+                                    <t t-set="j" t-value="j+1"/></t>
+                            </tr>
+                            <tr>
+                                <tr>
+                                    <td style="border:1px solid black;">
+                                        <B>TOTAL</B>
+                                    </td>
+                                    <td style="border:1px solid black;">
+                                        <B>
+                                            <t t-esc="tot"/>
+                                        </B>
+                                    </td>
+                                </tr>
+                                <td style="border:1px solid black;" colspan="1" class="text-left">
+                                    <strong>TOTAL DEDUCTION:</strong>
+                                </td>
+                                <td style="border:1px solid black;" colspan="2" class="text-left">
+                                    <B>
+                                        <t t-esc="tot"/>
+                                    </B>
+                                </td>
+                            </tr>
+                            <tr t-foreach="o.line_ids.filtered(lambda line: line.appears_on_payslip)" t-as="line">
+                                <t t-if="'Gross' in line.name">
+                                    <td style="border:1px solid black;">&amp;nbsp;</td>
+                                    <td style="border:1px solid black;">&amp;nbsp;</td>
+                                </t>
+                            </tr>
+                            <tr>
+                                <td colspan="2" style="height:20mm;border:1px solid black;"/>
+                            </tr>
+                        </tbody>
+                    </table>
+                </table>
+                <div class="text-left">
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <br/>
+                    <b>  Note: </b>Since this is a computer generated statement it does not require authentication by signature
+                    
+                </div>
+            </div>
+        </t>
+    </xpath>
+
+</template>
+</odoo>

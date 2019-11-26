@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="hr_emp_form">
+            <field name="name">employee form view</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_form"/>    
+            <field name="arch" type="xml">
+                <xpath expr="/form/sheet" position="before">
+                    <header>
+                        <field  name="status" widget = "statusbar" invisible="1"/>
+                        <button name = "sequence_generator" string = "Sequence Generator" type="object" attrs="{'invisible': [('status', '=', 'sent')]}" groups = "customer_vendor_product_assets_number.group_hr_external_box"/>
+                    </header>
+                </xpath>
+            <label for="name" position="before">
+                                    <div class="text-muted">
+                        <h2>Code <field name = "emp_testo" style="width:28%%" attrs="{'readonly': [('status', '=', 'sent')]}"/></h2>
+                        
+                    </div>    
+            </label>              
+                    <field name="work_phone" position="after">
+                        <field name="employee_category" groups = "customer_vendor_product_assets_number.group_hr_external_box"/>
+                        <field name="row" invisible = "1" /> 
+                        <field name="count" invisible = "1" /> 
+                        <field name = "number" invisible = "1" />
+                    </field> 
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_employee">
+            <field name="name">employee</field>
+            <field name="res_model">hr.employee</field>
+            <field name="view_mode">form</field>
+        </record>
+
+    </data>
+</odoo>
+   

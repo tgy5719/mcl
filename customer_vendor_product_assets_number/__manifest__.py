@@ -1,0 +1,35 @@
+{
+    'name': 'Master Sequence Generator',
+    'depends': ['sale','purchase','account','product'],
+    'category': 'Vendor','Product'
+    'author': 'Prixgen Tech Solutions Pvt Ltd.',
+    'company': 'Prixgen Tech Solutions Pvt Ltd.',
+    'website': 'https://www.prixgen.com',
+    'summary': "Generate the unique sequence number for vendor,customer and Product",
+    'depends': ['sale','purchase','hr',],
+    'data': ['security/config_settings_customer.xml',
+        'security/config_settings_emp.xml',
+        'security/config_settings_vendor.xml',
+        'security/config_settings.xml',
+        'data/product_sequencer.xml',
+        'data/vendor_sequencer.xml',
+        'data/customer_sequencer.xml',
+        'views/vendor_view.xml',
+        'views/product_view.xml',
+        'views/customer_view.xml',
+        'views/product_names.xml',
+        'views/xander.xml',
+        'views/neun.xml',
+        'views/vendor_one.xml',
+        'views/vendor_res.xml',
+        'views/product_setting.xml',
+        'views/vendor_setting.xml',
+        'views/customer_setting.xml', 
+        'views/emp.xml',
+        'views/emp_cat.xml',
+        'views/res_emp.xml',  
+    ],
+
+
+    
+}

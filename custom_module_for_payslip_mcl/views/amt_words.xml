@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="hr_payslip_form_amount">
+            <field name="name">hr.payslip</field>
+            <field name="model">hr.payslip</field>
+            <field name="inherit_id" ref="hr_payroll.view_hr_payslip_form"/>    
+            <field name="arch" type="xml">
+                <field name="credit_note" position="after">
+                    <field name="amount_total_number" invisible="1"/>
+                    <field name="stromb" invisible="1"/>
+                    <field name="tall" invisible="1"/>
+                    <field name="amount_total" invisible="1"/>
+                    <field name="field" invisible="1"/>
+                    <field name="net_total" invisible="1"/>
+                    
+                </field>
+            </field>                   
+        </record>
+
+        <record model="ir.ui.view" id="hr_employee_id">
+            <field name="name">hr.employee_id</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_form"/>    
+            <field name="arch" type="xml">
+                <xpath expr="//sheet/div[@id='o_employee_container']/div/div/label" position="before">
+                    
+                     <label for="employee_code" class="oe_edit_only"/>
+                       <field name="employee_code" placeholder="Employee Code"/>
+                        
+                </xpath>
+            </field>                   
+        </record>
+    </data>
+</odoo>    

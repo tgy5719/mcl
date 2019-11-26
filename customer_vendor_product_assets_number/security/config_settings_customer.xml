@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>        
+<data noupdate="0">
+	<record id="group_customer_internal" model="res.groups">
+		<field name="name">Settings internal customer</field>
+		<field name="category_id" ref="base.module_category_hidden" />
+	</record>
+	<record id="group_customer_external_box" model="res.groups">
+		<field name="name">Settings external customer</field>
+		<field name="category_id" ref="base.module_category_hidden" />
+	</record>
+</data>
+</odoo>

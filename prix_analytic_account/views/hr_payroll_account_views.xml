@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+	<data>
+    	<record id="view_employee_form_custom_inherit" model="ir.ui.view">
+            <field name="name">hr.employee.form</field>
+            <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="hr.view_employee_form"/>
+            <field name="arch" type="xml">
+                <field name="work_phone" position="after">
+                	<field name="z_analytic_account_id"/>
+                	<field name="z_analytic_tag_ids" widget="many2many_tags"/>
+                </field>
+            </field>
+        </record>
+
+    </data>
+</odoo>
+

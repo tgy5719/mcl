@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="partner_amount_partner">
+            <field name="name">res partner form</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>    
+            <field name="arch" type="xml">
+                                <xpath expr="/form/sheet" position="before">
+                    <header>
+                        <field  name="state" invisible="1" widget = "statusbar" attrs="{'invisible': [('customer', '!=',True)]}"/>
+                        <field  name="status" invisible="1" widget = "statusbar" attrs="{'invisible': [('supplier', '!=',True)]}"/>
+                        <button name = "customer_sequence_generator"  string = "Customer Sequence Generator" type="object" attrs="{'invisible': ['|',('customer', '!=', True),('state','=','sent')]}"  groups = "customer_vendor_product_assets_number.group_customer_external_box"/>
+                        <button name = "vendor_sequence_generator"  string = "Vendor Sequence Generator" type="object" attrs="{'invisible': ['|',('supplier', '!=', True),('status','=','sent')]}"  groups = "customer_vendor_product_assets_number.group_vendor_external_box"/>
+                    </header>
+                </xpath>
+                    <field name="ref" position="replace">
+                        <field name="ref" invisible="1"/>
+                    </field>
+                 <field name="name" position="before">
+                            <div class="text-muted">
+                        <h2>Code <field name = "ref_code" style="width:28%%" attrs="{'readonly': ['|',('state', '=', 'sent'),('status','=','sent')]}"/></h2>
+                        
+                             </div>  
+                    
+                </field> 
+            
+                <xpath expr="//field[@name='message_bounce']" position="after">
+
+                    <field name="Vendor_code1"  groups = "customer_vendor_product_assets_number.group_vendor_external_box" attrs="{'invisible': [('supplier', '!=', True)]}" />
+                    <field name="ratey" invisible="1"/>
+                    <field name = "row" invisible="1"/>
+                    <field name = "numb1" invisible="1"/>
+                    <field name = "numb" invisible="1"/>
+                    <field name="umb" invisible="1"/>
+                    <field name="than" invisible="1"/>
+                    <field name="Custumer_code1" groups = "customer_vendor_product_assets_number.group_customer_external_box" attrs="{'invisible': [('customer', '!=', True)]}"/>
+
+                    
+                </xpath>
+            </field>                   
+        </record>
+    </data>
+</odoo> 

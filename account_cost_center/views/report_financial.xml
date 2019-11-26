@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data>
+<template id="line_template_general_ledger_report_cost" inherit_id="account_reports.line_template" primary="True">
+    <xpath expr="//span[hasclass('account_report_line_name')]" position="inside">
+        &amp;nbsp;<a t-if="line.get('id') != 'hierarchy' and line.get('unfolded')" t-att-data-id="line.get('id')" action="view_all_journal_items" class="no_print o_journal_entries"> ⇒ journal items</a>
+    </xpath>
+    <xpath expr="//div[hasclass('o_account_reports_domain_dropdown')]/*[last()]" position="before">
+        <t t-if="line['caret_options'] != 'account.tax'"><a role="menuitem" tabindex="-1" t-att-data-id="line['id']" action="open_document" class="dropdown-item">View Journal Entry</a></t>
+    </xpath>
+</template>
+
+</data>
+</odoo>

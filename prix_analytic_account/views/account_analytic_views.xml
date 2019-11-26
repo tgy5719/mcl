@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+	<data>
+    	<record id="view_account_analytic_account_form_custom_inherit" model="ir.ui.view">
+            <field name="name">analytic.analytic.account.form</field>
+            <field name="model">account.analytic.account</field>
+            <field name="inherit_id" ref="analytic.view_account_analytic_account_form"/>
+            <field name="arch" type="xml">
+                
+                 <xpath expr="//form/sheet/group/group[2]" position="inside">
+                	<field name="z_analytic_tag_ids" widget="many2many_tags"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
