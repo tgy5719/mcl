@@ -1,0 +1,26 @@
+<odoo>
+	<data>
+		<record model="ir.ui.view" id="actual_view_salary_form">
+			<field name="name">hr.salary.rule.form</field>
+			<field name="model">hr.salary.rule</field>
+			<field name="inherit_id" ref="hr_payroll.hr_salary_rule_form"/>
+			<field name="arch" type="xml">
+				<field name="register_id" position="before">
+					<separator colspan="4" string="Conditions"/>
+					<field name="condition_select_1"/><newline/>
+                    <field name="condition_python_1" attrs="{'invisible':[('condition_select_1','!=','python')], 'required': [('condition_select_1','=','python')]}" colspan="4"/> <newline/>
+                    <field name="condition_range_1" attrs="{'invisible':[('condition_select_1','!=','range')], 'required':[('condition_select_1','=','range')]}"/><newline/>
+                    <field name="condition_range_min_1" colspan="2" attrs="{'invisible':[('condition_select_1','!=','range')], 'required':[('condition_select_1','=','range')]}"/><newline/>
+                    <field name="condition_range_max_1" colspan="2" attrs="{'invisible':[('condition_select_1','!=','range')], 'required':[('condition_select_1','=','range')]}"/><newline/>
+                    <separator colspan="4" string="Computation"/>
+					<field name="actual_select"/><newline/>
+					<field name="actual_percentage_base" attrs="{'invisible':[('actual_select','!=','percentage')], 'required': [('actual_select','=','percentage')]}"/><newline/>
+					<field name="quantity" attrs="{'invisible':[('actual_select','=','code')], 'required':[('actual_select','!=','code')]}"/><newline/>
+					<field name="actual_fix"  attrs="{'invisible':[('actual_select','!=','fix')], 'required':[('actual_select','=','fix')]}"/><newline/>
+					<field colspan="4" name="actual_python_compute" attrs="{'invisible':[('actual_select','!=','code')], 'required':[('actual_select','=','code')]}"/>
+					<field name="actual_percentage" attrs="{'invisible':[('actual_select','!=','percentage')], 'required':[('actual_select','=','percentage')]}"/>
+				</field>
+			</field>
+		</record>
+	</data>
+</odoo>
