@@ -1,2 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-sale.access_make_invisible_user,sale.order.Invisible,model_sale_order,user_validation.make_invisible,1,1,1,1
