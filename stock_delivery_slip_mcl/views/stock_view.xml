@@ -1,0 +1,26 @@
+<odoo>
+    <data>
+        <record id="inherit_stock_form_34567" model="ir.ui.view">
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+                <field name="partner_id" position="after">
+                    <field name="part_id" invisible="1"/>
+                    <field name="z_customer_id" invisible="1"/>
+                </field>
+                <field name="scheduled_date" position="after">
+                    <field name="z_deliver_to"/>
+                </field>
+                <field name="scheduled_date" position="after">
+                    <field name="z_date" attrs="{'invisible': [('backorder_id', '=', False)]}"/>
+                </field>
+                <field name="purchase_id" position="after">
+                    <field name="date_delivery"/>
+                </field>
+                <!-- <field name="z_interstate_bool" position="after">
+                    <field name="z_total_amt"/>
+                </field> -->
+            </field>
+        </record>
+    </data>
+</odoo>
