@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <record id="view_sale_order_inherits" model="ir.ui.view">
+           <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+               <field name="user_id" position="after">
+                    <field name="z_sales_person" invisible="1"/>
+
+                </field> 
+                <field name="user_id" position="replace">
+                    <field name="user_id" attrs="{'readonly': [('id', '!=', False)]}" invisible="1"/>
+                </field>
+
+                <field name="z_sale_ofc" position="replace">
+                    <field name="z_sale_ofc" attrs="{'readonly': [('id', '!=', False)]}" invisible="1"/>
+                </field>
+
+                <field name="team_id" position="replace">
+                    <field name="team_id" options="{'no_create': True}" attrs="{'readonly': [('id', '!=', False)]}" invisible="1"/>
+                </field>
+                <field name="pricelist_id" position="replace">
+                    <field name="pricelist_id" attrs="{'readonly': [('id', '!=', False)]}" invisible="1"/>
+                </field>
+            </field>
+           
+        </record>
+
+        <record id="view_order_tree_inherits_login_restriction" model="ir.ui.view">
+           <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_tree"/>
+            <field name="arch" type="xml">
+               <field name="user_id" position="after">
+                    <field name="pricelist_id" />
+                    <field name="team_id"/>
+                    <field name="z_sale_ofc"/>
+                </field> 
+            </field>
+           
+        </record>
+        <record id="view_quotation_tree_with_onboarding_inherits_login_restriction" model="ir.ui.view">
+           <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_quotation_tree_with_onboarding"/>
+            <field name="arch" type="xml">
+               <field name="user_id" position="after">
+                    <field name="pricelist_id" />
+                    <field name="team_id"/>
+                    <field name="z_sale_ofc"/>
+                </field> 
+            </field>
+           
+        </record>
+        
+        <record id="view_partner_form_inherited" model="ir.ui.view">
+           <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+               <field name="z_sales_office" position="after">
+                    <field name="team_id"/>
+                </field> 
+            </field>
+        </record>
+
+        <record id="crm_case_form_view_leads_form_inherited" model="ir.ui.view">
+           <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="crm.crm_case_form_view_leads"/>
+            <field name="arch" type="xml">
+               <field name="user_id" position="replace">
+                    <field name="user_id" attrs="{'readonly': [('id', '!=', False)]}" invisible="1"/>
+                </field> 
+                <field name="team_id" position="replace">
+                    <field name="team_id" attrs="{'readonly': [('id', '!=', False)]}" invisible="1"/>
+                </field> 
+            </field>
+        </record>
+
+        <record id="crm_case_tree_view_leads_inherits_login_restriction" model="ir.ui.view">
+           <field name="model">crm.lead</field>
+            <field name="inherit_id" ref="crm.crm_case_tree_view_leads"/>
+            <field name="arch" type="xml">
+               <field name="user_id" position="replace">
+                    <field name="user_id"/>
+                </field> 
+            </field>
+        </record>
+    </data>
+</odoo>
