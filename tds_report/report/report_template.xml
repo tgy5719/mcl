@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <report 
+            id="action_report_tds"
+            string="TDS REPORT"
+            model="report.tds_report.report_template_view" 
+            report_type="qweb-pdf"
+            name="tds_report.report_template_view"/>
+    <data>
+
+        <template id="report_template_view">
+            <t t-call="web.html_container">
+                    <t t-call="web.internal_layout">
+                        <div class="page">
+                                <br/>
+                                <h4><center><strong>TDS REGISTER</strong></center></h4>
+                                <br/>
+                            <div class="row">
+                                <div>
+                                <table style ="border:1px solid black" class="table table-condensed table-bordered">
+                                    <thead>
+                                        <th>Posting Date</th>
+                                        <th>Document No.</th>
+                                        <th>Status</th>
+                                        <th>Party code</th>
+                                        <th>Vendor name</th>
+                                        <th>Deductee PAN No.</th>
+                                        <th>Assessee code</th>
+                                        <th>TDS %</th>
+                                        <th>TDS Base Amount</th>
+                                        <th>TDS Amount</th>
+                                    </thead>
+                                    <tbody>
+                                        
+                                        <t t-foreach="docs" t-as= "doc">
+                                            
+                                            <tr>
+                                                <td><span t-esc="doc['date']"/></td>
+                                                <td><span t-esc="doc['doc_no']"/></td>
+                                                <td><span t-esc="doc['state']"/></td>
+                                                <td><span t-esc="doc['vendor_no']"/></td>
+                                                <td><span t-esc="doc['partner']"/></td>
+                                                <td><span t-esc="doc['pan_no']"/></td>
+                                                <td><span t-esc="doc['assess_code']"/></td>
+                                                <td><span t-esc="doc['tds_percent']"/></td>
+                                                <td><span t-esc="doc['tds_base']"/></td>
+                                                <td><span t-esc="doc['tds_amount']"/></td>
+                                            </tr>
+                                        </t>
+                                        <tr>
+                                            <td class="text-right" colspan="7">
+                                                <strong>Total </strong>
+                                            </td>
+                                            <td >
+                                                <strong><t t-esc="sum(doc['tds_base'] for doc in docs)"/></strong>
+                                            </td>
+                                            <td >
+                                                <strong><t t-esc="sum(doc['tds_amount'] for doc in docs)"/></strong>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                            	</table>
+                                
+                                
+                            </div>               
+                            </div>
+                    </div>
+                </t>
+            </t>      
+    </template>
+    <template id="tds_report.action_report">
+    <t t-call="web.html_container">
+        <t t-call="tds_report.report_template"/>
+    </t>
+</template>
+    </data>
+</odoo>            
