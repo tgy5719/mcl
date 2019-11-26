@@ -1,0 +1,30 @@
+<odoo>
+    <data>
+        <record id="inherit_stock_form_123" model="ir.ui.view">
+            <field name="model">stock.picking</field>
+            <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+            	<xpath expr="//sheet/group/group[2]" position="inside">
+            		
+            		<field name="transporter"/>
+                    <field name="e_way_no"/>
+                    <field name="z_delivered_to"/>
+                    <field name="vehicle" widget="many2many_tags"/>
+                    <field name="ext_vehicle_no"/>
+<!--                     <field name="z_total_amount"/> -->
+            	</xpath>
+
+<!-- 
+            	<xpath expr="//notebook/page[2]//tree" position="inside">
+            		<span> Total Number</span>
+            	</xpath> -->
+
+
+
+
+            </field>
+
+
+        </record>
+    </data>
+</odoo>

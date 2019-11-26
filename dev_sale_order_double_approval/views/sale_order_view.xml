@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright (C) 2015 DevIntelle Consulting Service Pvt.Ltd (<http://www.devintellecs.com>).
+
+For Module Support : devintelle@gmail.com  or Skype : devintelle
+ -->
+<odoo>
+	 <record id="inherited_sale_order_view" model="ir.ui.view">
+        <field name="name">inherited.sale.order.view</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_order_form"/>
+        <field name="arch" type="xml">
+            <field name="payment_term_id" position="after">
+                <field name="Z_check_value" attrs="{'invisible': [('state', 'not in', ['to_confirm','approved'])]}"/>
+                    <field name="to_approve" invisible="1"/>
+                    <!--field name="z_current_user" invisible="1"/-->
+                    <field name="z_invisible" invisible="1"/>
+                    <field name="z_pricelist" invisible="1"/>
+                    <field name="z_price" invisible="1"/>
+                    <field name="z_state" invisible="0"/>
+                    <field name="z_revise_visible" invisible="1"/>
+                    <field name="z_revise_invisible" invisible="1"/>
+                    <field name="z_action_state" invisible="1"/>
+            </field>
+            
+            <xpath expr="//form/header/button[7]" position="replace">
+                <button name="action_confirm" id="action_confirm" string="Confirm" invisible="1"/>
+            </xpath>
+            <xpath expr="//form/header/button[5]" position="replace">
+                <button name="print_quotation" invisible="1"/>
+            </xpath>
+            <xpath expr="//form/header/button[6]" position="replace">
+                <button name="action_confirm" string="Confirm" class="btn-primary" type="object"
+                        attrs="{'invisible': [('state', 'not in', ['to_confirm','approved'])]}"/>
+            </xpath>
+            <!--<attribute name="states">approved,to_confirm</attribute> -->
+            <!--<xpath expr="//button[@name='action_confirm']" position="after">
+                <button name="confirm_sale_order" string="Confirm Order" states="approved" type="object" class="oe_highlight" groups="dev_sale_order_double_approval.double_verification_so_right"/>
+            </xpath>-->
+            <xpath expr="//button[@name='action_confirm']" position="after">
+                <button name="action_confirms" string="Request Approve" type="object" class="oe_highlight" attrs="{'invisible' : [('state','not in',['draft'])]}"/>
+            </xpath>
+            <xpath expr="//button[@name='action_confirm']" position="after">
+                <button name="action_state" string="Approve Order" type="object" class="oe_highlight" groups="dev_sale_order_double_approval.double_verification_so_right" attrs="{'invisible' : ['|',('state','in',['approved','sale']),('z_action_state','=',False)]}"/>
+            </xpath>
+            <xpath expr="//button[@name='action_confirm']" position="after">
+                <button name="action_revised" string="Revise" type="object" groups="dev_sale_order_double_approval.double_verification_so_right" class="oe_highlight" attrs="{'invisible' : ['|',('state','in',['revised','approved','sale']),('z_revise_invisible','=','Close')]}"/>
+            </xpath>
+            <xpath expr="//button[@name='action_quotation_send']" position="replace">
+                <button name="action_quotation_send" string="SEND BY EMAIL" type="object" class="oe_highlight" attrs="{'invisible' : [('state','in',['draft','sent','to approve','approved','revised','done','cancel','sale'])]}"/> 
+            </xpath>
+            <xpath expr="//button[@name='print_quotation']" position="replace">
+                <button name="print_quotation" string="PRINT" type="object" class="oe_highlight" attrs="{'invisible' : [('state','in',['draft','to approve','revised','done'])]}"/>
+            </xpath>
+            <xpath expr="//button[@name='action_cancel']" position="attributes">
+                <attribute name="states"></attribute>
+                <attribute name="states">draft,sent,sale,to approve,approved,revised</attribute>
+            </xpath>
+                <xpath expr="/form/header/field[@name='state']" position="replace">
+                    <field name="state" widget="statusbar" statusbar_visible="draft,sent,approved,sale"/>
+                </xpath>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="after" >
+                <field name="z_sale_price" invisible="1"/>
+                <field name="z_check"/>
+         		<field name="z_requested_price"/>
+                <field name="z_requested_price_ft"/>
+                <field name="z_orc"/>
+                <field name="z_revise" attrs="{'column_invisible' : [('parent.state','in',['draft','sent'])],'readonly' : [('parent.state','in',['revised','approved','sale'])]}"/>
+                <field name="z_revised_price" attrs="{'readonly' : [('parent.state','in',['revised','approved','sale'])],'column_invisible' : [('parent.state','in',['draft','sent'])]}"/>
+                <field name="z_customer_approval" attrs="{'column_invisible' : [('parent.state','in',['sale', 'done', 'approved','to approve','sent','draft'])]}"/>
+                <!--field name="z_check_user"/>
+                <field name="z_current_user"/-->
+            </xpath>
+            <xpath expr="//field[@name='order_line']/tree/field[@name='price_unit']" position="replace" >
+                <field name='price_unit' string="Sale Price Sq. Mt"/>
+            </xpath>
+            <xpath expr="//page/field[@name='order_line']/form/group/group/field[@name='tax_id']" position="before">
+                    <field name="z_requested_price" attrs="{'invisible' : [('z_check','=',False)]}"/>
+                    <field name="z_requested_price_ft" attrs="{'invisible' : [('z_check','=',False)]}"/>
+                    <field name="z_check"/>
+                    <field name="z_revise" attrs="{'invisible' : [('state','in',['draft','sent'])],'readonly' : [('state','in',['revised','approved','sale'])]}"/>
+                    <field name="z_orc"/>
+                    <field name="z_revised_price" attrs="{'readonly' : [('parent.state','in',['revised','approved','sale'])],'column_invisible' : [('parent.state','in',['draft','sent'])]}" invisible="1"/>
+                    <field name="z_customer_approval" attrs="{'invisible': [('state', 'in', ('sale', 'done', 'approved','to approve','sent','draft'))]}"/>
+                    <field name="z_sale_price" invisible="1"/>
+                    <field name="z_in" invisible="1"/>
+                    <field name="z_out" invisible="1"/>
+                    <!--field name="z_current_user" invisible="0"/>
+                    <field name="z_check_user" invisible="0"/-->
+                </xpath>
+
+                <xpath expr="//page/field[@name='order_line']/form/group/group/field[@name='z_quantity_ft']" position="after">
+                    <field name="z_sales_price_sqft"/>
+
+                </xpath>
+                <xpath expr="//page/field[@name='order_line']/form/group/group/field[@name='tax_id']" position="after">
+                    <field name="price_subtotal"/>
+
+                </xpath>
+
+
+                <xpath expr="//form/sheet/notebook/page[1]/field[@name='order_line']/form[1]/group/group[1]/field[@name='price_unit']" position="replace">
+                    <field name='price_unit' invisible="1"/>
+                </xpath>
+        </field>
+    </record>
+    <record id="tree_inherited_sale_order_view" model="ir.ui.view">
+        <field name="name">inherited.sale.order.view</field>
+        <field name="model">sale.order</field>
+        <field name="inherit_id" ref="sale.view_quotation_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='state']" position="after">
+                <field name="z_state"/>
+            </xpath>
+        </field>
+    </record>
+    <record id="view_users_form1_dev_sale_order" model="ir.ui.view">
+        <field name="name">res.users</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='company_id']" position="after">
+                <field name="z_customer_approval_readonly" invisible="0"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_purchase_order_tree_inherited" model="ir.ui.view">
+        <field name="name">sale.order.tree</field>
+        <field name="model">sale.order</field>
+        <field name="priority">8</field>
+        <field name="inherit_id" ref="sale.view_order_tree"/>
+        <field name="arch" type="xml">
+            <field name="user_id" position="after">
+                <field name="z_sum_orderqty"/>
+                <field name="z_sum_delqty"/>
+                <field name="z_sum_invoiceqty"/>
+                <field name="z_status"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>

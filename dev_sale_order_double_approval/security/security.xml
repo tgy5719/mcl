@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright (C) 2015 DevIntelle Consulting Service Pvt.Ltd (<http://www.devintellecs.com>).
+
+For Module Support : devintelle@gmail.com  or Skype : devintelle
+ -->
+<odoo>
+    <record id="double_verification_so_right" model="res.groups">
+        <field name="name">Sale Order Double Approval</field>
+        <field name="category_id" ref="base.module_category_hidden"/>
+    </record>
+</odoo>
