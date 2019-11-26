@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+    	
+
+    	<record model="ir.ui.view" id="account_payment_lc_vendor">
+            <field name="name">account invoice vendor form</field>
+                <field name="model">account.invoice</field>
+                <field name="inherit_id" ref="account.invoice_supplier_form"/>
+                <field name="arch" type="xml">          
+                    <field name="date_due" position="after">
+                        <field name="lc_no" options="{'no_create': True, 'no_create_edit':True}"/>      
+                    </field>
+            	</field>
+        </record>
+        <record model="ir.ui.view" id="account_payment_lc_vendor_tree">
+            <field name="name">account invoice vendor tree</field>
+                <field name="model">account.invoice</field>
+                <field name="inherit_id" ref="account.invoice_supplier_tree"/>
+                <field name="arch" type="xml">          
+                    <field name="origin" position="after">
+                        <field name="lc_no" options="{'no_create': True, 'no_create_edit':True}"/>      
+                    </field>
+                </field>
+        </record>
+
+        <record model="ir.ui.view" id="purchase_form_lc">
+            <field name="name">purchase order lc form</field>
+                <field name="model">purchase.order</field>
+                <field name="inherit_id" ref="purchase.purchase_order_form"/>
+                <field name="arch" type="xml">          
+                    <field name="date_order" position="after">
+                        <field name="lc_no" options="{'no_create': True, 'no_create_edit':True}"/>      
+                    </field>
+                </field>
+        </record>
+        <record model="ir.ui.view" id="purchase_tree_lc">
+            <field name="name">purchase order lc tree</field>
+                <field name="model">purchase.order</field>
+                <field name="inherit_id" ref="purchase.purchase_order_tree"/>
+                <field name="arch" type="xml">          
+                    <field name="date_order" position="after">
+                        <field name="lc_no" options="{'no_create': True, 'no_create_edit':True}"/>      
+                    </field>
+                </field>
+        </record>
+
+    </data>
+</odoo> 
