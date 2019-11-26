@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record id="view_business_type_inherit_custom_fields" model="ir.ui.view">
+            <field name="name">sale.order.tree</field>
+            <field name="model">sale.order</field>
+            <field name="priority">4</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <field name="analytic_account_id" position="after">
+                    <field name="z_cus_biz_type" />
+                </field>
+            </field>
+        </record>
+    </data>
+</odoo>
