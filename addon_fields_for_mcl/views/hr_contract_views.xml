@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="hr_contract_form_in_inherit1" model="ir.ui.view">
+        <field name="name">hr.contract.form.in.inherit</field>
+        <field name="model">hr.contract</field>
+        <field name="inherit_id" ref="hr_contract.hr_contract_view_form"/>
+        <field name="arch" type="xml">
+       
+            <field name="driver_salay" position="after">
+            
+                    <field name="z_hra"/>
+                    <field name="z_conveyance_allowance"/>
+                    <field name="z_special_allowance"/>
+                    <field name="z_other_allowance"/>
+                    <field name="z_food_allowance"/>
+            
+            </field>
+             <field name="tds" position="after">
+            
+                    <field name="z_income_tax"/>
+                    <field name="z_canteen_recovery"/>
+                    <field name="z_other_deduction"/>
+                    <field name="z_travel_advance"/>
+            
+            </field>
+            
+            <field name="house_rent_allowance_metro_nonmetro" position="replace">
+                <field name="house_rent_allowance_metro_nonmetro" invisible="1"/>
+            </field>
+            <field name="reported_to_secretariat" position="replace">
+                <field name="reported_to_secretariat" widget="toggle_button" options='{"active": "Reported to the social secretariat", "inactive": "To report to the social secretariat"}' invisible="1"/>
+            </field>
+            <field name="supplementary_allowance" position="replace">
+                    <field name="supplementary_allowance" invisible="1"/>
+            </field>
+            <field name="tds" position="replace">
+                <field name="tds" invisible="1"/>
+            </field>
+            <field name="voluntary_provident_fund" position="replace">
+                    <field name="voluntary_provident_fund" invisible="1"/>
+            </field>
+            <field name="medical_insurance" position="replace">
+                    <field name="medical_insurance" invisible="1"/>
+            </field>
+       
+        </field>
+    </record>
+    
+</odoo>

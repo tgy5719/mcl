@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.ui.view" id="standard_view_employee_form1">
+        <field name="name">standard view employee</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <field name="esi_applicable" position="after">
+                <field name="lta_applicable"/>
+            </field>
+            <notebook>
+                <page name="lic_policy_details" string="LIC Policy Details">
+                    <field name="six" widget="one2many_list">
+                        <tree string="Policy" editable="bottom">
+                            <field name="z_policy_name"/>
+                            <field name="z_policy_num"/>
+                            <field name="z_amount"/>
+                        </tree>
+                    </field>
+                    <group class="oe_subtotal_footer oe_right" colspan="2" name="lic_amount_total">
+                            <field name="z_amount_total" widget='monetary' options="{'currency_field': 'currency_id'}"/>
+                       </group>
+                </page>
+            </notebook>
+        </field>
+    </record>
+</odoo>

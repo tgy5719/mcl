@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+
+        <record id="view_sale_order_inherit" model="ir.ui.view">
+           <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+               <field name="payment_term_id" position="after">
+                    <field name="z_payment_method"/>
+                    <field name="z_custom_po_no"/>
+                    <field name="z_po_date" string="PO Date"/>
+                    <field name="z_sale_ofc"/>
+                    <field name="sale_off" invisible="1"/>
+                    <!--field name="z_customer_tag" widget="many2many_tags"/-->
+                </field>  
+                <field name="partner_id" position="after">
+                    <field name="z_order_type"/>
+                     <!--field name="ext_doc_no"/-->
+                </field>
+                
+                <xpath expr="//notebook" position="inside">
+                    <page name="export" string="Export">
+                        <group> 
+                            <group>                           
+                              <field name="port_of_discharge"/>
+                              <field name="port_of_destination"/>
+                              <field name="country_of_origin_goods"/>
+                              <field name="country_of_final_destination"/>
+                            </group>
+                            <group>
+                              <field name="pre_carriage"/>
+                              <field name="carriage"/>
+                              <field name="export_shipment_method"/>
+                              <field name="type_of_container"/>
+                            </group>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+           
+        </record>
+    	<menuitem
+        id="menu_sale_team1"
+        name="Sale office"
+        action="team_sale_action1"
+        parent="sale.menu_sale_config"
+        sequence="100"/>
+    </data>
+</odoo>
