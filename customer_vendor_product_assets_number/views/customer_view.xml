@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record model="ir.ui.view" id="customer_form">
+        <field name="name">customer form view</field>
+        <field name="model">res.partner</field>
+        <field name="arch" type="xml">
+            <form string="customer">
+                <sheet>
+                    <div class="oe_title oe_left">
+                        <field name="name"/>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record model="ir.ui.view" id="customer_tree">
+        <field name="name">customer tree view</field>
+        <field name="model">res.partner</field>
+        <field name="arch" type="xml">
+            <tree string="customer">
+                <field name="name" />
+            </tree>
+        </field>
+    </record>
+    <record model="ir.actions.act_window" id="action_customers">
+        <field name="name">customers</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+
+</odoo>
+   

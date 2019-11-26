@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="customer_res_config_settings_view_form">
+            <field name="name">customer settinge</field>
+            <field name="model">res.config.settings</field>
+            <field name="priority" eval="10"/>
+            <field name="inherit_id" ref="base.res_config_settings_view_form"/>    
+            <field name="arch" type="xml">
+                <xpath expr="//div[@id='sale_config_online_confirmation_pay']" position="after">
+                    <div class="col-md-6 col-xs-12 o_setting_box" id="internal_customer" title="Manual Customer Sequence Genarator">
+                        <div class="o_setting_left_pane">
+                            <field name="group_customer_internal" class="oe_inline"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="group_customer_internal" />
+                            <div class="text-muted">
+                                 Manual Customer Sequence Genarator
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-xs-12 o_setting_box" id="external_customer" title="Auto Customer Sequence Genarator">
+                        <div class="o_setting_left_pane">
+                            <field name="group_customer_external_box" class="oe_inline"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="group_customer_external_box" />
+                            <div class="text-muted">
+                                Auto Customer Sequence Genarator
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+                </xpath>
+
+
+
+
+            </field>
+        </record>
+        <record model="ir.actions.act_window" id="action_res_config_customer">
+            <field name="name">Settings customer view</field>
+            <field name="res_model">res.config.settings</field>
+            <field name="view_mode">form</field>
+            <field name="target">inline</field>
+            <field name="context">{'module' :'customer_vendor_product_assets_number'}</field>
+        </record>
+
+    </data>
+</odoo>

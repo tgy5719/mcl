@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="vendor_res_config_settings_view_form">
+            <field name="name">vendor settinge</field>
+            <field name="model">res.config.settings</field>
+            <field name="inherit_id" ref="base_setup.res_config_settings_view_form"/>    
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='is_installed_sale']" position="before">
+                <div class="row mt16 o_settings_container">
+                    <div class="col-md-6 col-xs-12 o_setting_box" id="internal_vendor" title="Manual Vendor Sequence Generator">
+                        <div class="o_setting_left_pane">
+                            <field name="group_vendor_internal" class="oe_inline"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="group_vendor_internal" />
+                            <div class="text-muted">
+                                Manual Vendor Sequence Generator 
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 col-xs-12 o_setting_box" id="external_vendor" title="Auto Vendor Sequence Generator">
+                        <div class="o_setting_left_pane">
+                            <field name="group_vendor_external_box" class="oe_inline"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="group_vendor_external_box" />
+                            <div class="text-muted">
+                                Auto Vendor Sequence Generator
+                            </div>
+                        </div>
+                    </div>  
+                </div>                 
+            </xpath>
+
+
+
+
+            </field>
+        </record>
+
+    </data>
+</odoo>
