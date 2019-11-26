@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+            <record id="invoice_form_inherit1" model="ir.ui.view">
+            <field name="name">account.invoice.form</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_form"/>
+            <field name="arch" type="xml">
+                <field name="date_invoice" position="after">
+                    <field name="z_contribution_total" invisible="1"/>
+                </field>
+            	<notebook>
+                    <page name="salesperson_contribution" string="Salesperson Contribution">
+                        <field name="z_contribute_ids" widget="one2many_list">
+                            <tree string="salesperson" editable="bottom">
+                                <field name="z_invoice_no"/>
+                                <field name="z_invoice_value"/>
+                                <field name="z_salesperson"/>
+                                <field name="z_contribution"/>
+                                <field name="z_sp_contribution"/>
+                                <field name="z_partner" invisible="1"/>
+                                <field name="z_sl_no" invisible="1"/>
+                            </tree>
+                        </field>
+                    </page>
+                </notebook>
+            </field>
+        </record>
+        <record id="salesperson_contribution_line_tree" model="ir.ui.view">
+        <field name="name">salesperson.line.tree</field>
+        <field name="model">invoice.contribution</field>
+        <field name="arch" type="xml">
+            <tree string="salesperson contribution Lines" create="0">
+                <field name="z_invoice_no"/>
+                <field name = "z_partner"/>
+                <field name="z_invoice_value"/>
+                <field name="z_salesperson"/>
+                <field name="z_contribution"/>
+                <field name="z_sp_contribution"/>
+            </tree>
+        </field>
+    </record>
+    <record id="purchase_line_action" model="ir.actions.act_window">
+            <field name="name">Sales person contribution lines</field>
+            <field name="res_model">invoice.contribution</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,kanban,pivot,form</field>
+            <field name="view_id" ref="salesperson_contribution_line_tree"/>
+            <field name="context">{}</field>
+            <field name="help" type="html">
+              <p class="o_view_nocontent_empty_folder">
+                There's no contribution move yet
+              </p>
+            </field>
+    </record>
+    <menuitem id="sales_contribution"
+            name="Sales Contribution"
+            action="purchase_line_action"
+            parent="sale.menu_sale_report"
+            sequence="2"/>
+    </data>
+</odoo>
