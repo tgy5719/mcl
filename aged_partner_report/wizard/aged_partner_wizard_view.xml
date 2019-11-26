@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+   
+    <record id="aged_partner_wizard_view_form" model="ir.ui.view">
+        <field name="name">aged.partner.wizard.form</field>
+        <field name="model">aged.partner.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Emodel_target_projectmployee Count">
+                <group>
+                    <field name="report_date"/>
+                    <!-- <field name="report_to_date" /> -->
+                </group>
+                <footer>
+                    <button string="Count" type="object" name="partner_count" class="oe_highlight"/>
+                    <button string="Cancel" special="cancel" type="object" class="btn btn-secondary oe_inline"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_to_aged_partner_wizard" model="ir.actions.act_window">
+        <field name="name">Aged Partner</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">aged.partner.wizard</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="aged_partner_wizard_view_form"/>
+        <field name="target">new</field>
+    </record>
+
+
+    <menuitem 
+        action="action_to_aged_partner_wizard" 
+        id="menu_aged_partner_report" 
+        name="Aged  Partner Report" 
+        parent="account_reports.account_reports_partners_reports_menu"
+       />
+
+
+    
+
+</odoo>
