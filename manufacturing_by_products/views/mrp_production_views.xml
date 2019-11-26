@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+	<data>
+    	<record id="mrp_production_view_form_custom_module_for_mo" model="ir.ui.view">
+            <field name="name">mrp.production.form</field>
+            <field name="model">mrp.production</field>
+            <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+            <field name="arch" type="xml">
+                <!-- <xpath expr="//form/header/button[1]" position="replace">
+                    <button name="button_mark_done" attrs="{'invisible': ['|',('consumed_less_than_planned', '=', True),('state','in',['progress','confirmed','done','cancel'])]}" string="Mark as Done" type="object" class="oe_highlight"/>
+                </xpath>
+                <xpath expr="//form/header/button[2]" position="replace">
+                    <button name="button_mark_done" attrs="{'invisible': ['|',('consumed_less_than_planned', '=', True),'|',('state','!=','progress'),('is_locked', '!=', True)]}" string="Mark as Done" type="object" class="oe_highlight"/>
+                </xpath> -->
+                <field name="bom_id" position="after">
+                	<field name="z_planned_qty"/>
+                </field>
+
+                <button name="button_unreserve" position="after">
+	                <button name="short_close" type="object" string="Short Close" class="oe_highlight" attrs="{'invisible': [('state','!=','progress')]}"/>
+                    <button name="update_by_product" type="object" string="Update" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'progress')]}"/>
+                </button>
+
+                <xpath expr="//form/sheet/group[1]/group[1]/div[1]/button" position="replace">
+                	<button type="action" name="%(mrp.action_change_production_qty)d" string="Update" class="oe_link" attrs="{'invisible': ['|', ('state', '!=', 'confirmed'), ('id', '=', False)]}"/>
+				</xpath>
+
+                <xpath expr="//field[@name='finished_move_line_ids']/tree/field[@name='qty_done']" position="after">
+                    <field name="z_qty_sq_mtr"/>
+                    <field name="z_by_product"/>
+                </xpath>
+
+                <xpath expr="//field[@name='finished_move_line_ids']/tree/field[@name='qty_done']" position="replace">
+                    <field name="qty_done" attrs="{'readonly': [('lot_id', '!=', False)]}"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
