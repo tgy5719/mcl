@@ -14,26 +14,20 @@
 <template id="line_caret_options">
     <li t-if="line['caret_options'] == 'account.account'"><a role="menuitem" tabindex="-1" t-att-data-id="line['id']" action="open_general_ledger" class="dropdown-item">General Ledger</a></li>
     <li t-if="line['caret_options'] == 'account.account'"><a role="menuitem" tabindex="-1" t-att-data-id="line['id']" action="open_journal_items" class="dropdown-item">Journal Items</a></li>
-    <li t-if="line['caret_options'] == 'account.invoice.out'">
-      <a role="menuitem" tabindex="-1" t-att-data-id="line['id']" t-att-data-model="line.get('model', 'account.move.line')" t-att-data-action-context="line.get('action_context')" data-object="account.invoice" action="open_document" class="dropdown-item">View Invoice</a>
-    </li>
-    <li t-if="line['caret_options'] == 'account.invoice.in'">
-      <a role="menuitem" tabindex="-1" t-att-data-id="line['id']" t-att-data-model="line.get('model', 'account.move.line')" t-att-data-action-context="line.get('action_context')" data-object="account.invoice" action="open_document" class="dropdown-item" >View Bill</a>
-    </li>
-    <li t-if="line['caret_options'] == 'account.payment'">
-      <a role="menuitem" tabindex="-1" t-att-data-id="line['id']" t-att-data-model="line.get('model', 'account.move.line')" t-att-data-action-context="line.get('action_context')" data-object="account.payment" action="open_document" class="dropdown-item">View Payment</a>
-    </li>
+    <li t-if="line['caret_options'] == 'account.invoice.out'"><a role="menuitem" tabindex="-1" t-att-data-id="line['id']" t-att-data-model="line.get('model', 'account.move.line')" data-object="account.invoice" action="open_document" class="dropdown-item">View Invoice</a></li>
+    <li t-if="line['caret_options'] == 'account.invoice.in'"><a role="menuitem" tabindex="-1" t-att-data-id="line['id']" t-att-data-model="line.get('model', 'account.move.line')" data-object="account.invoice" action="open_document" class="dropdown-item" >View Bill</a></li>
+    <li t-if="line['caret_options'] == 'account.payment'"><a role="menuitem" tabindex="-1" t-att-data-id="line['id']" t-att-data-model="line.get('model', 'account.move.line')" data-object="account.payment" action="open_document" class="dropdown-item">View Payment</a></li>
     <li t-if="line['caret_options'] == 'account.tax'">
-      <a role="menuitem" tabindex="-1" t-att-data-id="line['id']" action="open_tax" class="dropdown-item">Audit</a>
+        <a role="menuitem" tabindex="-1" t-att-data-id="line['id']" action="open_tax" class="dropdown-item">Audit</a>
     </li>
     <li t-if="line['caret_options'] == 'tax.report.line'">
-      <a role="menuitem" tabindex="-1" t-att-data-id="line['id']" action="open_tax_report_line" class="dropdown-item">Audit</a>
+        <a role="menuitem" tabindex="-1" t-att-data-id="line['id']" action="open_tax_report_line" class="dropdown-item">Audit</a>
     </li>
     <li t-if="line['caret_options'] == 'account.bank.statement.line'"><a role="menuitem" tabindex="-1" t-att-data-id="line['id']" t-att-data-model="line.get('model', 'account.move.line')" data-object="account.bank.statement" action="open_document" class="dropdown-item">View Bank Statement</a></li>
     <li t-if="line['caret_options'] == 'account.analytic.account'">
         <a role="menuitem" tabindex="-1" t-att-data-id="line['id']" action="open_analytic_entries" class="dropdown-item">Analytic Entries</a>
     </li>
-    <li t-if="line['caret_options'] == 'res.partner'" role="presentation"><a role="menuitem" tabindex="-1" t-att-data-id="line['id']" t-att-data-model="line.get('model', 'res.partner')" data-object="res.partner" action="open_document" class="dropdown-item">View Partner</a></li>
+    <li t-if="line['caret_options'] == 'res.partner'" role="presentation"><a role="menuitem" tabindex="-1" t-att-data-id="line['id']" t-att-data-model="line.get('model', 'account.move.line')" data-object="res.partner" action="open_document" class="dropdown-item">View Partner</a></li>
 </template>
 
 <template id="filter_info_template">
@@ -173,7 +167,7 @@
             t-att-data-pagebreak="'before' if (line.get('page_break') and context.get('print_mode')) else None"
             t-att-data-parent-id="line.get('parent_id', False)"
             t-att-style="line.get('style', '')">
-            <td t-att-data-id="line['id']" t-att-class="'o_account_report_line o_account_report_line_indent ' + (line.get('unfoldable') and 'js_account_report_foldable o_foldable_total' or '')" t-att-data-unfolded="line.get('unfolded', False)" t-att-colspan="line.get('colspan', '1')"
+            <td t-att-data-id="line['id']" t-att-class="'o_account_report_line ' + (line.get('unfoldable') and 'js_account_report_foldable o_foldable_total' or '')" t-att-data-unfolded="line.get('unfolded', False)" t-att-colspan="line.get('colspan', '1')"
             t-att-data-offset="line.get('offset', False)" t-att-data-progress="line.get('progress', False)"
             >
                     <t t-if="line.get('unfoldable')">
@@ -209,8 +203,7 @@
                     </t>
             </td>
             <t t-foreach="line.get('columns')" t-as="column">
-                <t t-set="hierarchies_enabled" t-value="len(lines.get('columns_header', [])) > 1"/>
-                <td t-att-class="'o_account_report_line ' + (column.get('class', lines.get('columns_header')[-1][column_index+line.get('colspan', 1)].get('class', '')) + (line.get('unfoldable') and ' o_foldable_total' or '')) + ('' if hierarchies_enabled else ' o_account_report_line_indent')" t-att-style="column.get('style', lines.get('columns_header')[-1][column_index+line.get('colspan', 1)].get('style', ''))">
+                <td t-att-class="'o_account_report_line ' + (column.get('class', lines.get('columns_header')[-1][column_index+line.get('colspan', 1)].get('class', '')) + (line.get('unfoldable') and ' o_foldable_total' or ''))" t-att-style="column.get('style', lines.get('columns_header')[-1][column_index+line.get('colspan', 1)].get('style', ''))">
                     <span class="o_account_report_column_value" t-att-title="column.get('title')">
                         <t t-esc="column.get('name')"/>
                     </span>
@@ -280,7 +273,7 @@
                     </h4>
                 </t>
                 <t t-if="model._name == 'account.general.ledger'">
-                    <div class="o_account_reports_filter_input_wrapper no_print">
+                    <div class="o_account_reports_filter_input_wrapper">
                         <span class="searchIcon"><i class="fa fa-search" role="img" aria-label="Search" title="Search"></i></span>
                         <input class="o_account_reports_filter_input" type="text" placeholder="Search account" />
                     </div>

@@ -3,7 +3,6 @@
 
 from odoo import models, api, _, fields
 from odoo.tools import float_is_zero
-from odoo.tools.misc import format_date
 from datetime import timedelta
 
 
@@ -110,7 +109,6 @@ class ReportPartnerLedger(models.AbstractModel):
                 partners[partner]['initial_bal'] = initial_bal_results[partner_id]
                 partners[partner]['balance'] += partners[partner]['initial_bal']['balance']
                 partners[partner]['lines'] = self.env['account.move.line']
-                partners[partner]['total_lines'] = 0
 
         return partners
 
@@ -118,20 +116,17 @@ class ReportPartnerLedger(models.AbstractModel):
     def _get_lines(self, options, line_id=None):
         offset = int(options.get('lines_offset', 0))
         lines = []
-        context = self.env.context
         if line_id:
             line_id = int(line_id.split('_')[1]) or None
-        elif options.get('partner_ids') and len(options.get('partner_ids')) == 1:
-            #If a default partner is set, we only want to load the line referring to it.
-            partner_id = options['partner_ids'][0]
-            line_id = partner_id
-        if line_id:
-            if 'partner_' + str(line_id) not in options.get('unfolded_lines', []):
-                options.get('unfolded_lines', []).append('partner_' + str(line_id))
+        context = self.env.context
+
+        #If a default partner is set, we only want to load the line referring to it.
+        if options.get('partner_id'):
+            line_id = options['partner_id']
 
         grouped_partners = self._group_by_partner_id(options, line_id)
         sorted_partners = sorted(grouped_partners, key=lambda p: p.name or '')
-        unfold_all = context.get('print_mode') and not options.get('unfolded_lines')
+        unfold_all = context.get('print_mode') and not options.get('unfolded_lines') or options.get('partner_id')
         total_initial_balance = total_debit = total_credit = total_balance = 0.0
         for partner in sorted_partners:
             debit = grouped_partners[partner]['debit']
@@ -185,20 +180,17 @@ class ReportPartnerLedger(models.AbstractModel):
                     elif line.payment_id:
                         caret_type = 'account.payment'
                     domain_columns = [line.journal_id.code, line.account_id.code, self._format_aml_name(line), line.date_maturity,
-                                      line.full_reconcile_id.name or '', self.format_value(progress_before),
+                                      line.full_reconcile_id.name, self.format_value(progress_before),
                                       line_debit != 0 and self.format_value(line_debit) or '',
                                       line_credit != 0 and self.format_value(line_credit) or '']
                     if self.user_has_groups('base.group_multi_currency'):
-                        domain_columns.append(self.with_context(no_format=False).format_value(line.amount_currency, currency=line.currency_id) if line.amount_currency != 0 else '')
+                        domain_columns.append(self.format_value(line.amount_currency, currency=line.currency_id) if line.amount_currency != 0 else '')
                     domain_columns.append(self.format_value(progress))
-                    columns = [{'name': v} for v in domain_columns]
-                    columns[3].update({'class': 'date'})
                     domain_lines.append({
                         'id': line.id,
                         'parent_id': 'partner_' + str(partner.id),
-                        'name': format_date(self.env, line.date),
-                        'class': 'date',
-                        'columns': columns,
+                        'name': line.date,
+                        'columns': [{'name': v} for v in domain_columns],
                         'caret_options': caret_type,
                         'level': 4,
                     })

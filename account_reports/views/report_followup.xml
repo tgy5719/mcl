@@ -81,6 +81,17 @@
             <xpath expr="//div[hasclass('o_account_reports_no_print')]" position="attributes">
                 <attribute name="class">o_account_reports_page o_account_reports_no_print o_account_reports_followup</attribute>
             </xpath>
+            <xpath expr="//h2" position="after">
+                <p t-if='context.get("print_mode") != True and invoice_address_id' class='o_account_reports_contact_info'>
+                    <t t-if="invoice_address_id.phone"><i class='fa fa-phone fa-fw' role="img" aria-label="Phone" title="Phone"/><t t-esc="invoice_address_id.phone" /><br /></t>
+                    <t t-if="invoice_address_id.mobile"><i class='fa fa-mobile fa-fw' role="img" aria-label="Mobile" title="Mobile"/><t t-esc="invoice_address_id.mobile" /><br /></t>
+                    <t t-if="invoice_address_id.email">
+                        <a t-att-href="'mailto:' + invoice_address_id.email" title="Send an email">
+                            <i class='fa fa-envelope' role="img" aria-label="Email"/><t t-esc="' ' + invoice_address_id.email" />
+                        </a>
+                    </t>
+                </p>
+            </xpath>
             <xpath expr="//div[hasclass('o_account_reports_summary_edit')]" position="replace">
                 <div t-if="context.get('print_mode') != True" class="o_account_reports_summary_edit">
                         <textarea name="summary"><t t-if="report.get('summary')" t-esc="report['summary']" /></textarea>
@@ -109,15 +120,6 @@
                                 <span t-if="partner.country_id"><small>(<t t-esc='partner.country_id.name' />)</small></span>
                             </span>
                         </h2>
-                        <p t-if='context.get("print_mode") != True and invoice_address_id' class='o_account_reports_contact_info'>
-                            <t t-if="invoice_address_id.phone"><i class='fa fa-phone fa-fw' role="img" aria-label="Phone" title="Phone"/><t t-esc="invoice_address_id.phone" /><br /></t>
-                            <t t-if="invoice_address_id.mobile"><i class='fa fa-mobile fa-fw' role="img" aria-label="Mobile" title="Mobile"/><t t-esc="invoice_address_id.mobile" /><br /></t>
-                            <t t-if="invoice_address_id.email">
-                                <a t-att-href="'mailto:' + invoice_address_id.email" title="Send an email">
-                                    <i class='fa fa-envelope' role="img" aria-label="Email"/><t t-esc="' ' + invoice_address_id.email" />
-                                </a>
-                            </t>
-                        </p>
                     </div>
                     <div class="col-xl-6 no_print mb16" t-if='context.get("print_mode") != True' id='followup-mode'>
                         <div class="row">
@@ -171,7 +173,6 @@
 
         <template id="qunit_suite" name="account_reports_customer_statements_tests" inherit_id="web.qunit_suite">
             <xpath expr="//t[@t-set='head']" position="inside">
-                <script type="text/javascript" src="/account_reports/static/tests/action_manager_account_report_dl_tests.js"></script>
                 <script type="text/javascript" src="/account_reports/static/tests/followup_tests.js"></script>
             </xpath>
         </template>

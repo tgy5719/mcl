@@ -248,9 +248,25 @@
         <a t-if="options.get('partner')" type="button" class="dropdown-toggle account_partner_filter" data-toggle="dropdown">
             <span class="fa fa-folder-open"/> Partners
         </a>
-        <ul class="dropdown-menu o_filters_menu" role="menu">
-            <li class="o_account_report_search js_account_partner_m2m"/>
-        </ul>
+        <div class="dropdown-menu o_filters_menu" role="menu">
+            <div t-if="options.get('partner_ids') != None" class="o_account_report_search" role="menuitem">
+                <b>Partners</b><br />
+                <select class="js_account_partner_auto_complete o_account_report_select" data-filter="res_partners" multiple="multiple">
+                    <t t-foreach="res_partners" t-as="a">
+                        <option t-att-value="a[0]"><t t-esc="a[1]" /></option>
+                    </t>
+                </select>
+            </div>
+            <div t-if="options.get('partner_categories') != None" class="o_account_report_search" role="menuitem">
+                <b>Tags</b><br />
+                <select class="js_account_partner_auto_complete o_account_report_select" data-filter="res_partner_categories" multiple="multiple">
+                    <t t-foreach="res_partner_categories" t-as="t">
+                        <option t-att-value="t[0]"><t t-esc="t[1]" /></option>
+                    </t>
+                </select>
+            </div>
+            <div class="dropdown-divider" role="separator"></div>
+        </div>
     </template>
 
     <template id="search_template">

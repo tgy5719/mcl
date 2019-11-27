@@ -64,34 +64,14 @@ class report_account_general_ledger(models.AbstractModel):
               UNION ALL
               (
                WITH payment_table AS (
-                 SELECT aml.move_id, \"account_move_line\".date,
-                        CASE WHEN (aml.balance = 0 OR sub_aml.total_per_account = 0)
-                            THEN 0
-                            ELSE part.amount / ABS(sub_aml.total_per_account)
-                        END as matched_percentage
-                   FROM account_partial_reconcile part
-                   LEFT JOIN account_move_line aml ON aml.id = part.debit_move_id
-                   LEFT JOIN (SELECT move_id, account_id, ABS(SUM(balance)) AS total_per_account
-                                FROM account_move_line
-                                GROUP BY move_id, account_id) sub_aml
-                            ON (aml.account_id = sub_aml.account_id AND sub_aml.move_id=aml.move_id)
-                   LEFT JOIN account_move am ON aml.move_id = am.id,""" + tables + """
+                 SELECT aml.move_id, \"account_move_line\".date, CASE WHEN aml.balance = 0 THEN 0 ELSE part.amount / ABS(am.amount) END as matched_percentage
+                   FROM account_partial_reconcile part LEFT JOIN account_move_line aml ON aml.id = part.debit_move_id LEFT JOIN account_move am ON aml.move_id = am.id,""" + tables + """
                    WHERE part.credit_move_id = "account_move_line".id
                     AND "account_move_line".user_type_id IN %s
                     AND """ + where_clause + """
                  UNION ALL
-                 SELECT aml.move_id, \"account_move_line\".date,
-                        CASE WHEN (aml.balance = 0 OR sub_aml.total_per_account = 0)
-                            THEN 0
-                            ELSE part.amount / ABS(sub_aml.total_per_account)
-                        END as matched_percentage
-                   FROM account_partial_reconcile part
-                   LEFT JOIN account_move_line aml ON aml.id = part.credit_move_id
-                   LEFT JOIN (SELECT move_id, account_id, ABS(SUM(balance)) AS total_per_account
-                                FROM account_move_line
-                                GROUP BY move_id, account_id) sub_aml
-                            ON (aml.account_id = sub_aml.account_id AND sub_aml.move_id=aml.move_id)
-                   LEFT JOIN account_move am ON aml.move_id = am.id,""" + tables + """
+                 SELECT aml.move_id, \"account_move_line\".date, CASE WHEN aml.balance = 0 THEN 0 ELSE part.amount / ABS(am.amount) END as matched_percentage
+                   FROM account_partial_reconcile part LEFT JOIN account_move_line aml ON aml.id = part.credit_move_id LEFT JOIN account_move am ON aml.move_id = am.id,""" + tables + """
                    WHERE part.debit_move_id = "account_move_line".id
                     AND "account_move_line".user_type_id IN %s
                     AND """ + where_clause + """
@@ -111,7 +91,7 @@ class report_account_general_ledger(models.AbstractModel):
             params = [tuple(user_types.ids)] + where_params + [tuple(user_types.ids)] + where_params + [tuple(user_types.ids)] + where_params + [tuple(user_types.ids)]
         return sql, params
 
-    def _do_query_unaffected_earnings(self, options, line_id, company=None):
+    def _do_query_unaffected_earnings(self, options, line_id):
         ''' Compute the sum of ending balances for all accounts that are of a type that does not bring forward the balance in new fiscal years.
             This is needed to balance the trial balance and the general ledger reports (to have total credit = total debit)
         '''
@@ -126,16 +106,11 @@ class report_account_general_ledger(models.AbstractModel):
         select += " FROM %s WHERE %s"
         user_types = self.env['account.account.type'].search([('type', 'in', ('receivable', 'payable'))])
         with_sql, with_params = self._get_with_statement(user_types, domain=[('user_type_id.include_initial_balance', '=', False)])
-        aml_domain = [('user_type_id.include_initial_balance', '=', False)]
-        if company:
-            aml_domain += [('company_id', '=', company.id)]
-        tables, where_clause, where_params = self.env['account.move.line']._query_get(domain=aml_domain)
+        tables, where_clause, where_params = self.env['account.move.line']._query_get(domain=[('user_type_id.include_initial_balance', '=', False)])
         query = select % (tables, where_clause)
         self.env.cr.execute(with_sql + query, with_params + where_params)
         res = self.env.cr.fetchone()
-        date = self._context.get('date_to') or fields.Date.today()
-        currency_convert = lambda x: company and company.currency_id._convert(x, self.env.user.company_id.currency_id, self.env.user.company_id, date) or x
-        return {'balance': currency_convert(res[0]), 'amount_currency': res[1], 'debit': currency_convert(res[2]), 'credit': currency_convert(res[3])}
+        return {'balance': res[0], 'amount_currency': res[1], 'debit': res[2], 'credit': res[3]}
 
     def _do_query(self, options, line_id, group_by_account=True, limit=False):
         if group_by_account:
@@ -166,22 +141,17 @@ class report_account_general_ledger(models.AbstractModel):
         results = self._do_query(options, line_id, group_by_account=True, limit=False)
         used_currency = self.env.user.company_id.currency_id
         company = self.env['res.company'].browse(self._context.get('company_id')) or self.env['res.users']._get_company()
-        date = self._context.get('date_to') or fields.Date.today()
-        def build_converter(currency):
-            def convert(amount):
-                return currency._convert(amount, used_currency, company, date)
-            return convert
-
+        date = self._context.get('date') or fields.Date.today()
         compute_table = {
-            a.id: build_converter(a.company_id.currency_id)
+            a.id: a.company_id.currency_id._convert
             for a in self.env['account.account'].browse([k[0] for k in results])
         }
         results = dict([(
             k[0], {
-                'balance': compute_table[k[0]](k[1]) if k[0] in compute_table else k[1],
+                'balance': compute_table[k[0]](k[1], used_currency, company, date) if k[0] in compute_table else k[1],
                 'amount_currency': k[2],
-                'debit': compute_table[k[0]](k[3]) if k[0] in compute_table else k[3],
-                'credit': compute_table[k[0]](k[4]) if k[0] in compute_table else k[4],
+                'debit': compute_table[k[0]](k[3], used_currency, company, date) if k[0] in compute_table else k[3],
+                'credit': compute_table[k[0]](k[4], used_currency, company, date) if k[0] in compute_table else k[4],
             }
         ) for k in results])
         return results
@@ -191,28 +161,39 @@ class report_account_general_ledger(models.AbstractModel):
         results = self._do_query_group_by_account(options, line_id)
         initial_bal_date_to = fields.Date.from_string(self.env.context['date_from_aml']) + timedelta(days=-1)
         initial_bal_results = self.with_context(date_to=initial_bal_date_to.strftime('%Y-%m-%d'))._do_query_group_by_account(options, line_id)
-
+        unaffected_earnings_xml_ref = self.env.ref('account.data_unaffected_earnings')
+        unaffected_earnings_line = True  # used to make sure that we add the unaffected earning initial balance only once
+        if unaffected_earnings_xml_ref:
+            #compute the benefit/loss of last year to add in the initial balance of the current year earnings account
+            last_day_previous_fy = self.env.user.company_id.compute_fiscalyear_dates(fields.Date.from_string(self.env.context['date_from_aml']))['date_from'] + timedelta(days=-1)
+            unaffected_earnings_results = self.with_context(date_to=last_day_previous_fy.strftime('%Y-%m-%d'), date_from=False)._do_query_unaffected_earnings(options, line_id)
+            unaffected_earnings_line = False
         context = self.env.context
-
-        last_day_previous_fy = self.env.user.company_id.compute_fiscalyear_dates(fields.Date.from_string(self.env.context['date_from_aml']))['date_from'] + timedelta(days=-1)
-        unaffected_earnings_per_company = {}
-        for cid in context.get('company_ids', []):
-            company = self.env['res.company'].browse(cid)
-            unaffected_earnings_per_company[company] = self.with_context(date_to=last_day_previous_fy.strftime('%Y-%m-%d'), date_from=False)._do_query_unaffected_earnings(options, line_id, company)
-
-        unaff_earnings_treated_companies = set()
-        unaffected_earnings_type = self.env.ref('account.data_unaffected_earnings')
+        base_domain = [('date', '<=', context['date_to']), ('company_id', 'in', context['company_ids'])]
+        if context.get('journal_ids'):
+            base_domain.append(('journal_id', 'in', context['journal_ids']))
+        if context['date_from_aml']:
+            base_domain.append(('date', '>=', context['date_from_aml']))
+        if context['state'] == 'posted':
+            base_domain.append(('move_id.state', '=', 'posted'))
+        if context.get('account_tag_ids'):
+            base_domain += [('account_id.tag_ids', 'in', context['account_tag_ids'].ids)]
+        if context.get('analytic_tag_ids'):
+            base_domain += ['|', ('analytic_account_id.tag_ids', 'in', context['analytic_tag_ids'].ids), ('analytic_tag_ids', 'in', context['analytic_tag_ids'].ids)]
+        if context.get('analytic_account_ids'):
+            base_domain += [('analytic_account_id', 'in', context['analytic_account_ids'].ids)]
         for account_id, result in results.items():
+            domain = list(base_domain)  # copying the base domain
+            domain.append(('account_id', '=', account_id))
             account = self.env['account.account'].browse(account_id)
             accounts[account] = result
             accounts[account]['initial_bal'] = initial_bal_results.get(account.id, {'balance': 0, 'amount_currency': 0, 'debit': 0, 'credit': 0})
-            if account.user_type_id == unaffected_earnings_type and account.company_id not in unaff_earnings_treated_companies:
-                #add the benefit/loss of previous fiscal year to unaffected earnings accounts
-                unaffected_earnings_results = unaffected_earnings_per_company[account.company_id]
+            if account.user_type_id.id == self.env.ref('account.data_unaffected_earnings').id and not unaffected_earnings_line:
+                #add the benefit/loss of previous fiscal year to the first unaffected earnings account found.
+                unaffected_earnings_line = True
                 for field in ['balance', 'debit', 'credit']:
                     accounts[account]['initial_bal'][field] += unaffected_earnings_results[field]
                     accounts[account][field] += unaffected_earnings_results[field]
-                unaff_earnings_treated_companies.add(account.company_id)
             #use query_get + with statement instead of a search in order to work in cash basis too
             aml_ctx = {}
             if context.get('date_from_aml'):
@@ -232,20 +213,17 @@ class report_account_general_ledger(models.AbstractModel):
             aml_ids = aml_ids[offset:stop]
 
             accounts[account]['lines'] = self.env['account.move.line'].browse(aml_ids)
-
-        # For each company, if the unaffected earnings account wasn't in the selection yet: add it manually
+        #if the unaffected earnings account wasn't in the selection yet: add it manually
         user_currency = self.env.user.company_id.currency_id
-        for cid in context.get('company_ids', []):
-            company = self.env['res.company'].browse(cid)
-            if company not in unaff_earnings_treated_companies and not float_is_zero(unaffected_earnings_per_company[company]['balance'], precision_digits=user_currency.decimal_places):
-                unaffected_earnings_account = self.env['account.account'].search([
-                    ('user_type_id', '=', unaffected_earnings_type.id), ('company_id', '=', company.id)
-                ], limit=1)
-                if unaffected_earnings_account and (not line_id or unaffected_earnings_account.id == line_id):
-                    accounts[unaffected_earnings_account[0]] = unaffected_earnings_per_company[company]
-                    accounts[unaffected_earnings_account[0]]['initial_bal'] = unaffected_earnings_per_company[company]
-                    accounts[unaffected_earnings_account[0]]['lines'] = []
-                    accounts[unaffected_earnings_account[0]]['total_lines'] = 0
+        if not unaffected_earnings_line and not float_is_zero(unaffected_earnings_results['balance'], precision_digits=user_currency.decimal_places):
+            #search an unaffected earnings account
+            unaffected_earnings_account = self.env['account.account'].search([
+                ('user_type_id', '=', self.env.ref('account.data_unaffected_earnings').id), ('company_id', 'in', self.env.context.get('company_ids', []))
+            ], limit=1)
+            if unaffected_earnings_account and (not line_id or unaffected_earnings_account.id == line_id):
+                accounts[unaffected_earnings_account[0]] = unaffected_earnings_results
+                accounts[unaffected_earnings_account[0]]['initial_bal'] = unaffected_earnings_results
+                accounts[unaffected_earnings_account[0]]['lines'] = []
         return accounts
 
     def _get_taxes(self, journal):
@@ -277,13 +255,18 @@ class report_account_general_ledger(models.AbstractModel):
                 res[tax]['tax_amount'] = res[tax]['tax_amount'] * -1
         return res
 
+    def _get_journal_total(self):
+        tables, where_clause, where_params = self.env['account.move.line']._query_get()
+        self.env.cr.execute('SELECT COALESCE(SUM(debit), 0) as debit, COALESCE(SUM(credit), 0) as credit, COALESCE(SUM(debit-credit), 0) as balance FROM ' + tables + ' '
+                        'WHERE ' + where_clause + ' ', where_params)
+        return self.env.cr.dictfetchone()
+
     @api.model
     def _get_lines(self, options, line_id=None):
         offset = int(options.get('lines_offset', 0))
         lines = []
         context = self.env.context
         company_id = self.env.user.company_id
-        used_currency = company_id.currency_id
         dt_from = options['date'].get('date_from')
         line_id = line_id and int(line_id.split('_')[1]) or None
         aml_lines = []
@@ -293,23 +276,18 @@ class report_account_general_ledger(models.AbstractModel):
         unfold_all = context.get('print_mode') and len(options.get('unfolded_lines')) == 0
         sum_debit = sum_credit = sum_balance = 0
         for account in sorted_accounts:
-            display_name = account.code + " " + account.name
-            if options.get('filter_accounts'):
-                #skip all accounts where both the code and the name don't start with the given filtering string
-                if not any([display_name_part.startswith(options.get('filter_accounts')) for display_name_part in display_name.split(' ')]):
-                    continue
             debit = grouped_accounts[account]['debit']
             credit = grouped_accounts[account]['credit']
             balance = grouped_accounts[account]['balance']
             sum_debit += debit
             sum_credit += credit
             sum_balance += balance
-            amount_currency = '' if not account.currency_id else self.with_context(no_format=False).format_value(grouped_accounts[account]['amount_currency'], currency=account.currency_id)
+            amount_currency = '' if not account.currency_id else self.format_value(grouped_accounts[account]['amount_currency'], currency=account.currency_id)
             # don't add header for `load more`
             if offset == 0:
                 lines.append({
                     'id': 'account_%s' % (account.id,),
-                    'name': display_name,
+                    'name': account.code + " " + account.name,
                     'columns': [{'name': v} for v in [amount_currency, self.format_value(debit), self.format_value(credit), self.format_value(balance)]],
                     'level': 2,
                     'unfoldable': True,
@@ -320,7 +298,7 @@ class report_account_general_ledger(models.AbstractModel):
                 initial_debit = grouped_accounts[account]['initial_bal']['debit']
                 initial_credit = grouped_accounts[account]['initial_bal']['credit']
                 initial_balance = grouped_accounts[account]['initial_bal']['balance']
-                initial_currency = '' if not account.currency_id else self.with_context(no_format=False).format_value(grouped_accounts[account]['initial_bal']['amount_currency'], currency=account.currency_id)
+                initial_currency = '' if not account.currency_id else self.format_value(grouped_accounts[account]['initial_bal']['amount_currency'], currency=account.currency_id)
 
                 domain_lines = []
                 if offset == 0:
@@ -342,6 +320,7 @@ class report_account_general_ledger(models.AbstractModel):
                 if not context.get('print_mode'):
                     remaining_lines = grouped_accounts[account]['total_lines'] - offset - len(amls)
 
+                used_currency = self.env.user.company_id.currency_id
 
                 for line in amls:
                     if options.get('cash_basis'):
@@ -351,8 +330,8 @@ class report_account_general_ledger(models.AbstractModel):
                         line_debit = line.debit
                         line_credit = line.credit
                     date = amls.env.context.get('date') or fields.Date.today()
-                    line_debit = line.company_id.currency_id._convert(line_debit, used_currency, company_id, date)
-                    line_credit = line.company_id.currency_id._convert(line_credit, used_currency, company_id, date)
+                    line_debit = line.company_id.currency_id._convert(line_debit, used_currency, line.company_id, date)
+                    line_credit = line.company_id.currency_id._convert(line_credit, used_currency, line.company_id, date)
                     progress = progress + line_debit - line_credit
                     currency = "" if not line.currency_id else self.with_context(no_format=False).format_value(line.amount_currency, currency=line.currency_id)
 
@@ -419,7 +398,6 @@ class report_account_general_ledger(models.AbstractModel):
                 lines += domain_lines
 
         if not line_id:
-
             lines.append({
                 'id': 'general_ledger_total_%s' % company_id.id,
                 'name': _('Total'),
@@ -430,6 +408,16 @@ class report_account_general_ledger(models.AbstractModel):
 
         journals = [j for j in options.get('journals') if j.get('selected')]
         if len(journals) == 1 and journals[0].get('type') in ['sale', 'purchase'] and not line_id:
+            total = self._get_journal_total()
+            lines.append({
+                'id': 0,
+                'class': 'total',
+                'name': _('Total'),
+                'columns': [{'name': v} for v in ['', '', '', '', self.format_value(total['debit']), self.format_value(total['credit']), self.format_value(total['balance'])]],
+                'level': 1,
+                'unfoldable': False,
+                'unfolded': False,
+            })
             lines.append({
                 'id': 0,
                 'name': _('Tax Declaration'),

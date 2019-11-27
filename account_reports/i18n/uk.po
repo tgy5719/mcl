@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server saas~11.5+e\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-10-02 10:31+0000\n"
-"PO-Revision-Date: 2018-10-02 10:31+0000\n"
+"POT-Creation-Date: 2018-09-21 14:06+0000\n"
+"PO-Revision-Date: 2018-09-21 14:06+0000\n"
 "Last-Translator: Alina Lisnenko <alinasemeniuk1@gmail.com>, 2018\n"
 "Language-Team: Ukrainian (https://www.transifex.com/odoo/teams/41243/uk/)\n"
 "MIME-Version: 1.0\n"
@@ -20,7 +20,7 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n % 1 == 0 && n % 10 == 1 && n % 100 != 11 ? 0 : n % 1 == 0 && n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 1 : n % 1 == 0 && (n % 10 ==0 || (n % 10 >=5 && n % 10 <=9) || (n % 100 >=11 && n % 100 <=14 )) ? 2: 3);\n"
 
 #. module: account_reports
-#: code:addons/account_reports/models/account_followup_report.py:240
+#: code:addons/account_reports/models/account_followup_report.py:239
 #, python-format
 msgid "%s Payment Reminder"
 msgstr "%s Нагадування оплати"
@@ -41,7 +41,7 @@ msgstr "&times;"
 #: code:addons/account_reports/models/account_report.py:582
 #, python-format
 msgid "(No Group)"
-msgstr "(Немає групи)"
+msgstr ""
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_financial_report.py:355
@@ -54,25 +54,25 @@ msgstr "(копіювати)"
 #: code:addons/account_reports/models/account_aged_partner_balance.py:22
 #, python-format
 msgid "1 - 30"
-msgstr "1 - 30"
+msgstr ""
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_aged_partner_balance.py:22
 #, python-format
 msgid "31 - 60"
-msgstr "31 - 60"
+msgstr ""
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_aged_partner_balance.py:22
 #, python-format
 msgid "61 - 90"
-msgstr "61 - 90"
+msgstr ""
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_aged_partner_balance.py:22
 #, python-format
 msgid "91 - 120"
-msgstr "91 - 120"
+msgstr ""
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.search_template_analytic
@@ -107,11 +107,6 @@ msgstr ""
 msgid ""
 "<br/>\n"
 "                Analytic Accounts:"
-msgstr ""
-
-#. module: account_reports
-#: model_terms:ir.ui.view,arch_db:account_reports.filter_info_template
-msgid "<br/>Companies:"
 msgstr ""
 
 #. module: account_reports
@@ -177,7 +172,7 @@ msgstr ""
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.search_template_partner
 msgid "<span class=\"fa fa-folder-open\"/> Partners"
-msgstr "<span class=\"fa fa-folder-open\"/> Партнери"
+msgstr ""
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.search_template_account_type
@@ -198,7 +193,7 @@ msgstr ""
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.res_partner_view_form
 msgid "<span class=\"o_stat_text\">Due</span>"
-msgstr "<span class=\"o_stat_text\">Борг</span>"
+msgstr "<span class=\"o_stat_text\">Належний</span>"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.account_reports_journal_dashboard_kanban_view_account_manager
@@ -262,6 +257,11 @@ msgid "Account Report Footnote"
 msgstr ""
 
 #. module: account_reports
+#: model_terms:ir.ui.view,arch_db:account_reports.res_config_settings_view_form
+msgid "Account Tags"
+msgstr "Теги рахунків"
+
+#. module: account_reports
 #: code:addons/account_reports/models/account_analytic_report.py:79
 #, python-format
 msgid "Accounts without a group"
@@ -279,11 +279,11 @@ msgstr "Дія"
 
 #. module: account_reports
 #. openerp-web
-#: code:addons/account_reports/static/src/js/account_reports.js:360
+#: code:addons/account_reports/static/src/js/account_reports.js:356
 #: model_terms:ir.ui.view,arch_db:account_reports.main_template
 #, python-format
 msgid "Add a note"
-msgstr "Додати примітку"
+msgstr ""
 
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_res_company__totals_below_sections
@@ -393,12 +393,12 @@ msgstr "Аналітичні записи"
 #: model:ir.ui.menu,name:account_reports.menu_action_report_account_analytic
 #, python-format
 msgid "Analytic Report"
-msgstr "Аналітичний звіт"
+msgstr ""
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.filter_info_template
 msgid "Analytic Tags:"
-msgstr "Аналітичні теги:"
+msgstr ""
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.line_template
@@ -478,7 +478,7 @@ msgstr "Баланс"
 #: model:ir.actions.client,name:account_reports.action_account_report_bs
 #: model:ir.ui.menu,name:account_reports.account_financial_html_report_menu_2
 msgid "Balance Sheet"
-msgstr "Звіт балансу"
+msgstr "Бухгалтерський баланс"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_bank_reconciliation_report.py:211
@@ -487,7 +487,7 @@ msgstr "Звіт балансу"
 #: model:ir.actions.client,name:account_reports.action_account_report_bank_reconciliation_with_journal
 #, python-format
 msgid "Bank Reconciliation"
-msgstr "Узгодження банківських виписок"
+msgstr "Узгодження виписок"
 
 #. module: account_reports
 #: model:ir.model,name:account_reports.model_account_bank_reconciliation_report
@@ -531,7 +531,7 @@ msgstr "Метод касового нарахування"
 #: model:ir.actions.client,name:account_reports.action_account_report_cs
 #: model:ir.ui.menu,name:account_reports.account_financial_html_report_menu_3
 msgid "Cash Flow Statement"
-msgstr "Звіт про рух грошових коштів"
+msgstr "Рух грошових коштів"
 
 #. module: account_reports
 #: model:account.financial.html.report.line,name:account_reports.account_financial_report_cashsummary_opening_balance0
@@ -610,7 +610,7 @@ msgstr ""
 #. module: account_reports
 #: model:ir.model,name:account_reports.model_account_coa_report
 msgid "Chart of Account Report"
-msgstr "Звіт плану рахунків"
+msgstr "План звіту рахунків"
 
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_financial_html_report_line__children_ids
@@ -625,7 +625,7 @@ msgstr "Дочірні рядки"
 #. module: account_reports
 #: model:account.financial.html.report.line,name:account_reports.account_financial_report_executivesummary_closing_bank_balance0
 msgid "Closing bank balance"
-msgstr "Баланс закриття по банку"
+msgstr "Залишок коштів у банку"
 
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_financial_html_report_line__code
@@ -669,7 +669,7 @@ msgstr ""
 #. module: account_reports
 #: model:ir.model,name:account_reports.model_res_config_settings
 msgid "Config Settings"
-msgstr "Налаштування"
+msgstr ""
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_consolidated_journals.py:26
@@ -701,7 +701,7 @@ msgid "Cost of Revenue"
 msgstr "Собівартість продажу"
 
 #. module: account_reports
-#: code:addons/account_reports/models/account_followup_report.py:248
+#: code:addons/account_reports/models/account_followup_report.py:247
 #, python-format
 msgid ""
 "Could not send mail to partner because it does not have any email address "
@@ -799,7 +799,7 @@ msgstr "Власний"
 #: code:addons/account_reports/models/res_partner.py:87
 #, python-format
 msgid "Customer Ledger"
-msgstr "Розрахунки з клієнтом"
+msgstr "Бухоблік клієнта"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.followup_filter_info_template
@@ -809,7 +809,7 @@ msgstr "Зв’яз. клієнта:"
 #. module: account_reports
 #: model:ir.actions.client,name:account_reports.action_account_followup
 msgid "Customers Statement"
-msgstr "Звірка з клієнтом"
+msgstr "Акт звірки клієнтів"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_bank_reconciliation_report.py:22
@@ -1068,7 +1068,7 @@ msgstr "Фінансові звіти"
 #. module: account_reports
 #: selection:account.financial.html.report.line,figure_type:0
 msgid "Float"
-msgstr "Число з комою"
+msgstr "число з комою"
 
 #. module: account_reports
 #: selection:account.financial.html.report.line,show_domain:0
@@ -1083,7 +1083,7 @@ msgstr "Згорнуто"
 #. module: account_reports
 #: model:ir.model,name:account_reports.model_account_followup_report
 msgid "Follow-up Report"
-msgstr "Звіт нагадування"
+msgstr ""
 
 #. module: account_reports
 #: model:ir.actions.act_window,name:account_reports.action_view_list_customer_statements
@@ -1097,13 +1097,13 @@ msgid "Follow-up Reports Tree View"
 msgstr ""
 
 #. module: account_reports
-#: code:addons/account_reports/models/account_followup_report.py:235
+#: code:addons/account_reports/models/account_followup_report.py:234
 #, python-format
 msgid "Follow-up email sent to %s"
 msgstr ""
 
 #. module: account_reports
-#: code:addons/account_reports/models/account_followup_report.py:257
+#: code:addons/account_reports/models/account_followup_report.py:256
 #, python-format
 msgid "Follow-up letter printed"
 msgstr ""
@@ -1121,13 +1121,14 @@ msgid "Follow-ups Done / Total Follow-ups"
 msgstr "Зроблено нагадувань / Всього нагадувань"
 
 #. module: account_reports
-#: code:addons/account_reports/models/account_followup_report.py:180
+#: code:addons/account_reports/models/account_followup_report.py:179
 #, python-format
 msgid "Followup Report"
 msgstr "Звіт нагадувань"
 
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_res_partner__followup_status
+#: model:ir.model.fields,field_description:account_reports.field_res_users__followup_status
 msgid "Followup status"
 msgstr ""
 
@@ -1223,7 +1224,7 @@ msgstr "Групувати за"
 #. module: account_reports
 #: code:addons/account_reports/models/account_financial_report.py:291
 #: code:addons/account_reports/models/account_financial_report.py:867
-#: code:addons/account_reports/models/account_financial_report.py:981
+#: code:addons/account_reports/models/account_financial_report.py:980
 #, python-format
 msgid "Groupby should be a field from account.move.line"
 msgstr "Група має бути полем з account.move.line"
@@ -1272,7 +1273,7 @@ msgstr "ID"
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.followup_search_template
 msgid "In Need of Action"
-msgstr "Що потребують дії"
+msgstr "що потребують дії"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.customer_statements_search_view
@@ -1355,12 +1356,6 @@ msgstr "Записи в журналі згруповані по податка�
 #, python-format
 msgid "Journal Name (Code)"
 msgstr "Назва журналу (Код)"
-
-#. module: account_reports
-#: model:ir.actions.act_window,name:account_reports.action_account_print_journal_menu
-#: model:ir.ui.menu,name:account_reports.menu_print_journal
-msgid "Journals Audit"
-msgstr "Аудит журналів"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.filter_info_template
@@ -1545,6 +1540,7 @@ msgstr "Ніколи"
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_move_line__next_action_date
 #: model:ir.model.fields,field_description:account_reports.field_res_partner__payment_next_action_date
+#: model:ir.model.fields,field_description:account_reports.field_res_users__payment_next_action_date
 msgid "Next Action Date"
 msgstr "Дата наступної дії"
 
@@ -1625,7 +1621,6 @@ msgid ""
 "Odoo will remind you to take care of this follow-up on the next reminder "
 "date."
 msgstr ""
-"Odoo нагадає вам попіклуватися про наступну дату наступного нагадування."
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_aged_partner_balance.py:22
@@ -1706,6 +1701,7 @@ msgstr "Розрахунки з партнерами"
 
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_res_partner__partner_ledger_label
+#: model:ir.model.fields,field_description:account_reports.field_res_users__partner_ledger_label
 msgid "Partner Ledger Label"
 msgstr "Логотип партнерської бухгалтерської книги"
 
@@ -1729,7 +1725,7 @@ msgstr "Кредитор"
 #: model:account.financial.html.report.line,name:account_reports.account_financial_report_current_liabilities_payable
 #: model:account.financial.html.report.line,name:account_reports.account_financial_report_executivesummary_creditors0
 msgid "Payables"
-msgstr "Кредитори"
+msgstr "Кредиторська заборгованість"
 
 #. module: account_reports
 #: selection:account.financial.html.report.line,figure_type:0
@@ -1744,7 +1740,7 @@ msgstr "Досягнення"
 #. module: account_reports
 #: model:account.financial.html.report.line,name:account_reports.account_financial_report_fixed_assets_view0
 msgid "Plus Fixed Assets"
-msgstr "Плюс основні засоби"
+msgstr "плюс основні засоби"
 
 #. module: account_reports
 #: model:account.financial.html.report.line,name:account_reports.account_financial_report_non_current_assets_view0
@@ -1787,6 +1783,11 @@ msgid "Print Follow-up Letter"
 msgstr ""
 
 #. module: account_reports
+#: model_terms:ir.ui.view,arch_db:account_reports.res_config_settings_view_form
+msgid "Print Legal Statement"
+msgstr "Друк юридичних виписок"
+
+#. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_financial_html_report_line__print_on_new_page
 msgid "Print On New Page"
 msgstr ""
@@ -1802,7 +1803,7 @@ msgstr "Попередній перегляд друку"
 #: code:addons/account_reports/static/src/xml/account_report_template.xml:7
 #, python-format
 msgid "Print letter"
-msgstr "Роздрукувати лист"
+msgstr ""
 
 #. module: account_reports
 #: model:ir.actions.server,name:account_reports.action_account_reports_customer_statements_do_followup
@@ -1862,7 +1863,7 @@ msgstr "Референс"
 #: code:addons/account_reports/static/src/xml/account_report_template.xml:13
 #, python-format
 msgid "Remind me later"
-msgstr "Нагадати мені пізніше"
+msgstr ""
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.view_account_financial_report_form
@@ -1937,7 +1938,7 @@ msgstr ""
 #: code:addons/account_reports/static/src/xml/account_report_template.xml:10
 #, python-format
 msgid "Send by email"
-msgstr "Відіслано електронною поштою"
+msgstr "Відіслано по email"
 
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_account_financial_html_report_line__sequence
@@ -2029,6 +2030,7 @@ msgstr "Текст"
 
 #. module: account_reports
 #: model:ir.model.fields,help:account_reports.field_res_partner__payment_next_action_date
+#: model:ir.model.fields,help:account_reports.field_res_users__payment_next_action_date
 msgid "The date before which no action should be taken."
 msgstr "Дата, до якої не слід вживати жодних дій."
 
@@ -2087,8 +2089,8 @@ msgstr "Сьогодні"
 #: code:addons/account_reports/models/account_aged_partner_balance.py:78
 #: code:addons/account_reports/models/account_consolidated_journals.py:41
 #: code:addons/account_reports/models/account_consolidated_journals.py:73
-#: code:addons/account_reports/models/account_financial_report.py:1058
-#: code:addons/account_reports/models/account_financial_report.py:1141
+#: code:addons/account_reports/models/account_financial_report.py:1057
+#: code:addons/account_reports/models/account_financial_report.py:1140
 #: code:addons/account_reports/models/account_general_ledger.py:403
 #: code:addons/account_reports/models/account_general_ledger.py:415
 #: code:addons/account_reports/models/account_partner_ledger.py:219
@@ -2108,15 +2110,17 @@ msgstr "Загальний"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_followup_report.py:35
-#: code:addons/account_reports/models/account_followup_report.py:108
+#: code:addons/account_reports/models/account_followup_report.py:107
 #: model:ir.model.fields,field_description:account_reports.field_res_partner__total_due
+#: model:ir.model.fields,field_description:account_reports.field_res_users__total_due
 #, python-format
 msgid "Total Due"
 msgstr "Загальна сума заборгованості"
 
 #. module: account_reports
-#: code:addons/account_reports/models/account_followup_report.py:119
+#: code:addons/account_reports/models/account_followup_report.py:118
 #: model:ir.model.fields,field_description:account_reports.field_res_partner__total_overdue
+#: model:ir.model.fields,field_description:account_reports.field_res_users__total_overdue
 #, python-format
 msgid "Total Overdue"
 msgstr "Прострочені"
@@ -2147,7 +2151,7 @@ msgstr "Нерозподілені прибутки"
 
 #. module: account_reports
 #: code:addons/account_reports/models/account_financial_report.py:45
-#: code:addons/account_reports/models/account_financial_report.py:905
+#: code:addons/account_reports/models/account_financial_report.py:904
 #, python-format
 msgid "Undefined"
 msgstr "Невизначений"
@@ -2180,6 +2184,7 @@ msgstr "Не узгоджено"
 
 #. module: account_reports
 #: model:ir.model.fields,field_description:account_reports.field_res_partner__unreconciled_aml_ids
+#: model:ir.model.fields,field_description:account_reports.field_res_users__unreconciled_aml_ids
 msgid "Unreconciled Aml"
 msgstr "Незвірений Aml"
 
@@ -2229,7 +2234,7 @@ msgstr "Переглянути рахунок-фактуру"
 #: model_terms:ir.ui.view,arch_db:account_reports.line_template_general_ledger_report
 #: model_terms:ir.ui.view,arch_db:account_reports.line_template_partner_ledger_report
 msgid "View Journal Entry"
-msgstr "Переглянути журнальні записи"
+msgstr "Переглянути проводки"
 
 #. module: account_reports
 #: model_terms:ir.ui.view,arch_db:account_reports.line_caret_options
@@ -2303,7 +2308,7 @@ msgstr ""
 #. module: account_reports
 #: model:ir.model.fields,help:account_reports.field_account_financial_html_report__comparison
 msgid "display the comparison filter"
-msgstr "відобразити фільтр порівняння"
+msgstr "Відобразити фільтр порівняння"
 
 #. module: account_reports
 #: model:ir.model.fields,help:account_reports.field_account_financial_html_report__show_journal_filter
@@ -2321,7 +2326,7 @@ msgid "display the unfold all options in report"
 msgstr "відобразити розгорнуті всі параметри в звіті"
 
 #. module: account_reports
-#: code:addons/account_reports/models/account_financial_report.py:923
+#: code:addons/account_reports/models/account_financial_report.py:922
 #, python-format
 msgid "n/a"
 msgstr "немає"

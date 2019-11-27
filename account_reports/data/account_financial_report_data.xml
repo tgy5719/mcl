@@ -377,7 +377,7 @@
             <field name="sequence" eval="1"/>
             <field name="parent_id" ref='account_financial_report_cashsummary_net_increase0'/>
             <field name="formulas">balance = PRECUS.balance + CACUS.balance + PRESUP.balance + LCP.balance</field>
-            <field name="level" eval="2" />
+            <field name="level" eval="0" />
             <field name="special_date_changer">strict_range</field>
         </record>
         <record id="account_financial_report_cashsummary_prepayments_received0" model="account.financial.html.report.line">
@@ -387,7 +387,7 @@
             <field name="parent_id" ref='account_financial_report_cashsummary_operating0'/>
             <field name="domain" eval="[('account_id.internal_type', '=', 'receivable')]" />
             <field name="formulas">balance = -sum.amount_residual</field>
-            <field name="level" eval="3" />
+            <field name="level" eval="2" />
             <field name="groupby">partner_id</field>
             <field name="special_date_changer">strict_range</field>
         </record>
@@ -398,7 +398,7 @@
             <field name="parent_id" ref='account_financial_report_cashsummary_operating0'/>
             <field name="domain" eval="[('credit', '>', 0), ('account_id.tag_ids', '=', ref('account.account_tag_operating'))]" />
             <field name="formulas">balance = -sum.balance</field>
-            <field name="level" eval="3" />
+            <field name="level" eval="2" />
             <field name="groupby">account_id</field>
             <field name="special_date_changer">strict_range</field>
         </record>
@@ -409,7 +409,7 @@
             <field name="parent_id" ref='account_financial_report_cashsummary_operating0'/>
             <field name="domain" eval="[('account_id.internal_type', '=', 'payable')]" />
             <field name="formulas">balance = -sum.amount_residual</field>
-            <field name="level" eval="3" />
+            <field name="level" eval="2" />
             <field name="groupby">partner_id</field>
             <field name="special_date_changer">strict_range</field>
         </record>
@@ -420,7 +420,7 @@
             <field name="parent_id" ref='account_financial_report_cashsummary_operating0'/>
             <field name="domain" eval="[('debit', '>', 0), ('account_id.tag_ids', '=', ref('account.account_tag_operating'))]" />
             <field name="formulas">balance = -sum.balance</field>
-            <field name="level" eval="3" />
+            <field name="level" eval="2" />
             <field name="groupby">account_id</field>
             <field name="special_date_changer">strict_range</field>
         </record>
@@ -429,7 +429,7 @@
             <field name="code">IN</field>
             <field name="sequence" eval="2"/>
             <field name="parent_id" ref='account_financial_report_cashsummary_net_increase0'/>
-            <field name="level" eval="2" />
+            <field name="level" eval="0" />
             <field name="formulas">balance = INV_IN.balance + INV_OUT.balance</field>
             <field name="special_date_changer">strict_range</field>
         </record>
@@ -441,7 +441,7 @@
             <field name="domain" eval="[('credit', '>', 0),('account_id.tag_ids', '=', ref('account.account_tag_investing'))]" />
             <field name="formulas">balance = -sum.balance</field>
             <field name="groupby">account_id</field>
-            <field name="level" eval="3" />
+            <field name="level" eval="2" />
             <field name="special_date_changer">strict_range</field>
         </record>
         <record id="account_financial_report_cashsummary_investing_out0" model="account.financial.html.report.line">
@@ -452,7 +452,7 @@
             <field name="domain" eval="[('debit', '>', 0), ('account_id.tag_ids', '=', ref('account.account_tag_investing'))]" />
             <field name="formulas">balance = -sum.balance</field>
             <field name="groupby">account_id</field>
-            <field name="level" eval="3" />
+            <field name="level" eval="2" />
             <field name="special_date_changer">strict_range</field>
         </record>
         <record id="account_financial_report_cashsummary_financing0" model="account.financial.html.report.line">
@@ -460,7 +460,7 @@
             <field name="code">FI</field>
             <field name="sequence" eval="3"/>
             <field name="parent_id" ref='account_financial_report_cashsummary_net_increase0'/>
-            <field name="level" eval="2" />
+            <field name="level" eval="0" />
             <field name="formulas">balance = FI_IN.balance + FI_OUT.balance</field>
             <field name="special_date_changer">strict_range</field>
         </record>
@@ -472,7 +472,7 @@
             <field name="domain" eval="[('credit', '>', 0), ('account_id.tag_ids', '=', ref('account.account_tag_financing'))]" />
             <field name="formulas">balance = -sum.balance</field>
             <field name="groupby">account_id</field>
-            <field name="level" eval="3" />
+            <field name="level" eval="2" />
             <field name="special_date_changer">strict_range</field>
         </record>
         <record id="account_financial_report_cashsummary_financing_out0" model="account.financial.html.report.line">
@@ -483,7 +483,7 @@
             <field name="domain" eval="[('debit', '>', 0), ('account_id.tag_ids', '=', ref('account.account_tag_financing'))]" />
             <field name="formulas">balance = -sum.balance</field>
             <field name="groupby">account_id</field>
-            <field name="level" eval="3" />
+            <field name="level" eval="2" />
             <field name="special_date_changer">strict_range</field>
         </record>
         <record id="account_financial_report_cashsummary_unclassified0" model="account.financial.html.report.line">
@@ -491,7 +491,7 @@
             <field name="code">UNC</field>
             <field name="sequence" eval="4"/>
             <field name="parent_id" ref='account_financial_report_cashsummary_net_increase0'/>
-            <field name="level" eval="2" />
+            <field name="level" eval="0" />
             <field name="formulas">balance = UNC_IN.balance + UNC_OUT.balance</field>
             <field name="hide_if_zero" eval="True" />
             <field name="special_date_changer">strict_range</field>
@@ -504,7 +504,7 @@
             <field name="domain" eval="[('credit', '>', 0), ('account_id.internal_type', 'not in', ('receivable', 'payable')), ('account_id.tag_ids', 'not in', [ref('account.account_tag_financing'), ref('account.account_tag_investing'), ref('account.account_tag_operating')])]" />
             <field name="formulas">balance = -sum.balance</field>
             <field name="groupby">account_id</field>
-            <field name="level" eval="3" />
+            <field name="level" eval="2" />
             <field name="special_date_changer">strict_range</field>
         </record>
         <record id="account_financial_report_cashsummary_unclassified_out0" model="account.financial.html.report.line">
@@ -515,7 +515,7 @@
             <field name="domain" eval="[('debit', '>', 0), ('account_id.internal_type', 'not in', ('receivable', 'payable')), ('account_id.tag_ids', 'not in', [ref('account.account_tag_financing'), ref('account.account_tag_investing'), ref('account.account_tag_operating')])]" />
             <field name="formulas">balance = -sum.balance</field>
             <field name="groupby">account_id</field>
-            <field name="level" eval="3" />
+            <field name="level" eval="2" />
             <field name="special_date_changer">strict_range</field>
         </record>
 
@@ -526,7 +526,7 @@
             <field name="sequence" eval="5"/>
             <field name="parent_id" ref='account_financial_report_cashsummary_net_increase0'/>
             <field name="formulas">balance = (CASHEND.balance - CASHSTART.balance) - (OP.balance + FI.balance + IN.balance + UNC.balance)</field>
-            <field name="level" eval="1" />
+            <field name="level" eval="0" />
             <field name="hide_if_zero" eval="True" />
         </record>
 

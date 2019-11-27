@@ -18,11 +18,3 @@ class AccountMoveLine(models.Model):
             You need to be able to change it even if the aml is locked by the lock date
             (this function is used in the follow-ups) """
         return self.with_context(check_move_validity=False).write({'blocked': blocked})
-
-    def get_action_context(self):
-        if self.invoice_id:
-            return {
-                'default_type': self.invoice_id.type,
-                'default_journal_id': self.invoice_id.journal_id.id,
-            }
-        return {}

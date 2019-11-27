@@ -434,6 +434,9 @@ class AccountReport(models.AbstractModel):
             searchview_dict['analytic_tags'] = self.env.user.id in self.env.ref('analytic.group_analytic_tags').users.ids and [(t.id, t.name) for t in self.env['account.analytic.tag'].search([])] or False
             options['selected_analytic_tag_names'] = [self.env['account.analytic.tag'].browse(int(tag)).name for tag in options['analytic_tags']]
         if options.get('partner'):
+            partners = self.env['account.move.line'].read_group([('partner_id', '!=', False)], ['partner_id'], ['partner_id'])
+            searchview_dict['res_partners'] = [partner['partner_id'] for partner in partners] or False # list of tuple(id, name)
+            searchview_dict['res_partner_categories'] = [(category.id, category.name) for category in self.env['res.partner.category'].search([])] or False
             options['selected_partner_ids'] = [self.env['res.partner'].browse(int(partner)).name for partner in options['partner_ids']]
             options['selected_partner_categories'] = [self.env['res.partner.category'].browse(int(category)).name for category in options['partner_categories']]
 
@@ -848,9 +851,9 @@ class AccountReport(models.AbstractModel):
         return self._get_dates_period(options, date_from, date_to, period_type=period_type)
 
     def format_value(self, value, currency=False):
-        currency_id = currency or self.env.user.company_id.currency_id
         if self.env.context.get('no_format'):
-            return currency_id.round(value)
+            return value
+        currency_id = currency or self.env.user.company_id.currency_id
         if currency_id.is_zero(value):
             # don't print -0.0 in reports
             value = abs(value)
@@ -1083,23 +1086,27 @@ class AccountReport(models.AbstractModel):
         workbook = xlsxwriter.Workbook(output, {'in_memory': True})
         sheet = workbook.add_worksheet(self._get_report_name()[:31])
 
-        date_default_col1_style = workbook.add_format({'font_name': 'Arial', 'font_size': 12, 'font_color': '#666666', 'indent': 2, 'num_format': 'yyyy-mm-dd'})
-        date_default_style = workbook.add_format({'font_name': 'Arial', 'font_size': 12, 'font_color': '#666666', 'num_format': 'yyyy-mm-dd'})
-        default_col1_style = workbook.add_format({'font_name': 'Arial', 'font_size': 12, 'font_color': '#666666', 'indent': 2})
-        default_style = workbook.add_format({'font_name': 'Arial', 'font_size': 12, 'font_color': '#666666'})
+        def_style = workbook.add_format({'font_name': 'Arial'})
         title_style = workbook.add_format({'font_name': 'Arial', 'bold': True, 'bottom': 2})
         super_col_style = workbook.add_format({'font_name': 'Arial', 'bold': True, 'align': 'center'})
-        level_0_style = workbook.add_format({'font_name': 'Arial', 'bold': True, 'font_size': 13, 'bottom': 6, 'font_color': '#666666'})
-        level_1_style = workbook.add_format({'font_name': 'Arial', 'bold': True, 'font_size': 13, 'bottom': 1, 'font_color': '#666666'})
-        level_2_col1_style = workbook.add_format({'font_name': 'Arial', 'bold': True, 'font_size': 12, 'font_color': '#666666', 'indent': 1})
-        level_2_col1_total_style = workbook.add_format({'font_name': 'Arial', 'bold': True, 'font_size': 12, 'font_color': '#666666'})
-        level_2_style = workbook.add_format({'font_name': 'Arial', 'bold': True, 'font_size': 12, 'font_color': '#666666'})
-        level_3_col1_style = workbook.add_format({'font_name': 'Arial', 'font_size': 12, 'font_color': '#666666', 'indent': 2})
-        level_3_col1_total_style = workbook.add_format({'font_name': 'Arial', 'bold': True, 'font_size': 12, 'font_color': '#666666', 'indent': 1})
-        level_3_style = workbook.add_format({'font_name': 'Arial', 'font_size': 12, 'font_color': '#666666'})
+        level_0_style = workbook.add_format({'font_name': 'Arial', 'bold': True, 'bottom': 2, 'top': 2, 'pattern': 1, 'font_color': '#FFFFFF'})
+        level_0_style_left = workbook.add_format({'font_name': 'Arial', 'bold': True, 'bottom': 2, 'top': 2, 'left': 2, 'pattern': 1, 'font_color': '#FFFFFF'})
+        level_0_style_right = workbook.add_format({'font_name': 'Arial', 'bold': True, 'bottom': 2, 'top': 2, 'right': 2, 'pattern': 1, 'font_color': '#FFFFFF'})
+        level_1_style = workbook.add_format({'font_name': 'Arial', 'bold': True, 'bottom': 2, 'top': 2})
+        level_1_style_left = workbook.add_format({'font_name': 'Arial', 'bold': True, 'bottom': 2, 'top': 2, 'left': 2})
+        level_1_style_right = workbook.add_format({'font_name': 'Arial', 'bold': True, 'bottom': 2, 'top': 2, 'right': 2})
+        level_2_style = workbook.add_format({'font_name': 'Arial', 'bold': True, 'top': 2})
+        level_2_style_left = workbook.add_format({'font_name': 'Arial', 'bold': True, 'top': 2, 'left': 2})
+        level_2_style_right = workbook.add_format({'font_name': 'Arial', 'bold': True, 'top': 2, 'right': 2})
+        level_3_style = def_style
+        level_3_style_left = workbook.add_format({'font_name': 'Arial', 'left': 2})
+        level_3_style_right = workbook.add_format({'font_name': 'Arial', 'right': 2})
+        domain_style = workbook.add_format({'font_name': 'Arial', 'italic': True})
+        domain_style_left = workbook.add_format({'font_name': 'Arial', 'italic': True, 'left': 2})
+        domain_style_right = workbook.add_format({'font_name': 'Arial', 'italic': True, 'right': 2})
+        upper_line_style = workbook.add_format({'font_name': 'Arial', 'top': 2})
 
-        #Set the first column width to 50
-        sheet.set_column(0, 0, 50)
+        sheet.set_column(0, 0, 15) #  Set the first column width to 15
 
         super_columns = self._get_super_columns(options)
         y_offset = bool(super_columns.get('columns')) and 1 or 0
@@ -1117,6 +1124,7 @@ class AccountReport(models.AbstractModel):
             else:
                 sheet.write(0, x, cell_content, super_col_style)
                 x += 1
+
         for row in self.get_header(options):
             x = 0
             for column in row:
@@ -1135,45 +1143,57 @@ class AccountReport(models.AbstractModel):
         if options.get('hierarchy'):
             lines = self._create_hierarchy(lines)
 
-        #write all data rows
+        if lines:
+            max_width = max([len(l['columns']) for l in lines])
+
         for y in range(0, len(lines)):
-            level = lines[y].get('level')
-            if lines[y].get('caret_options'):
-                style = level_3_style
-                col1_style = level_3_col1_style
-            elif level == 0:
+            if lines[y].get('level') == 0:
+                for x in range(0, len(lines[y]['columns']) + 1):
+                    sheet.write(y + y_offset, x, None, upper_line_style)
                 y_offset += 1
+                style_left = level_0_style_left
+                style_right = level_0_style_right
                 style = level_0_style
-                col1_style = style
-            elif level == 1:
+            elif lines[y].get('level') == 1:
+                for x in range(0, len(lines[y]['columns']) + 1):
+                    sheet.write(y + y_offset, x, None, upper_line_style)
+                y_offset += 1
+                style_left = level_1_style_left
+                style_right = level_1_style_right
                 style = level_1_style
-                col1_style = style
-            elif level == 2:
+            elif lines[y].get('level') == 2:
+                style_left = level_2_style_left
+                style_right = level_2_style_right
                 style = level_2_style
-                col1_style = 'total' in lines[y].get('class', '').split(' ') and level_2_col1_total_style or level_2_col1_style
-            elif level == 3:
+            elif lines[y].get('level') == 3:
+                style_left = level_3_style_left
+                style_right = level_3_style_right
                 style = level_3_style
-                col1_style = 'total' in lines[y].get('class', '').split(' ') and level_3_col1_total_style or level_3_col1_style
+            # elif lines[y].get('type') != 'line':
+            #     style_left = domain_style_left
+            #     style_right = domain_style_right
+            #     style = domain_style
             else:
-                style = default_style
-                col1_style = default_col1_style
-
-            if 'date' in lines[y].get('class', ''):
-                #write the dates with a specific format to avoid them being casted as floats in the XLSX
-                sheet.write_datetime(y + y_offset, 0, lines[y]['name'], date_default_col1_style)
-            else:
-                #write the first column, with a specific style to manage the indentation
-                sheet.write(y + y_offset, 0, lines[y]['name'], col1_style)
-
-            #write all the remaining cells
+                style = def_style
+                style_left = def_style
+                style_right = def_style
+            sheet.write(y + y_offset, 0, lines[y]['name'], style_left)
+            for x in range(1, max_width - len(lines[y]['columns']) + 1):
+                sheet.write(y + y_offset, x, None, style)
             for x in range(1, len(lines[y]['columns']) + 1):
-                this_cell_style = style
-                if 'date' in lines[y]['columns'][x - 1].get('class', ''):
-                    #write the dates with a specific format to avoid them being casted as floats in the XLSX
-                    this_cell_style = date_default_style
-                    sheet.write_datetime(y + y_offset, x + lines[y].get('colspan', 1) - 1, lines[y]['columns'][x - 1].get('name', ''), this_cell_style)
+                # if isinstance(lines[y]['columns'][x - 1], tuple):
+                    # lines[y]['columns'][x - 1] = lines[y]['columns'][x - 1][0]
+                if x < len(lines[y]['columns']):
+                    sheet.write(y + y_offset, x + lines[y].get('colspan', 1) - 1, lines[y]['columns'][x - 1].get('name', ''), style)
                 else:
-                    sheet.write(y + y_offset, x + lines[y].get('colspan', 1) - 1, lines[y]['columns'][x - 1].get('name', ''), this_cell_style)
+                    sheet.write(y + y_offset, x + lines[y].get('colspan', 1) - 1, lines[y]['columns'][x - 1].get('name', ''), style_right)
+            if 'total' in lines[y].get('class', '') or lines[y].get('level') == 0:
+                for x in range(len(lines[0]['columns']) + 1):
+                    sheet.write(y + 1 + y_offset, x, None, upper_line_style)
+                y_offset += 1
+        if lines:
+            for x in range(max_width + 1):
+                sheet.write(len(lines) + y_offset, x, None, upper_line_style)
 
         workbook.close()
         output.seek(0)

@@ -118,8 +118,7 @@ class ReportAccountFinancialReport(models.Model):
                     current_hierarchy_line.append({
                         # field_index - 1 because ['period'] is not part of options['groups']['fields']
                         'name': last_group.get('string') if field == 'period' else self._get_column_name(last_group, options['groups']['fields'][field_index - 1]),
-                        'colspan': current_colspan,
-                        'class': 'number'
+                        'colspan': current_colspan
                     })
                     last_group = current_group
                     current_colspan = 0
@@ -531,20 +530,20 @@ class AccountFinancialReportLine(models.Model):
             # Get all available fields from account_move_line, to build the 'select' part of the query
             replace_columns = {
                 'date': 'ref.date',
-                'debit': 'CASE WHEN \"account_move_line\".debit > 0 THEN ref.matched_percentage * \"account_move_line\".debit ELSE 0 END AS debit',
-                'credit': 'CASE WHEN \"account_move_line\".credit > 0 THEN ref.matched_percentage * \"account_move_line\".credit ELSE 0 END AS credit',
-                'balance': 'ref.matched_percentage * \"account_move_line\".balance AS balance'
+                'debit_cash_basis': 'CASE WHEN \"account_move_line\".debit > 0 THEN ref.matched_percentage * \"account_move_line\".debit ELSE 0 END AS debit_cash_basis',
+                'credit_cash_basis': 'CASE WHEN \"account_move_line\".credit > 0 THEN ref.matched_percentage * \"account_move_line\".credit ELSE 0 END AS credit_cash_basis',
+                'balance_cash_basis': 'ref.matched_percentage * \"account_move_line\".balance AS balance_cash_basis'
             }
             columns = []
             columns_2 = []
             for name, field in self.env['account.move.line']._fields.items():
                 if not(field.store and field.type not in ('one2many', 'many2many')):
                     continue
-                columns.append('\"account_move_line\".\"%s\"' % name)
+                columns.append('\"account_move_line\".%s' % name)
                 if name in replace_columns:
                     columns_2.append(replace_columns.get(name))
                 else:
-                    columns_2.append('\"account_move_line\".\"%s\"' % name)
+                    columns_2.append('\"account_move_line\".%s' % name)
             select_clause_1 = ', '.join(columns)
             select_clause_2 = ', '.join(columns_2)
 
@@ -659,7 +658,7 @@ class AccountFinancialReportLine(models.Model):
                     -- Part for the unreconciled journal items.
                     -- Using amount_residual if the account is reconciliable is needed in case of partial reconciliation
 
-                    SELECT ''' + select_clause_1.replace('"account_move_line"."balance_cash_basis"', 'CASE WHEN acc.reconcile THEN  "account_move_line".amount_residual ELSE "account_move_line".balance END AS balance_cash_basis') + '''
+                    SELECT ''' + select_clause_1.replace('"account_move_line".balance_cash_basis', 'CASE WHEN acc.reconcile THEN  "account_move_line".amount_residual ELSE "account_move_line".balance END AS balance_cash_basis') + '''
                     FROM account_move_line "account_move_line"
                     LEFT JOIN account_account acc ON "account_move_line".account_id = acc.id
                     WHERE "account_move_line".move_id IN %s
@@ -708,34 +707,14 @@ class AccountFinancialReportLine(models.Model):
               UNION ALL
               (
                WITH payment_table AS (
-                 SELECT aml.move_id, \"account_move_line\".date,
-                        CASE WHEN (aml.balance = 0 OR sub_aml.total_per_account = 0)
-                            THEN 0
-                            ELSE part.amount / ABS(sub_aml.total_per_account)
-                        END as matched_percentage
-                   FROM account_partial_reconcile part
-                   LEFT JOIN account_move_line aml ON aml.id = part.debit_move_id
-                   LEFT JOIN (SELECT move_id, account_id, ABS(SUM(balance)) AS total_per_account
-                                FROM account_move_line
-                                GROUP BY move_id, account_id) sub_aml
-                            ON (aml.account_id = sub_aml.account_id AND sub_aml.move_id=aml.move_id)
-                   LEFT JOIN account_move am ON aml.move_id = am.id, """ + tables + """
+                 SELECT aml.move_id, \"account_move_line\".date, CASE WHEN aml.balance = 0 THEN 0 ELSE part.amount / ABS(am.amount) END as matched_percentage
+                   FROM account_partial_reconcile part LEFT JOIN account_move_line aml ON aml.id = part.debit_move_id LEFT JOIN account_move am ON aml.move_id = am.id, """ + tables + """
                    WHERE part.credit_move_id = "account_move_line".id
                     AND "account_move_line".user_type_id IN %s
                     AND """ + where_clause + """
                  UNION ALL
-                 SELECT aml.move_id, \"account_move_line\".date,
-                        CASE WHEN (aml.balance = 0 OR sub_aml.total_per_account = 0)
-                            THEN 0
-                            ELSE part.amount / ABS(sub_aml.total_per_account)
-                        END as matched_percentage
-                   FROM account_partial_reconcile part
-                   LEFT JOIN account_move_line aml ON aml.id = part.credit_move_id
-                   LEFT JOIN (SELECT move_id, account_id, ABS(SUM(balance)) AS total_per_account
-                                FROM account_move_line
-                                GROUP BY move_id, account_id) sub_aml
-                            ON (aml.account_id = sub_aml.account_id AND sub_aml.move_id=aml.move_id)
-                   LEFT JOIN account_move am ON aml.move_id = am.id, """ + tables + """
+                 SELECT aml.move_id, \"account_move_line\".date, CASE WHEN aml.balance = 0 THEN 0 ELSE part.amount / ABS(am.amount) END as matched_percentage
+                   FROM account_partial_reconcile part LEFT JOIN account_move_line aml ON aml.id = part.credit_move_id LEFT JOIN account_move am ON aml.move_id = am.id, """ + tables + """
                    WHERE part.debit_move_id = "account_move_line".id
                     AND "account_move_line".user_type_id IN %s
                     AND """ + where_clause + """
@@ -964,12 +943,11 @@ class AccountFinancialReportLine(models.Model):
         groups = groups or {'fields': [], 'ids': [()]}
         debit_credit = debit_credit and financial_report.debit_credit
         formulas = self._split_formulas()
-        currency = self.env.user.company_id.currency_id
 
         line_res_per_group = []
 
         if not groups['ids']:
-            return [{'line': {'balance': 0.0}}]
+            return [{'line': {'balance': False}}]
 
         # this computes the results of the line itself
         for group_index, group in enumerate(groups['ids']):
@@ -989,10 +967,9 @@ class AccountFinancialReportLine(models.Model):
             if line:
                 res = {}
                 res['balance'] = line.balance
-                res['balance'] = currency.round(line.balance)
                 if debit_credit:
-                    res['credit'] = currency.round(line.credit)
-                    res['debit'] = currency.round(line.debit)
+                    res['credit'] = line.credit
+                    res['debit'] = line.debit
                 line_res_per_group.append(res)
 
         # don't need any groupby lines for count_rows and from_context formulas
@@ -1050,7 +1027,7 @@ class AccountFinancialReportLine(models.Model):
                     results_for_group.update({'line': line_res_per_group[group_index]})
                     columns.append(results_for_group)
                 else:
-                    columns.append({'line': {'balance': 0.0}})
+                    columns.append({'line': {'balance': False}})
 
         return columns or [{'line': res} for res in line_res_per_group]
 

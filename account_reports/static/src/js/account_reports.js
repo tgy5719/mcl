@@ -2,116 +2,19 @@ odoo.define('account_reports.account_report', function (require) {
 'use strict';
 
 var core = require('web.core');
-var Context = require('web.Context');
 var AbstractAction = require('web.AbstractAction');
 var ControlPanelMixin = require('web.ControlPanelMixin');
 var Dialog = require('web.Dialog');
+var framework = require('web.framework');
 var crash_manager = require('web.crash_manager');
+var ActionManager = require('web.ActionManager');
 var datepicker = require('web.datepicker');
 var session = require('web.session');
 var field_utils = require('web.field_utils');
-var RelationalFields = require('web.relational_fields');
-var StandaloneFieldManagerMixin = require('web.StandaloneFieldManagerMixin');
-var Widget = require('web.Widget');
 
 var QWeb = core.qweb;
 var _t = core._t;
 
-var M2MFilters = Widget.extend(StandaloneFieldManagerMixin, {
-    /**
-     * @constructor
-     * @param {Object} fields
-     */
-    init: function (parent, fields) {
-        this._super.apply(this, arguments);
-        StandaloneFieldManagerMixin.init.call(this);
-        this.fields = fields;
-        this.widgets = {};
-    },
-    /**
-     * @override
-     */
-    willStart: function () {
-        var self = this;
-        var defs = [this._super.apply(this, arguments)];
-        _.each(this.fields, function (field, fieldName) {
-            defs.push(self._makeM2MWidget(field, fieldName));
-        });
-        return $.when.apply($, defs);
-    },
-    /**
-     * @override
-     */
-    start: function () {
-        var self = this;
-        _.each(this.fields, function (field, fieldName) {
-            self.$el.append($('<p/>', {style: 'font-weight:bold;'}).text(field.label));
-            self.widgets[fieldName].appendTo(self.$el);
-        });
-        return this._super.apply(this, arguments);
-    },
-
-    //--------------------------------------------------------------------------
-    // Private
-    //--------------------------------------------------------------------------
-
-    /**
-     * This method will be called whenever a field value has changed and has
-     * been confirmed by the model.
-     *
-     * @private
-     * @override
-     * @returns {Deferred}
-     */
-    _confirmChange: function () {
-        var self = this;
-        var result = StandaloneFieldManagerMixin._confirmChange.apply(this, arguments);
-        var data = {};
-        _.each(this.fields, function (filter, fieldName) {
-            data[fieldName] = self.widgets[fieldName].value.res_ids;
-        });
-        this.trigger_up('value_changed', data);
-        return result;
-    },
-    /**
-     * This method will create a record and initialize M2M widget.
-     *
-     * @private
-     * @param {Object} fieldInfo
-     * @param {string} fieldName
-     * @returns {Deferred}
-     */
-    _makeM2MWidget: function (fieldInfo, fieldName) {
-        var self = this;
-        var options = {};
-        options[fieldName] = {
-            options: {
-                no_create_edit: true,
-                no_create: true,
-            }
-        };
-        return this.model.makeRecord(fieldInfo.modelName, [{
-            fields: [{
-                name: 'id',
-                type: 'integer',
-            }, {
-                name: 'display_name',
-                type: 'char',
-            }],
-            name: fieldName,
-            relation: fieldInfo.modelName,
-            type: 'many2many',
-            value: fieldInfo.value,
-        }], options).then(function (recordID) {
-            self.widgets[fieldName] = new RelationalFields.FieldMany2ManyTags(self,
-                fieldName,
-                self.model.get(recordID),
-                {mode: 'edit',}
-            );
-            self._registerWidget(recordID, fieldName, self.widgets[fieldName]);
-        });
-    },
-});
 
 var accountReportsWidget = AbstractAction.extend(ControlPanelMixin, {
 
@@ -124,17 +27,6 @@ var accountReportsWidget = AbstractAction.extend(ControlPanelMixin, {
         'click .js_account_report_foldable': 'fold_unfold',
         'click [action]': 'trigger_action',
         'click .o_account_reports_load_more span': 'load_more',
-    },
-
-    custom_events: {
-        'value_changed': function(ev) {
-             var self = this;
-             self.report_options.partner_ids = ev.data.partner_ids;
-             self.report_options.partner_categories = ev.data.partner_categories;
-             return self.reload().then(function () {
-                 self.$searchview_buttons.find('.account_partner_filter').click();
-             });
-         },
     },
 
     init: function(parent, action) {
@@ -265,8 +157,6 @@ var accountReportsWidget = AbstractAction.extend(ControlPanelMixin, {
         else {
             this.$('.o_account_reports_level1.total').show();
         }
-        this.report_options['filter_accounts'] = query;
-        this.render_footnotes();
     },
     render_searchview_buttons: function() {
         var self = this;
@@ -402,31 +292,18 @@ var accountReportsWidget = AbstractAction.extend(ControlPanelMixin, {
         });
 
         // partner filter
+        this.$searchview_buttons.find('.js_account_partner_auto_complete').select2();
         if (this.report_options.partner) {
-            if (!this.M2MFilters) {
-                var fields = {};
-                if ('partner_ids' in this.report_options) {
-                    fields['partner_ids'] = {
-                        label: _t('Partners'),
-                        modelName: 'res.partner',
-                        value: this.report_options.partner_ids.map(Number),
-                    };
-                }
-                if ('partner_categories' in this.report_options) {
-                    fields['partner_categories'] = {
-                        label: _t('Tags'),
-                        modelName: 'res.partner.category',
-                        value: this.report_options.partner_categories.map(Number),
-                    };
-                }
-                if (!_.isEmpty(fields)) {
-                    this.M2MFilters = new M2MFilters(this, fields);
-                    this.M2MFilters.appendTo(this.$searchview_buttons.find('.js_account_partner_m2m'));
-                }
-            } else {
-                this.$searchview_buttons.find('.js_account_partner_m2m').append(this.M2MFilters.$el);
-            }
+            this.$searchview_buttons.find('[data-filter="res_partners"]').select2("val", this.report_options.partner_ids);
+            this.$searchview_buttons.find('[data-filter="res_partner_categories"]').select2("val", this.report_options.partner_categories);
         }
+        this.$searchview_buttons.find('.js_account_partner_auto_complete').on('change', function(){
+            self.report_options.partner_ids = self.$searchview_buttons.find('[data-filter="res_partners"]').val();
+            self.report_options.partner_categories = self.$searchview_buttons.find('[data-filter="res_partner_categories"]').val();
+            return self.reload().then(function(){
+                self.$searchview_buttons.find('.account_partner_filter').click();
+            })
+        });
     },
     format_date: function(moment_date) {
         var date_format = 'YYYY-MM-DD';
@@ -497,9 +374,6 @@ var accountReportsWidget = AbstractAction.extend(ControlPanelMixin, {
         var number = 1;
         var footnote_to_render = [];
         _.each($dom_footnotes, function(el) {
-            if ($(el).parents('.o_account_reports_filtered_lines').length > 0) {
-                return;
-            }
             var line_id = $(el).data('id');
             var footnote = _.filter(self.footnotes, function(footnote) {return ''+footnote.line === ''+line_id;});
             if (footnote.length !== 0) {
@@ -689,15 +563,12 @@ var accountReportsWidget = AbstractAction.extend(ControlPanelMixin, {
         var action = $(e.target).attr('action');
         var id = $(e.target).parents('td').data('id');
         var params = $(e.target).data();
-        var context = new Context(this.odoo_context, params.actionContext || {});
-
-        params = _.omit(params, 'actionContext');
         if (action) {
             return this._rpc({
                     model: this.report_model,
                     method: action,
                     args: [this.financial_id, this.report_options, params],
-                    context: context,
+                    context: this.odoo_context,
                 })
                 .then(function(result){
                     return self.do_action(result);
