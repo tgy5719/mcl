@@ -1,4 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_group_crm_lead_user,crm.lead.login.restriction.user,model_crm_lead_login_restriction,login_restriction.group_crm_lead_user,1,0,0,0
-
-access_group_crm_lead_manager,crm.lead.login.restriction.manager,model_crm_lead_login_restriction,login_restriction.group_crm_lead_manager,1,1,1,1
