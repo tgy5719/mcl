@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_users_form_inherited_login_restriction" model="ir.ui.view">
+    	<field name="name">res.users.form</field>
+    	<field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+        	<xpath expr="//field[@name='login']" position="after">
+        		<group>
+        			<field name="z_password" password="True"/>       
+            	</group>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_partner_form_inherited_login_restriction" model="ir.ui.view">
+        <field name="name">res.partner.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet/group/group[2]" position="inside">
+                <field name="z_sales_manager"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="crm_team_view_form_inherited_login_restriction" model="ir.ui.view">
+        <field name="name">crm.team.form</field>
+        <field name="model">crm.team</field>
+        <field name="inherit_id" ref="sales_team.crm_team_view_form"/>
+        <field name="arch" type="xml">
+            <field name="user_id" position="replace">
+                <field name="user_id"/>
+            </field>
+        </field>
+    </record>
+</odoo>
