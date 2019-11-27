@@ -1,6 +1,6 @@
 {
     'name': 'Login Restriction',
-    'version': '0.20',
+    'version': '0.21',
     'author': "Prixgen Tech Solutions Pvt. Ltd.",
     'website': 'https://www.prixgen.com',
     'company': 'Prixgen Tech Solutions Pvt. Ltd.',
