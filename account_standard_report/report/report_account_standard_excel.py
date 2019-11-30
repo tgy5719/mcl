@@ -88,14 +88,13 @@ class StandardReportXlsx(models.AbstractModel):
                 ]
 
                 all_lines = wizard._sql_get_line_for_report(type_l=('4_total',))
-                all_sale = wizar.user_id
                 # print(all_lines)
                 if all_lines:
 
                     row = 6
                     row += 1
                     start_row = row
-                    for i, line in enumerate(all_lines,all_sale):
+                    for i, line in enumerate(all_lines):
                         i += row
                         sheet.write(i, 0, line.get('code', ''))
                         sheet.write(i, 1, line.get('name', ''))
@@ -198,6 +197,7 @@ class StandardReportXlsx(models.AbstractModel):
                     sheet.write(i, 13, _get_data_float(line.get('older')), currency_format)
                     sheet.write(i, 14, _get_data_float(line.get('balance')), currency_format)
                     sheet.write(i, 15, line.get('matching_number', ''))
+
                 def _set_table(start_row, row):
                     sheet.add_table(start_row - 1, 0, row + 1, len(head) - 1,
                                     {'total_row': 1,

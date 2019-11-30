@@ -2,12 +2,12 @@
 
 {
     'name': 'Standard Accounting Report',
-    'version': '12.0.2.0.0',
+    'version': '12.0.1.0.0',
     'category': 'Accounting',
     'author': 'Florent de Labarre',
     'summary': 'Standard Accounting Report',
     'website': 'https://github.com/fmdl',
-    'depends': ['account', 'report_xlsx','crm','addon_fields_for_mcl'],
+    'depends': ['account', 'report_xlsx'],
     'data': [
         'security/ir.model.access.csv',
         'data/report_paperformat.xml',

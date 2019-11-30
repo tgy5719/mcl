@@ -13,10 +13,6 @@
                 <field name="analytic_account_id"/>
                 <field name="move_id"/>
                 <field name="partner_id"/>
-                
-                <field name = "z_sale_team"/>
-                <field name = "z_sale_person"/>
-                <field name = "z_sale_office"/>
                 <field name="debit" sum="Total" attrs="{'invisible':[('debit','=',0)]}"/>
                 <field name="credit" sum="Total" attrs="{'invisible':[('credit','=',0)]}"/>
                 <field name="cumul_balance"/>
@@ -37,10 +33,6 @@
                 <field name="line_type"/>
                 <field name="date"/>
                 <field name="partner_id"/>
-                
-                <field name = "z_sale_team"/>
-                <field name = "z_sale_person"/>
-                <field name = "z_sale_office"/>
                 <!-- <field name="account_id"/> -->
                 <field name="move_id"/>
                 <!-- <field name="move_line_id"/> -->
@@ -64,19 +56,12 @@
         <field name="model">account.report.standard.ledger.line</field>
         <field name="arch" type="xml">
             <form string="Journal Item">
-                <header>
-                    <button name="get_sale_details" string="SALE DETAILS" type="object"/>
-                </header>
                 <sheet>
                     <group>
                         <group>
                             <field name="line_type"/>
                             <field name="move_line_id"/>
                             <field name="partner_id"/>
-                            
-                            <field name = "z_sale_team"/>
-                            <field name = "z_sale_person"/>
-                            <field name = "z_sale_office"/>
                         </group>
                         <group>
                             <field name="journal_id"/>
@@ -123,9 +108,6 @@
         <field name="model">account.report.standard.ledger.line</field>
         <field name="arch" type="xml">
             <search string="Journal Items">
-              
-                  
-         
                 <!-- <field name="move_id" filter_domain="['|', ('move_id','ilike',self)]" string="Move"/>
                 <field name="date"/>
                 <field name="account_id"/>
@@ -133,7 +115,6 @@
                 <field name="partner_id"/>
                 <field name="journal_id"/>
                 <field name="line_type"/>
-                <filter string="sale  Team" name="user_id" context="{'group_by':'user_id'}"/>
                 <separator/>
                 <filter string="Unposted" domain="[('move_id.state','=','draft')]" help="Unposted Journal Items"/>
                 <filter name="posted" string="Posted" domain="[('move_id.state','=','posted')]" help="Posted Journal Items"/>

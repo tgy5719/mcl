@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
 import calendar
-import psycopg2
+
 import odoo.addons.decimal_precision as dp
 from datetime import datetime, timedelta
 from odoo import api, models, fields, _
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT, DEFAULT_SERVER_DATETIME_FORMAT
-from odoo.exceptions import AccessError, UserError, ValidationError
+from odoo.exceptions import AccessError, UserError
 
 D_LEDGER = {'general': {'name': _('General Ledger'),
                         'group_by': 'account_id',
@@ -98,47 +98,18 @@ class AccountStandardLedgerLines(models.TransientModel):
     full_reconcile_id = fields.Many2one('account.full.reconcile', 'Match.')
     reconciled = fields.Boolean('Reconciled')
     report_object_id = fields.Many2one('account.report.standard.ledger.report.object')
-    z_sale_team = fields.Many2one('crm.team',string='Sale Team',compute='get_sale_details',store='True')
-    z_sale_person = fields.Many2one('res.users',string='Saleperson',compute='get_sale_details',store='True')
-    z_sale_office = fields.Many2one('office.name',string='Sale Office',compute='get_sale_details',store='True')
-    # user_id = fields.Many2one('crm.team',string = 'Sale Team',related = "move_line_id.zuser_id",strore = True)
-    # zuser_id = fields.Many2one('crm.team',string = 'Sale Team',compute = "flow_saleteam",store = True)
+
     current = fields.Monetary(default=0.0, currency_field='company_currency_id', string='Not due')
     age_30_days = fields.Monetary(default=0.0, currency_field='company_currency_id', string='30 days')
     age_60_days = fields.Monetary(default=0.0, currency_field='company_currency_id', string='60 days')
     age_90_days = fields.Monetary(default=0.0, currency_field='company_currency_id', string='90 days')
     age_120_days = fields.Monetary(default=0.0, currency_field='company_currency_id', string='120 days')
     older = fields.Float(default=0.0, digits=dp.get_precision('Account'), string='Older')
+
     amount_currency = fields.Monetary(default=0.0, currency_field='currency_id', string='Amount Currency')
     currency_id = fields.Many2one('res.currency')
 
     company_currency_id = fields.Many2one('res.currency')
-    # @api.multi
-    # @api.depends('move_line_id')
-    # def flow_saleteam (self):
-    #     for line in self:
-    #         line.zuser_id = line.move_line_id.zuser_id.id
-
-    @api.multi
-    @api.depends('move_id')
-    def get_sale_details(self):
-        for line in self:
-            if line.move_id.name:
-                invoices = self.env['account.invoice'].search([('number','=',line.move_id.name)])
-                if len(invoices) > 0:
-                    line.z_sale_team = invoices[0].team_id.id
-                    line.z_sale_person = invoices[0].user_id.id
-                    line.z_sale_office = invoices[0].z_sale_ofc.id
-                # conn = psycopg2.connect(database="mcl-test",user="postgres",password="1234",host="127.0.0.1",port="5432")
-                # cur = conn.cursor()
-                # cur.execute("SELECT number,team_id, user_id, z_sale_ofc from account_invoice where number = '"+line.move_id.name+"'")
-                # row = cur.fetchall()
-                # if len(row) > 0:
-                #     line.z_sale_team = row[0][1]
-                #     line.z_sale_person = row[0][2]
-                #     line.z_sale_office = row[0][3]
-                # conn.close()
-
 
     @api.model
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
@@ -147,13 +118,7 @@ class AccountStandardLedgerLines(models.TransientModel):
             for line in res:
                 line['cumul_balance'] = line['debit'] - line['credit']
         return res
-    # @api.multi
-    # @api.depends('invoice_name')
-    # def flow_saleperson(self):
-    #     for run in self:
-    #         invoice_ids = self.env['account.move.line'].search([('name','=',run.invoice_name)])
-    #         for line in self:
-    #             run.user_id = line.user_id
+
 
 class AccountStandardLedgerReportObject(models.TransientModel):
     _name = 'account.report.standard.ledger.report.object'
@@ -168,7 +133,7 @@ class AccountStandardLedgerReportObject(models.TransientModel):
     journal_id = fields.Many2one('account.journal', 'Journal')
     partner_id = fields.Many2one('res.partner', 'Partner')
     analytic_account_id = fields.Many2one('account.analytic.account', 'Analytic Account')
-    user_id = fields.Many2one('res.users','Saleperson')
+
 
 class AccountStandardLedger(models.TransientModel):
     _name = 'account.report.standard.ledger'
@@ -270,7 +235,7 @@ class AccountStandardLedger(models.TransientModel):
     report_type = fields.Selection([('account', 'Account'), ('partner', 'Partner'), ('journal', 'Journal'),
                                     ('analytic', 'Analytic')], string='Report Type')
     template_id = fields.Many2one('account.report.template', 'Template')
-    user_ids = fields.Many2many('res.users', string="sale person", relation='table_standard_report_user')
+
     @api.onchange('account_in_ex_clude_ids')
     def _onchange_account_in_ex_clude_ids(self):
         if self.account_in_ex_clude_ids:
@@ -319,9 +284,6 @@ class AccountStandardLedger(models.TransientModel):
     def action_view_lines(self):
         self.ensure_one()
         self._compute_data()
-        lines = self.env['account.report.standard.ledger.line'].search([])
-        for line in lines:
-            line.get_sale_details()
         return {
             'name': self.report_id.name,
             'view_type': 'form',
