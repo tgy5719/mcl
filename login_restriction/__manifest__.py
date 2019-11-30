@@ -11,12 +11,12 @@
     """,
     'depends': ['base','crm','sale','sale_crm','sale_management','stock','account','collection_summary','stock_summary','sales_team','addon_fields_for_mcl'],
     'data': [
+        'security/groups.xml',
+        'security/ir.model.access.csv'
         'views/crm_lead_views.xml',
         'views/crm_lead_login_restriction_views.xml',
         'views/res_users_views.xml',
         'views/sale_order_views.xml',
-        'security/groups.xml',
-        'security/ir.model.access.csv'
     	],
     'auto_install': False,
     'application': True,
