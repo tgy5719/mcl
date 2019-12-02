@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates>
+    <t t-name="mrp_mo_cost_report_ae.button">
+        <button type="button" class="btn btn-primary o_mrp_bom_print">print</button>
+        <!-- <button type="button" class="btn btn-primary ml8 o_mrp_bom_print_unfolded">print unfolded</button> -->
+        <label style="margin-left: 8px"><strong>From:</strong></label>
+        <input class="o_input o_from_date" type="date" id="from_date" style="margin-left: 8px" t-att-value="date_from"/>
+        <label><strong>To:</strong></label>
+        <input class="o_input o_to_date" type="date" id="to_date" style="margin-left: 8px" t-att-value="date_to"/>
+    </t>
+
+    <form class="form-inline" t-name="mrp_mo_cost_report_ae.report_bom_search">
+        <div class="form-group col-lg-4">
+            <label>Product</label>
+            <select class="o_input o_mrp_production_report_product">
+                <option value="0">---</option>
+                <option t-foreach="products" t-as="product" t-att-value="product">
+                    <t t-esc="products[product]"/>
+                </option>
+            </select>
+        </div>
+        <div class="form-group col-lg-4 row">
+            <label>Product Filter:</label>
+            <input type="text" size="30" maxlenght="50" class="o_input o_mrp_mo_product"  onkeydown="return (event.keyCode!=13);"/>
+        </div>
+        <div t-if="is_lot_enabled" class="form-group col-lg-4">
+            <label>Lot/Serial Number:</label>
+            <select class="o_input o_mrp_bom_report_lots">
+                <option value="---">---</option>
+                <option t-foreach="lots" t-as="lot" t-att-value="lot">
+                    <t t-esc="lots[lot]"/>
+                </option>
+            </select>
+        </div>
+       <!--  <div class="form-group col-lg-3">
+            <label>Quantity:</label>
+            <div class="row">
+                <div class="col-lg-6">
+                    <input type="number" step="any" t-att-value="bom_qty" min="1" class="o_input o_mrp_bom_report_qty"/>
+                </div>
+                <div class="col-lg-6">
+                    <t t-if="is_uom_applied" t-esc="bom_uom_name"/>
+                </div>
+            </div>
+        </div> -->
+<!--         <div t-if="is_variant_applied" class="form-group col-lg-3">
+            <label>Variant:</label>
+            <select class="o_input o_mrp_bom_report_variants">
+                <option t-foreach="variants" t-as="variant" t-att-value="variant">
+                    <t t-esc="variants[variant]"/>
+                </option>
+            </select>
+        </div> -->
+        <!-- <div t-attf-class="form-group #{is_lot_enabled ? 'col-lg-3' : is_variant_applied ? 'col-lg-4' : 'col-lg-8'}">
+            <label>Report:</label>
+            <select class="o_input o_mrp_bom_report_type">
+                <option t-att-data-type="'all'">MO Structure &amp; Cost</option>
+                <option t-att-data-type="'bom_structure'">MO Structure</option>
+                <option t-att-data-type="'bom_cost'">MO Cost</option>
+            </select>
+        </div> -->
+    </form>
+</templates>

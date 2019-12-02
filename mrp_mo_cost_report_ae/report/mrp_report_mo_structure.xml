@@ -1,0 +1,552 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <template id="report_mrp_bom1">
+        <div class="container o_mrp_bom_report_page">
+            <t t-if="data and data.get('lines')">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h1>MO Structure &amp; Cost</h1>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="mt16">
+                            <table width="100%" class="o_mrp_bom_expandable">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>MO</th>
+                                        <th class="text-right">Production Qty</th>
+                                        <th groups="uom.group_uom">Production UoM</th>
+                                        <th class="o_mrp_bom_cost text-right">Production Cost</th>
+                                        <th>Component Name</th>
+                                        <th class="text-right">Consumption Qty</th>
+                                        <th class="text-left" groups="uom.group_uom">Component UoM</th>
+                                        <th class="o_mrp_prod_cost text-right" title="This is the cost defined on the product.">Component Cost</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <t t-foreach="data.get('lines')" t-as="d">
+                                    <t t-set="currency" t-value="d['currency']"/>
+                                    <tr t-att-class="'parent_id_' + str(d['parent_id']) + ' ' if d['mo'].level > 0 else ''" t-att-data-id="str(d['mo'].id)" t-att-data-level="d['mo'].level">
+                                        <td>
+                                            <t t-esc="d['mo'].product_id.display_name"/>
+                                        </td>
+                                        <td>
+                                            <t t-set="space_td" t-value="'margin-left: '+ str(d['mo'].level * 30) + 'px;'"/>
+                                            <span t-att-style="space_td"/>
+                                            <t t-esc="d['mo'].name"/>
+                                        </td>
+                                        <td class="text-right">
+                                            <span><t t-esc="d['qty']" t-options='{"widget": "float", "decimal_precision": "Product Unit of Measure"}'/></span>
+                                        </td>
+                                        <td groups="uom.group_uom">
+                                            <span><t t-esc="d['mo'].product_uom_id.name"/></span>
+                                        </td>
+                                        <td class="text-right o_mrp_bom_cost">
+                                            <strong t-esc="d['mo_cost']" t-options='{"widget": "monetary", "display_currency": currency}'/>
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+
+                                    <!-- Components -->
+                                    <t t-foreach="d['mo'].move_raw_ids" t-as="component">
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td groups="uom.group_uom"></td>
+                                        <td>
+                                            <span style="margin-left:15px;"/>
+                                            <t t-if="component.product_id.default_code">
+                                                <t t-esc="'[' + component.product_id.default_code + ']'"/>
+                                            </t>
+                                            <t t-esc="component.product_id.name"/>
+                                        </td>
+                                        <td class="text-right">
+                                            <span><t t-esc="component.quantity_done" t-options='{"widget": "float", "decimal_precision": "Product Unit of Measure"}'/></span>
+                                        </td>
+                                        <td groups="uom.group_uom">
+                                            <span><t t-esc="component.product_uom.name"/></span>
+                                        </td>
+                                        <td class="text-right o_mrp_prod_cost">
+                                            <span t-esc="abs(component.price_unit * component.quantity_done)" t-options='{"widget": "monetary", "display_currency": currency}'/>
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                    </t>
+                                    <!-- Operations -->
+                                    <t t-if="d.get('operations') and not d['mo'].parent_id">
+                                        <tr t-att-data-id="d['mo'].id" t-att-parent_id="d['mo'].parent_id">
+                                            <td>
+                                                <span class="o_mrp_mo_unfoldable fa fa-fw fa-caret-right" role="img" aria-label="Unfold" title="Unfold" t-att-data-id="str(d['mo'].id)" t-att-data-function="'get_ops'" t-att-data-level="d['mo'].level" style="margin-left:15px;"/>
+                                                <span>Operations</span>
+                                            </td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td groups="uom.group_uom"></td>
+                                            <td class="text-right">
+                                                <span t-esc="d['op_time']" t-options='{"widget": "float_time"}'/>
+                                            </td>
+                                            <td groups="uom.group_uom">
+                                                <span> Minutes</span>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-esc="d['op_cost']" t-options='{"widget": "monetary", "display_currency": currency}'/>
+                                            </td>
+                                            <td></td>
+                                        </tr>
+                                    </t>
+
+                                    <!-- Child MOs -->
+                                    <t t-if="d['child_mos']">
+                                        <t t-foreach="d['child_mos'].get('child_mos')" t-as="child_mo">
+                                            <t t-set="space_td" t-value="'margin-left: '+ str(child_mo.level * 30) + 'px;'"/>
+                                            <tr t-att-class="'parent_id_' + str(d['child_mos'].get('parent_id')) + ' o_hidden' if child_mo.level > 0 else ''" t-att-data-id="str(child_mo.id)" t-att-data-level="child_mo.level">
+                                                <td>
+                                                    <t t-esc="child_mo.product_id.display_name"/>
+                                                </td>
+                                                <td>
+                                                    <span t-att-style="space_td"/>
+                                                    <t t-esc="child_mo.name"/>
+                                                </td>
+                                                <td class="text-right">
+                                                    <span><t t-esc="d['qty']" t-options='{"widget": "float", "decimal_precision": "Product Unit of Measure"}'/></span>
+                                                </td>
+                                                <td groups="uom.group_uom">
+                                                    <span><t t-esc="child_mo.product_uom_id.name"/></span>
+                                                </td>
+                                                <td class="text-right o_mrp_bom_cost">
+                                                    <strong t-esc="d['mo_cost']" t-options='{"widget": "monetary", "display_currency": currency}'/>
+                                                </td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+
+                                            </tr>
+                                        </t>
+                                    </t>
+                                </t>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </div>
+    </template>
+    <template id="report_mrp_bom">
+        <div class="container o_mrp_bom_report_page">
+            <t t-if="data">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <h1>MO Structure &amp; Cost</h1>
+                    </div>
+                </div>
+                <t t-set="currency" t-value="data[0]['currency']"/>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="mt16">
+                            <table width="100%" class="o_mrp_bom_expandable">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>MO</th>
+                                        <th class="text-right">Production Qty</th>
+                                        <th groups="uom.group_uom">Production UoM</th>
+                                        <th class="o_mrp_bom_cost text-right">Production Cost</th>
+                                        <th>Component Name</th>
+                                        <th class="text-right">Consumption Qty</th>
+                                        <th class="text-left" groups="uom.group_uom">Component UoM</th>
+                                        <th class="o_mrp_prod_cost text-right" title="This is the cost defined on the product.">Component Cost</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                <t t-foreach="data" t-as="d">
+                                    <tr t-att-class="'parent_id_' + str(d['parent_id']) + ' ' if d['mo'].level > 0 else ''" t-att-data-id="str(d['mo'].id)" t-att-data-level="d['mo'].level">
+                                        <td>
+                                            <span class="o_mrp_mo_unfoldable fa fa-fw fa-caret-right" role="img" aria-label="Unfold" title="Unfold" t-att-data-id="str(d['mo'].id)" t-att-data-function="'get_components'" />
+                                            <a href="#" t-att-data-res-id="d['mo'].product_id.id" t-att-data-model="'product.product'" class="o_mrp_bom_action"><t t-esc="d['mo'].product_id.display_name"/></a>
+                                        </td>
+                                        <td>
+                                            <t t-set="space_td" t-value="'margin-left: '+ str(d['mo'].level * 30) + 'px;'"/>
+                                            <span t-att-style="space_td"/>
+                                            <span  t-att-data-function="'get_child_mo'" t-if="d['mo'].has_child_mo" class="o_mrp_mo_unfoldable fa fa-fw fa-caret-right" role="img" aria-label="Unfold" title="Unfold" t-att-data-id="str(d['mo'].id)"/>
+                                            <a href="#" t-att-data-res-id="d['mo'].id" t-att-data-model="'mrp.production'" class="o_mrp_bom_action"><t t-esc="d['mo'].name"/></a>
+                                        </td>
+                                      <!--   <td>
+                                            <a href="#" t-att-data-res-id="d['mo'].bom_id.id" t-att-data-model="'mrp.bom'" class="o_mrp_bom_action"><t t-esc="d['mo'].product_tmpl_id.display_name"/></a>
+                                        </td> -->
+                                        <td class="text-right">
+                                            <span><t t-esc="d['qty']" t-options='{"widget": "float", "decimal_precision": "Product Unit of Measure"}'/></span>
+                                        </td>
+                                        <td groups="uom.group_uom">
+                                            <span><t t-esc="d['mo'].product_uom_id.name"/></span>
+                                        </td>
+                                        <td class="text-right o_mrp_bom_cost" t-if="data[0]['report_structure'] != 'bom_structure'">
+                                            <strong t-esc="d['mo_cost']" t-options='{"widget": "monetary", "display_currency": currency}'/>
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <!-- <td class="text-right o_mrp_prod_cost" t-if="data[0]['report_structure'] != 'bom_cost'">
+                                            <span><t t-esc="d['mo'].product_id.standard_price" t-options='{"widget": "monetary", "display_currency": currency}'/></span>
+                                        </td> -->
+                                        <td></td>
+                                    </tr>
+
+                                    <!-- Operations -->
+                                    <t t-if="d.get('operations') and not d['mo'].parent_id">
+                                        <tr t-att-data-id="d['mo'].id" t-att-parent_id="d['mo'].parent_id">
+                                            <td>
+                                                <span class="o_mrp_mo_unfoldable fa fa-fw fa-caret-right" role="img" aria-label="Unfold" title="Unfold" t-att-data-id="str(d['mo'].id)" t-att-data-function="'get_ops'" t-att-data-level="d['mo'].level" style="margin-left:15px;"/>
+                                                <span>Operations</span>
+                                            </td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td groups="uom.group_uom"></td>
+                                            <td class="text-right">
+                                                <span t-esc="d['op_time']" t-options='{"widget": "float_time"}'/>
+                                            </td>
+                                            <td groups="uom.group_uom">
+                                                <span> Minutes</span>
+                                            </td>
+                                            <td class="text-right">
+                                                <span t-esc="d['op_cost']" t-options='{"widget": "monetary", "display_currency": currency}'/>
+                                            </td>
+                                            <td></td>
+                                        </tr>
+                                    </t>
+
+                                    <!-- Child MOs -->
+                                    <t t-if="d['child_mos']">
+                                        <t t-foreach="d['child_mos'].get('child_mos')" t-as="child_mo">
+                                            <t t-set="space_td" t-value="'margin-left: '+ str(child_mo.level * 30) + 'px;'"/>
+                                            <tr t-att-class="'parent_id_' + str(d['child_mos'].get('parent_id')) + ' o_hidden' if child_mo.level > 0 else ''" t-att-data-id="str(child_mo.id)" t-att-data-level="child_mo.level">
+                                                <td>
+                                                    <span class="o_mrp_mo_unfoldable fa fa-fw fa-caret-right" role="img" aria-label="Unfold" title="Unfold" t-att-data-id="str(child_mo.id)" t-att-data-function="'get_components'" />
+                                                    <a href="#" t-att-data-res-id="child_mo.product_id.id" t-att-data-model="'product.product'" class="o_mrp_bom_action"><t t-esc="child_mo.product_id.display_name"/></a>
+                                                </td>
+                                                <td><span t-att-style="space_td"/><span t-if="child_mo.has_child_mo" class="o_mrp_mo_unfoldable fa fa-fw fa-caret-right" role="img" aria-label="Unfold" title="Unfold" t-att-data-id="str(child_mo.id)" t-att-data-function="'get_child_mo'"/><a href="#" t-att-data-res-id="child_mo.id"  t-att-data-id="child_mo.id" t-att-data-model="'mrp.production'" class="o_mrp_bom_action"><t t-esc="child_mo.name"/></a></td>
+
+                                              <!--   <td>
+                                                    <a href="#" t-att-data-res-id="child_mo.bom_id.id" t-att-data-model="'mrp.bom'" class="o_mrp_bom_action"><t t-esc="child_mo.product_tmpl_id.display_name"/></a>
+                                                </td> -->
+                                                <td class="text-right">
+                                                    <span><t t-esc="d['qty']" t-options='{"widget": "float", "decimal_precision": "Product Unit of Measure"}'/></span>
+                                                </td>
+                                                <td groups="uom.group_uom">
+                                                    <span><t t-esc="child_mo.product_uom_id.name"/></span>
+                                                </td>
+                                                <td class="text-right o_mrp_bom_cost" t-if="data[0]['report_structure'] != 'bom_structure'">
+                                                    <strong t-esc="d['mo_cost']" t-options='{"widget": "monetary", "display_currency": currency}'/>
+                                                </td>
+                                                <!-- <td class="text-right o_mrp_prod_cost" t-if="data[0]['report_structure'] != 'bom_cost'">
+                                                    <span t-esc="child_mo.product_id.standard_price" t-options='{"widget": "monetary", "display_currency": currency}'/>
+                                                </td> -->
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+
+                                            </tr>
+                                        </t>
+                                    </t>
+                                </t>
+                                </tbody>
+                              <!--   <tfoot>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td class="text-right"><span><strong>Unit Cost</strong></span></td>
+                                        <td groups="uom.group_uom"></td>
+                                        <td t-if="data[0]['report_structure'] != 'bom_cost'" class="o_mrp_prod_cost text-right">
+                                            <span><t t-esc="data[0]['price']/data[0]['bom_qty']" t-options='{"widget": "monetary", "display_currency": currency}'/></span>
+                                        </td>
+                                        <td t-if="data[0]['report_structure'] != 'bom_structure'" class="o_mrp_bom_cost text-right">
+                                            <span><t t-esc="data[0]['total']/data[0]['bom_qty']" t-options='{"widget": "monetary", "display_currency": currency}'/></span>
+                                        </td>
+                                    </tr>
+                                </tfoot> -->
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </t>
+            <t t-else="">
+                <h1 class="text-center">No data available.</h1>
+            </t>
+        </div>
+    </template>
+
+    <!-- Componets -->
+    <template id="report_mo_products">
+        <t t-set="currency" t-value="components.get('currency')"/>
+        <t t-foreach="components.get('components')" t-as="component">
+            <tr t-att-parent_id="components.get('parent_id')" t-att-data-id="component.id">
+                <td></td>
+                <td></td>
+                <td></td>
+                <td groups="uom.group_uom"></td>
+                <td></td>
+                <td>
+                    <span style="margin-left:15px;"/>
+                    <a href="#" t-att-data-res-id="component.product_id.id" t-att-data-model="'product.product'" class="o_mrp_bom_action"><t t-esc="component.product_id.display_name"/></a>
+                </td>
+                <td class="text-right">
+                    <span><t t-esc="component.quantity_done" t-options='{"widget": "float", "decimal_precision": "Product Unit of Measure"}'/></span>
+                </td>
+                <td groups="uom.group_uom">
+                    <span><t t-esc="component.product_uom.name"/></span>
+                </td>
+                <td class="text-right o_mrp_prod_cost">
+                    <span t-esc="abs(component.price_unit * component.quantity_done)" t-options='{"widget": "monetary", "display_currency": currency}'/>
+                </td>
+            </tr>
+        </t>
+    </template>
+
+    <!-- Child Mo Template -->
+    <template id="report_mrp_child">
+        <t t-set="currency" t-value="data['currency']"/>
+        <t t-foreach="data.get('child_mos')" t-as="child_mo">
+            <t t-set="mo_cost_fun" t-value="data.get('self')._get_mo_cost(child_mo)"/>
+            <t t-set="space_td" t-value="'margin-left: '+ str(child_mo.level * 30) + 'px;'"/>
+            <tr t-att-parent_id="data['parent_id']" t-att-data-id="str(child_mo.id)" t-att-data-level="child_mo.level">
+                <td>
+                    <span style="margin-left:30px" class="o_mrp_mo_unfoldable fa fa-fw fa-caret-right" role="img" aria-label="Unfold" title="Unfold" t-att-data-id="str(child_mo.id)" t-att-data-function="'get_components'" />
+                    <a href="#" t-att-data-res-id="child_mo.product_id.id" t-att-data-model="'product.product'" class="o_mrp_bom_action"><t t-esc="child_mo.product_id.display_name"/></a>
+                </td>
+                <td><span t-att-style="space_td"/><span t-if="child_mo.has_child_mo" class="o_mrp_mo_unfoldable fa fa-fw fa-caret-right" role="img" aria-label="Unfold" title="Unfold" t-att-data-id="str(child_mo.id)" t-att-data-function="'get_child_mo'" /><a href="#" t-att-data-res-id="child_mo.id" t-att-data-model="'mrp.production'" class="o_mrp_bom_action"><t t-esc="child_mo.name"/></a>
+                </td>
+
+              <!--   <td>
+                    <a href="#" t-att-data-res-id="child_mo.bom_id.id" t-att-data-model="'mrp.bom'" class="o_mrp_bom_action"><t t-esc="child_mo.product_tmpl_id.display_name"/></a>
+                </td> -->
+                <td class="text-right">
+                    <span><t t-esc="child_mo.product_qty" t-options='{"widget": "float", "decimal_precision": "Product Unit of Measure"}'/></span>
+                </td>
+                <td groups="uom.group_uom">
+                    <span><t t-esc="child_mo.product_uom_id.name"/></span>
+                </td>
+                <td class="text-right o_mrp_bom_cost">
+                    <strong t-esc="mo_cost_fun['total_cost'] + mo_cost_fun['op_cost']" t-options='{"widget": "monetary", "display_currency": currency}'/>
+                </td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <!-- <td class="text-right o_mrp_prod_cost">
+                    <span t-esc="child_mo.product_id.standard_price" t-options='{"widget": "monetary", "display_currency": currency}'/>
+                </td> -->
+            </tr>
+            <!-- Operations -->
+            <t t-if="mo_cost_fun.get('operations')">
+                <tr t-att-parent_id="child_mo.parent_id" t-att-data-id="child_mo.id">
+                    <td>
+                        <span t-att-style="space_td"/>
+                        <span class="o_mrp_mo_unfoldable fa fa-fw fa-caret-right" role="img" aria-label="Unfold" title="Unfold" t-att-data-id="str(child_mo.id)" t-att-data-function="'get_ops'" t-att-data-level="child_mo.level" style="margin-left:15px;"/>
+                        <span>Operations</span>
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td groups="uom.group_uom"></td>
+                    <td class="text-right">
+                        <span t-esc="mo_cost_fun.get('op_time')" t-options='{"widget": "float_time"}'/>
+                    </td>
+                    <td groups="uom.group_uom">
+                        <span> Minutes</span>
+                    </td>
+                    <td class="text-right">
+                        <span t-esc="mo_cost_fun.get('op_cost')" t-options='{"widget": "monetary", "display_currency": currency}'/>
+                    </td>
+                    <td></td>
+                </tr>
+            </t>
+        </t>
+    </template>
+
+    <!-- Operations -->
+    <template id="report_mrp_operations">
+        <t t-set="currency" t-value="data['currency']"/>
+        <t t-foreach="data.get('operations')" t-as="op">
+            <tr t-att-parent_id="data['mo_id']" t-att-data-id="op[1]">
+                <t t-set="space_td" t-value="'margin-left:' + str(data.get('level') * 30) + 'px'"/>
+                <td>
+                    <span t-att-style="space_td"/>
+                    <a href="#" t-att-data-res-id="op[1]" t-att-data-model="'mrp.routing.workcenter'" class="o_mrp_bom_action"><t t-esc="op[2]"/></a>
+                </td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td groups="uom.group_uom"></td>
+                <td class="text-right">
+                    <span t-esc="op[3]" t-options='{"widget": "float_time"}'/>
+                </td>
+                <td groups="uom.group_uom">
+                    <span> Minutes</span>
+                </td>
+                <td class="text-right"><span t-esc="(op[3] / 60 ) * op[4]" t-options='{"widget": "monetary", "display_currency": currency}'/></td>
+                <td></td>
+            </tr>
+        </t>
+    </template>
+
+    <template id="report_mrp_bom_line">
+        <t t-set="currency" t-value="data[0]['currency']"/>
+        <!-- <t t-foreach="data[0]" t-as="d"> -->
+        <t t-foreach="data[0].get('components')" t-as="l">
+            <t t-set="space_td" t-value="'margin-left: '+ str(l['level'] * 20) + 'px;'"/>
+            <tr class="o_mrp_bom_report_line" t-att-data-id="l['child_bom']" t-att-data-mo="l['mo'].name" t-att-parent_id="l['parent_id']" t-att-data-line="l['line_id']" t-att-data-product_id="l['prod_id']" t-att-data-qty="l['prod_qty']" t-att-data-level="l['level']">
+                <td>
+                    <span t-att-style="space_td"/>
+                    <t t-if="l['child_bom']">
+                        <span t-att-data-function="'get_bom'" class="o_mrp_bom_unfoldable fa fa-fw fa-caret-right" role="img" aria-label="Unfold" title="Unfold"/>
+                    </t>
+                    <span t-att-class="None if l['child_bom'] else 'o_mrp_bom_no_fold'">
+                        <a href="#" t-att-data-res-id="l['mo'].id" t-att-data-model="'mrp.production'" class="o_mrp_bom_action"><t t-esc="l['mo'].name"/></a>
+                    </span>
+                    <t t-if="l['phantom_bom']">
+                        <span class="fa fa-dropbox" title="This is a BoM of type Kit!" role="img" aria-label="This is a BoM of type Kit!"/>
+                    </t>
+                </td>
+                <td>
+                    <span>
+                        <a href="#" t-att-data-res-id="l['prod_id']" t-att-data-model="'product.product'" class="o_mrp_bom_action"><t t-esc="l['prod_name']"/></a>
+                    </span>
+                </td>
+               <!--  <td>
+                    <span>
+                        <a href="#" t-att-data-res-id="l['child_bom']" t-att-data-model="'mrp.bom'" class="o_mrp_bom_action"><t t-esc="l['code']"/></a>
+                  </span>
+                </td> -->
+                <td class="text-right"><span><t t-esc="l['prod_qty']" t-options='{"widget": "float", "decimal_precision": "Product Unit of Measure"}'/></span></td>
+                <td groups="uom.group_uom"><span><t t-esc="l['prod_uom']"/></span></td>
+                <td class="o_mrp_prod_cost text-right">
+                    <span t-esc="l['prod_cost']" t-options='{"widget": "monetary", "display_currency": currency}'/>
+                </td>
+                <td class="o_mrp_bom_cost text-right">
+                    <span t-esc="l['total']" t-options='{"widget": "monetary", "display_currency": currency}'/>
+                </td>
+                <td>
+                    <span>
+                        <t t-if="l['attachments']">
+                            <a href="#" role="button" t-att-data-res-id="l['attachments'].ids" t-att-data-model="'mrp.document'" class="o_mrp_show_attachment_action fa fa-fw o_button_icon fa-files-o"/>
+                        </t>
+                    </span>
+                </td>
+            </tr>
+        </t>
+        <t t-esc="data[0]"/>
+        <t t-if="data[0].get('operations')">
+        <t t-foreach="data[0].get('operations')" t-as="d">
+            <t t-set="space_td" t-value="'margin-left: '+ str(d['level'] * 50) + 'px;'"/>
+            <tr class="o_mrp_bom_report_line o_mrp_bom_cost" t-att-data-id="'operation-' + str(data['bom'].id)" t-att-data-bom-id="d['bom'].id" t-att-parent_id="d['bom'].id" t-att-data-qty="d['bom_qty']" t-att-data-level="d['level']">
+                <td>
+                    <span t-att-style="space_td"/>
+                    <span class="o_mrp_bom_unfoldable fa fa-fw fa-caret-right" t-att-data-function="'get_operations'" role="img" aria-label="Unfold" title="Unfold"/>
+                    Operations
+                </td>
+                <td/>
+                <td class="text-right">
+                    <span t-esc="d['operations_time']" t-options='{"widget": "float_time"}'/>
+                </td>
+                <td groups="uom.group_uom"><span>Minutes</span></td>
+                <td class="o_mrp_prod_cost">
+                </td>
+                <td class="o_mrp_bom_cost text-right">
+                    <span t-esc="d['operations_cost']" t-options='{"widget": "monetary", "display_currency": currency}'/>
+                </td>
+                <td/>
+            </tr>
+        </t>
+        </t>
+    </template>
+
+    <template id="report_mrp_operation_line">
+      <t t-set="currency" t-value="data[0]['currency']"/>
+      <t t-foreach="data" t-as="d">
+      <t t-foreach="d['operations']" t-as="op">
+          <t t-set="space_td" t-value="'margin-left: '+ str((op['level'] + 1) * 30) + 'px;'"/>
+          <tr class="o_mrp_bom_report_line o_mrp_bom_cost" t-att-parent_id="'operation-' + str(data['bom_id'])">
+              <td>
+                  <span t-att-style="space_td"/>
+                  <a href="#" t-att-data-res-id="op['operation'].id" t-att-data-model="'mrp.routing.workcenter'" class="o_mrp_bom_action"><t t-esc="op['name']"/></a>
+              </td>
+              <td/>
+              <td class="text-right">
+                  <span t-esc="op['duration_expected']" t-options='{"widget": "float_time"}'/>
+              </td>
+              <td groups="uom.group_uom"><span>Minutes</span></td>
+              <td class="o_mrp_prod_cost"></td>
+              <td class="o_mrp_bom_cost text-right">
+                  <span t-esc="op['total']" t-options='{"widget": "monetary", "display_currency": currency}'/>
+              </td>
+              <td/>
+          </tr>
+      </t>
+      </t>
+    </template>
+
+    <template id="report_mrp_bom_pdf">
+        <t t-call="web.html_container">
+            <t t-call="mrp_mo_cost_report_ae.report_mrp_bom"/>
+        </t>
+    </template>
+
+    <template id="report_mrp_bom_pdf_line">
+      <t t-set="currency" t-value="data[0]['currency']"/>
+      <t t-foreach="data['lines']" t-as="line">
+          <t t-foreach="line" t-as="l">
+          <t t-set="space_td" t-value="'margin-left: '+ str(l['level'] * 20) + 'px;'"/>
+          <tr t-if="data['report_structure'] != 'bom_structure' or l['type'] != 'operation'">
+              <td>
+                  <span t-att-style="space_td"/>
+                  <span><t t-esc="l['name']"/></span>
+              </td>
+              <td>
+                  <span t-if="l.get('code')" t-esc="l['code']" />
+              </td>
+              <td class="text-right">
+                  <span>
+                      <t t-if="l['type'] == 'operation'" t-esc="l['quantity']" t-options='{"widget": "float_time"}'/>
+                      <t t-if="l['type'] == 'bom'" t-esc="l['quantity']" t-options='{"widget": "float", "decimal_precision": "Product Unit of Measure"}'/>
+                  </span>
+              </td>
+              <td groups="uom.group_uom"><span><t t-esc="l['uom']"/></span></td>
+              <td t-if="data['report_structure'] != 'bom_cost'" class="o_mrp_prod_cost text-right">
+                  <span t-if="'prod_cost' in l" t-esc="l['prod_cost']" t-options='{"widget": "monetary", "display_currency": currency}'/>
+              </td>
+              <td t-if="data['report_structure'] != 'bom_structure'" class="o_mrp_bom_cost text-right">
+                  <span t-esc="l['bom_cost']" t-options='{"widget": "monetary", "display_currency": currency}'/>
+              </td>
+          </tr>
+          </t>
+      </t>
+    </template>
+
+    <template id="report_mo_structure">
+        <t t-set="data_report_landscape" t-value="True"/>
+        <t t-call="web.basic_layout">
+            <t t-call-assets="mrp.assets_common" t-js="False"/>
+            <t t-foreach="docs" t-as="data">
+                <div class="page">
+                    <t t-call="mrp_mo_cost_report_ae.report_mrp_bom1"/>
+                </div>
+                <p style="page-break-before:always;"> </p>
+            </t>
+        </t>
+    </template>
+</odoo>
