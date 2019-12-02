@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="l10n_in_template_line_report" inherit_id="account_reports.line_template" primary="True">
+        <xpath expr="//div[hasclass('o_account_reports_domain_dropdown')]/*[last()]" position="before">
+            <t t-if="line['caret_options'] != 'account.tax'"><a role="menuitem" tabindex="-1" t-att-data-id="line['id']" action="open_document" class="dropdown-item">View Journal Entry</a></t>
+        </xpath>
+    </template>
+
+    <template id="l10n_in_template_report" inherit_id="account_reports.main_template" primary="True">
+        <xpath expr="//tbody" position="replace">
+            <t t-if="lines.get('lines')">
+                <t t-call="l10n_in_reports.l10n_in_template_line_report" />
+            </t>
+        </xpath>
+    </template>
+</odoo>
