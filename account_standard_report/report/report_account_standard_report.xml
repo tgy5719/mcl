@@ -84,6 +84,7 @@
                                             <th class="col-xs-1">JRNL</th>
                                             <th class="col-xs-1">Account</th>
                                             <th class="col-xs-1">Journal entries</th>
+                                            <th class="col-xs-1">Sale Team</th>
                                             <!-- <th class="col-xs-3">Ref</th> -->
                                             <th class="col-xs-1">Due Date</th>
                                             <th class="col-xs-1 text-right">Not Due</th>
@@ -117,6 +118,9 @@
                                                 </td>
                                                 <td>
                                                     <span t-if="l.view_type == 'normal'" t-field="l.move_id"></span>
+                                                </td>
+                                                <td>
+                                                    <span t-if="l.view_type == 'normal'" t-field="l.user_id"></span>
                                                 </td>
                                                 <td>
                                                     <span t-if="l.view_type == 'normal'" t-field="l.date_maturity"></span>
@@ -262,6 +266,7 @@
                                             <th class="col-xs-1" t-if="o.report_type == 'journal'">JRNL</th>
                                             <th class="col-xs-1" t-if="o.report_type == 'account'">Account</th>
                                             <th class="col-xs-1" t-if="o.report_type == 'partner'">Partner</th>
+                                            <th class="col-xs-1" t-if="o.report_type == 'analytic'">Sale Team</th>
                                             <th class="col-xs-1" t-if="o.report_type == 'analytic'">Analytic</th>
                                             <th class="col-xs-1 text-right">Debit</th>
                                             <th class="col-xs-1 text-right">Credit</th>
@@ -279,6 +284,9 @@
                                             <td t-if="o.report_type == 'partner'">
                                                 <span t-field="l.partner_id"></span>
                                             </td>
+                                            <td>
+                                                <span t-field="l.user_id"></span>
+                                           </td>
                                             <td t-if="o.report_type == 'analytic'">
                                                 <span t-field="l.analytic_account_id"></span>
                                             </td>
@@ -310,6 +318,7 @@
                                             <th class="col-xs-1">Journal entries</th>
                                             <th class="col-xs-3">Ref</th>
                                             <th class="col-xs-3">Partner</th>
+                                            <th class="col-xs-3">Sale Team</th>
                                             <th class="col-xs-1">Due Date</th>
                                             <th class="col-xs-1 text-right">Debit</th>
                                             <th class="col-xs-1 text-right">Credit</th>
@@ -360,6 +369,10 @@
                                                 <td>
                                                     <i t-if="l.view_type == 'init'" t-field="l.partner_id"></i>
                                                     <span t-if="l.view_type == 'normal'" t-field="l.partner_id"></span>
+                                                </td>
+                                                <td>
+                                                    <i t-if="l.view_type == 'init'" t-field="l.user_id"></i>
+                                                    <span t-if="l.view_type == 'normal'" t-field="l.user_id"></span>
                                                 </td>
                                                 <td>
                                                     <i t-if="l.view_type == 'init'" t-field="l.date_maturity"></i>
