@@ -660,21 +660,21 @@ class stock_summary_report_with_values(models.TransientModel):
     @api.multi
     def get_neg_adjustment_qty_value(self, product):
         state = 'done'
-        location_id = 12
+        # location_id = 5
         location_dest_id = 5
         
 
         query = """select sum(sm.value) from stock_move as sm \
                                   JOIN product_product as pp ON pp.id = sm.product_id \
                                   where sm.date >= %s and sm.date <= %s and \
-                                  sm.location_id = %s and sm.location_dest_id = %s and sm.product_id = %s and sm.picking_type_id is null\
+                                  sm.location_dest_id = %s and sm.product_id = %s and sm.picking_type_id is null\
                                   and sm.state = %s
                                   """
 
         start_date = str(self.start_date) + ' 00:00:00'
         end_date = str(self.end_date) + ' 23:59:59'
 
-        params = (start_date, end_date,location_id,location_dest_id, product.id, state)
+        params = (start_date, end_date,location_dest_id, product.id, state)
 
         self.env.cr.execute(query, params)
         result = self.env.cr.dictfetchall()
@@ -708,14 +708,14 @@ class stock_summary_report_with_values(models.TransientModel):
         query = """select sum(sm.value) from stock_move as sm \
                                   JOIN product_product as pp ON pp.id = sm.product_id \
                                   where sm.date >= %s and sm.date <= %s and \
-                                  sm.location_id = %s and sm.location_dest_id = %s and sm.product_id = %s and sm.picking_type_id is null\
+                                  sm.location_id = %s and sm.product_id = %s and sm.picking_type_id is null\
                                   and sm.state = %s
                                   """
 
         start_date = str(self.start_date) + ' 00:00:00'
         end_date = str(self.end_date) + ' 23:59:59'
 
-        params = (start_date, end_date,location_id,location_dest_id, product.id, state)
+        params = (start_date, end_date,location_id, product.id, state)
 
         self.env.cr.execute(query, params)
         result = self.env.cr.dictfetchall()
