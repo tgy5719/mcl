@@ -171,12 +171,13 @@ class stock_summary_report_with_values(models.TransientModel):
         location_id = 7  
         query = """select sum(sm.value) from stock_move as sm \
                                   JOIN product_product as pp ON pp.id = sm.product_id \
-                                  where sm.date < %s and sm.location_id = %s and\
+                                  where sm.date >= %s and sm.date <= %s and sm.location_id = %s and\
                                   sm.product_id = %s and sm.state = %s
                                   """
 
         start_date = str(self.start_date) + ' 00:00:00'
-        params = (start_date,location_id, product.id, state)
+        end_date = str(self.end_date) + ' 23:59:59'
+        params = (start_date,end_date,location_id, product.id, state)
 
         self.env.cr.execute(query, params)
         result = self.env.cr.dictfetchall()
@@ -455,7 +456,7 @@ class stock_summary_report_with_values(models.TransientModel):
     def get_manufactured_qty(self, product):
         state = 'done'
         location_id = 7
-
+        # Difffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
         query = """select sum(sm.product_qty) from stock_move as sm \
                                   JOIN product_product as pp ON pp.id = sm.product_id \
                                   where sm.date >= %s and sm.date <= %s and sm.location_id = %s and \
@@ -483,11 +484,12 @@ class stock_summary_report_with_values(models.TransientModel):
                                   JOIN product_product as pp ON pp.id = sm.product_id \
                                   where sm.date >= %s and sm.date <= %s and \
                                   sm.product_id = %s and \
-                                  sm.location_dest_id = %s and sm.price_unit <= %s \
+                                  sm.location_dest_id = %s \
+                                  and sm.state='done'\
                                   """
       start_date = str(self.start_date) + ' 00:00:00'
       end_date = str(self.end_date) + ' 23:59:59'
-      params = (start_date, end_date, product.id,location_dest_id,price_unit)
+      params = (start_date, end_date, product.id,location_dest_id)
       self.env.cr.execute(query, params)
       result = self.env.cr.dictfetchall()
       if result[0].get('sum'):
@@ -502,11 +504,12 @@ class stock_summary_report_with_values(models.TransientModel):
                                   JOIN product_product as pp ON pp.id = sm.product_id \
                                   where sm.date >= %s and sm.date <= %s and \
                                   sm.product_id = %s and \
-                                  sm.location_dest_id = %s and sm.price_unit < %s \
+                                  sm.location_dest_id = %s  \
+                                  and sm.state='done'\
                                   """
       start_date = str(self.start_date) + ' 00:00:00'
       end_date = str(self.end_date) + ' 23:59:59'
-      params = (start_date, end_date, product.id,location_dest_id,price_unit)
+      params = (start_date, end_date, product.id,location_dest_id)
       self.env.cr.execute(query, params)
       result = self.env.cr.dictfetchall()
       if result[0].get('sum'):
@@ -584,21 +587,18 @@ class stock_summary_report_with_values(models.TransientModel):
 
         query = """select sum(sm.product_uom_qty) from stock_move as sm \
                           JOIN stock_picking_type as spt ON spt.id = sm.picking_type_id \
-                          JOIN product_product as pp ON pp.id = sm.product_id \
-                          where sm.date >= %s and sm.date <= %s \
-                          and spt.code = %s and sm.product_id = %s\
-                          
-
-                          and sm.state = %s
+                          JOIN product_product as pp ON pp.id = sm.product_id  \
+                          where sm.date >= %s and sm.date <= %s and sm.product_id = %s\
+                          and sm.state = %s and sm.location_dest_id = %s\
                           """
 
         start_date = str(self.start_date) + ' 00:00:00'
         end_date = str(self.end_date) + ' 23:59:59'
 
-        if self.location_id:
-            params = (start_date, end_date, move_type, location_dest_id, product.id, state)
-        else:
-            params = (start_date, end_date, move_type, product.id, state)
+        params = (start_date, end_date,  product.id, state,location_dest_id)
+        # if self.location_id:
+        # else:
+        #     params = (start_date, end_date, move_type, product.id, state)
 
         self.env.cr.execute(query, params)
         result = self.env.cr.dictfetchall()
@@ -617,14 +617,14 @@ class stock_summary_report_with_values(models.TransientModel):
         query = """select sum(sm.product_uom_qty) from stock_move as sm \
                                   JOIN product_product as pp ON pp.id = sm.product_id \
                                   where sm.date >= %s and sm.date <= %s and \
-                                  sm.location_id = %s and sm.location_dest_id = %s and sm.product_id = %s and sm.picking_type_id is null\
+                                  sm.location_id = %s  and sm.product_id = %s and sm.picking_type_id is null\
                                   and sm.state = %s
                                   """
 
         start_date = str(self.start_date) + ' 00:00:00'
         end_date = str(self.end_date) + ' 23:59:59'
 
-        params = (start_date, end_date,location_id,location_dest_id, product.id, state)
+        params = (start_date, end_date,location_id, product.id, state)
 
         self.env.cr.execute(query, params)
         result = self.env.cr.dictfetchall()
@@ -643,14 +643,14 @@ class stock_summary_report_with_values(models.TransientModel):
         query = """select sum(sm.product_uom_qty) from stock_move as sm \
                                   JOIN product_product as pp ON pp.id = sm.product_id \
                                   where sm.date >= %s and sm.date <= %s and \
-                                  sm.location_id = %s and sm.location_dest_id = %s and sm.product_id = %s and sm.picking_type_id is null\
+                                  sm.location_dest_id = %s and sm.product_id = %s and sm.picking_type_id is null\
                                   and sm.state = %s
                                   """
 
         start_date = str(self.start_date) + ' 00:00:00'
         end_date = str(self.end_date) + ' 23:59:59'
 
-        params = (start_date, end_date,location_id,location_dest_id, product.id, state)
+        params = (start_date, end_date,location_dest_id, product.id, state)
 
         self.env.cr.execute(query, params)
         result = self.env.cr.dictfetchall()
@@ -664,7 +664,7 @@ class stock_summary_report_with_values(models.TransientModel):
         location_dest_id = 5
         
 
-        query = """select sum(sm.price_unit) from stock_move as sm \
+        query = """select sum(sm.value) from stock_move as sm \
                                   JOIN product_product as pp ON pp.id = sm.product_id \
                                   where sm.date >= %s and sm.date <= %s and \
                                   sm.location_id = %s and sm.location_dest_id = %s and sm.product_id = %s and sm.picking_type_id is null\
@@ -705,7 +705,7 @@ class stock_summary_report_with_values(models.TransientModel):
         state = 'done'
         location_id = 5
         location_dest_id = 12
-        query = """select sum(sm.price_unit) from stock_move as sm \
+        query = """select sum(sm.value) from stock_move as sm \
                                   JOIN product_product as pp ON pp.id = sm.product_id \
                                   where sm.date >= %s and sm.date <= %s and \
                                   sm.location_id = %s and sm.location_dest_id = %s and sm.product_id = %s and sm.picking_type_id is null\
@@ -727,6 +727,7 @@ class stock_summary_report_with_values(models.TransientModel):
     def get_sale_delivered_qty_value(self, product):
         state = 'done'
         move_type = 'outgoing'
+        location_dest_id =9
         m_type = ''
         if self.location_id:
             m_type = 'and sm.location_id = %s'
@@ -734,19 +735,18 @@ class stock_summary_report_with_values(models.TransientModel):
         query = """select sum(sm.value) from stock_move as sm \
                           JOIN stock_picking_type as spt ON spt.id = sm.picking_type_id \
                           JOIN product_product as pp ON pp.id = sm.product_id \
-                          where sm.date >= %s and sm.date <= %s \
-                          and spt.code = %s """ + m_type + """and sm.product_id = %s \
-                          and sm.state = %s and sm.company_id = %s
+                          where sm.date >= %s and sm.date <= %s and sm.product_id = %s \
+                          and sm.state = %s and sm.company_id = %s and sm.location_dest_id = %s\
                           """
 
         start_date = str(self.start_date) + ' 00:00:00'
         end_date = str(self.end_date) + ' 23:59:59'
 
-        if self.location_id:
-            params = (start_date, end_date, move_type, self.location_id.id, product.id, state,
-                      self.company_id.id)
-        else:
-            params = (start_date, end_date, move_type, product.id, state, self.company_id.id)
+        params = (start_date, end_date, product.id, state,
+                      self.company_id.id,location_dest_id)
+        # if self.location_id:
+        # else:
+        #     params = (start_date, end_date, move_type, product.id, state, self.company_id.id)
 
         self.env.cr.execute(query, params)
         result = self.env.cr.dictfetchall()
@@ -754,10 +754,25 @@ class stock_summary_report_with_values(models.TransientModel):
             return result[0].get('sum')
         return 0.0
 
+    # Get the later product cost     
+    @api.multi
+    def get_product_cost(self, product):
+        query = """select cost from product_price_history 
+                                where product_id = %s 
+                                order by id desc
+                                  """
+        self.env.cr.execute(query, product.ids)
+        result = self.env.cr.dictfetchall()
+        if result:
+          if result[0].get('cost'):
+              return result[0].get('cost')
+        return 0.0
+
     @api.multi
     def get_availabel_quantity_value(self, product):
       in_qty_purchased_value = self.get_purchased_qty_value(product)
       in_qty_purchased_returned_value = self.get_purchased_returned_qty_value(product)
+      # pdb.set_trace()
       net_purchased_value = in_qty_purchased_value - in_qty_purchased_returned_value
       in_qty_manufactured_value = self.get_avaliable_manufactured_qty_value(product)
       in_qty_sold_value = self.get_sold_qty_value(product)
@@ -774,7 +789,7 @@ class stock_summary_report_with_values(models.TransientModel):
     def get_product(self):
         product_pool=self.env['product.product']
         if not self.filter_by:
-            product_ids = product_pool.search([('type','!=','service')])
+            product_ids = product_pool.search([('type','=','product')])
             return product_ids
         elif self.filter_by == 'product' and self.product_ids:
             return self.product_ids
@@ -791,84 +806,96 @@ class stock_summary_report_with_values(models.TransientModel):
 
     @api.multi
     def get_lines(self):
-        lst=[]
-        product_ids = self.get_product()
-        for product in product_ids:
-            beginning_qty = self.get_availabel_quantity(product)
-            beginning_value = self.get_availabel_quantity_value(product)
-            received_qty = self.get_receive_qty(product)
-            received_value = self.get_receive_qty_values(product)
-            sale_del_qty = self.get_sale_delivered_qty(product)
-            sale_del_qty_value =  self.get_sale_delivered_qty_value(product)
-            mrp_qty = self.get_manufactured_qty(product)
-            mrp_value = self.get_avaliable_manufactured_qty_value(product)
-            consumption_qty = self.get_consumption_value(product)
-            consumption_value = self.get_consumption_value_value(product)
-            adjust_qty_positive = self.get_pos_adjustment_qty(product)
-            adjust_qty_negative = self.get_neg_adjustment_qty(product)
-            adjust_qty_positive_value = self.get_pos_adjustment_qty_value(product)
-            adjust_qty_negative_value = self.get_neg_adjustment_qty_value(product)
-            adjustment_qty = adjust_qty_positive + adjust_qty_negative
-            adjust_qty = abs(adjustment_qty)
-            adjust_value = adjust_qty * (adjust_qty_positive_value + adjust_qty_negative_value)
-            ending_qty = (beginning_qty + received_qty + mrp_qty + adjust_qty_positive) - (adjust_qty_negative + sale_del_qty + consumption_qty)
-            ending_value = (beginning_value+received_value+mrp_value) -(sale_del_qty_value+consumption_value)
-            if not self.is_zero:
-                if beginning_qty != 0 or received_qty != 0 or ending_qty != 0 or mrp_qty != 0:
-                    lst.append({
-                        'category':product.categ_id.name or 'Untitle',
-                        'product':product.name,
-                        'product_lot_num': self.env['stock.production.lot'].search([('product_id','=',product.id)],limit=1).name if product.product_tmpl_id.tracking == 'lot' else ' ',
-                        'uom' : product.uom_id.name,
-                        'beginning_qty':beginning_qty,
-                        'beginning_value':beginning_value,
-                        'received_qty':received_qty,
-                        'received_value':received_value,
-                        'sale_del_qty':sale_del_qty,
-                        'sale_del_qty_value':sale_del_qty_value,
-                        'mrp_qty':mrp_qty,
-                        'mrp_value':mrp_value,
-                        'consumption_qty':consumption_qty,
-                        'consumption_value':consumption_value,
-                        'adjust_qty_positive':adjust_qty_positive,
-                        'adjust_qty_positive_value':adjust_qty_positive_value,
-                        'adjust_qty_negative':adjust_qty_negative,
-                        'adjust_qty_negative_value':adjust_qty_negative_value,
-                        'adjust_qty':adjust_qty,
-                        'adjust_value':adjust_value,
-                        'ending_qty':ending_qty,
-                        'ending_value':ending_value,
-                    })
-            else:
-                lst.append({
-                    'category': product.categ_id.name or 'Untitle',
-                    'product':product.name,
-                    'product_lot_num': self.env['stock.production.lot'].search([('product_id','=',product.id)],limit=1).name if product.product_tmpl_id.tracking == 'lot' else ' ',
-                    'uom' : product.uom_id.name,
-                    'beginning_qty':beginning_qty,
-                    'beginning_value':beginning_value,
-                    'received_qty':received_qty,
-                    'received_value':received_value,
-                    'sale_qty':sale_qty,
-                    'sale_del_qty':sale_del_qty,
-                    'sale_del_qty_value':sale_del_qty_value,
-                    # 'sale_value':sale_value,
-                    # 'internal_qty':internal_qty,
-                    # 'internal_value':internal_value,
-                    'mrp_qty':mrp_qty,
-                    'mrp_value':mrp_value,
-                    'consumption_qty':consumption_qty,
-                    'consumption_value':consumption_value,
-                    'adjust_qty_positive':adjust_qty_positive,
-                    'adjust_qty_positive_value':adjust_qty_positive_value,
-                    'adjust_qty_negative':adjust_qty_negative,
-                    'adjust_qty_negative_value':adjust_qty_negative_value,
-                    'adjust_qty':adjust_qty,
-                    'adjust_value':adjust_value,
-                    'ending_qty':ending_qty,
-                    'ending_value':ending_value,
-                })
-        return lst
+      lst=[]
+      product_ids = self.get_product()
+      # print("Product Lentsssssssssssssssssssssssssssssssssssss",len(product_ids))
+      for product in product_ids:
+        beginning_qty = self.get_availabel_quantity(product)
+        # beginning_value = self.get_availabel_quantity_value(product)
+        beginning_value = beginning_qty *self.get_product_cost(product)
+        received_qty = self.get_receive_qty(product)
+        received_value = self.get_receive_qty_values(product)
+        sale_del_qty = self.get_sale_delivered_qty(product)
+        sale_del_qty_value =  self.get_sale_delivered_qty_value(product)
+        mrp_qty = self.get_manufactured_qty(product)
+        mrp_value = self.get_avaliable_manufactured_qty_value(product)
+        consumption_qty = self.get_consumption_value(product)
+        consumption_value = self.get_consumption_value_value(product)
+        adjust_qty_positive = self.get_pos_adjustment_qty(product)
+        adjust_qty_negative = self.get_neg_adjustment_qty(product)
+        adjust_qty_positive_value = self.get_pos_adjustment_qty_value(product)
+        adjust_qty_negative_value = self.get_neg_adjustment_qty_value(product)
+        adjustment_qty = adjust_qty_positive + adjust_qty_negative
+        adjust_qty = abs(adjustment_qty)
+        adjust_value = adjust_qty * (adjust_qty_positive_value + adjust_qty_negative_value)
+        ending_qty = (beginning_qty + received_qty + mrp_qty + adjust_qty_positive) - (adjust_qty_negative + sale_del_qty + consumption_qty)
+        ending_value =ending_qty * self.get_product_cost(product)
+        # ending_value = (beginning_value+received_value+mrp_value) -(sale_del_qty_value+consumption_value)
+        # if product.id == 15:
+        # pdb.set_trace()
+        # if not self.is_zero:
+        size =''
+        if  product.attribute_value_ids:
+          for each in product.attribute_value_ids:
+            # pdb.set_trace()
+            size +=  each.name +','
+        else:
+          size=''
+        if  ending_qty  != 0:
+          lst.append({
+          'category':product.categ_id.name or 'Untitle',
+          'product':product.name +' '+size ,
+          'product_lot_num': self.env['stock.production.lot'].search([('product_id','=',product.id)],limit=1).name if product.product_tmpl_id.tracking == 'lot' else ' ',
+          'uom' : product.uom_id.name,
+          'beginning_qty':beginning_qty,
+          'beginning_value':beginning_value,
+          'received_qty':received_qty,
+          'received_value':received_value,
+          'sale_del_qty':sale_del_qty,
+          'sale_del_qty_value':sale_del_qty_value,
+          'mrp_qty':mrp_qty,
+          'mrp_value':mrp_value,
+          'consumption_qty':consumption_qty,
+          'consumption_value':consumption_value,
+          'adjust_qty_positive':adjust_qty_positive,
+          'adjust_qty_positive_value':adjust_qty_positive_value,
+          'adjust_qty_negative':adjust_qty_negative,
+          'adjust_qty_negative_value':adjust_qty_negative_value,
+          'adjust_qty':adjust_qty,
+          'adjust_value':adjust_value,
+          'ending_qty':ending_qty,
+          'ending_value':ending_value,
+          })
+            # else:
+            #     lst.append({
+          #         'category': product.categ_id.name or 'Untitle',
+          #         'product':product.name,
+          #         'product_lot_num': self.env['stock.production.lot'].search([('product_id','=',product.id)],limit=1).name if product.product_tmpl_id.tracking == 'lot' else ' ',
+          #         'uom' : product.uom_id.name,
+          #         'beginning_qty':beginning_qty,
+          #         'beginning_value':beginning_value,
+          #         'received_qty':received_qty,
+          #         'received_value':received_value,
+          #         'sale_qty':sale_qty,
+          #         'sale_del_qty':sale_del_qty,
+          #         'sale_del_qty_value':sale_del_qty_value,
+          #         # 'sale_value':sale_value,
+          #         # 'internal_qty':internal_qty,
+          #         # 'internal_value':internal_value,
+          #         'mrp_qty':mrp_qty,
+          #         'mrp_value':mrp_value,
+          #         'consumption_qty':consumption_qty,
+          #         'consumption_value':consumption_value,
+          #         'adjust_qty_positive':adjust_qty_positive,
+          #         'adjust_qty_positive_value':adjust_qty_positive_value,
+          #         'adjust_qty_negative':adjust_qty_negative,
+          #         'adjust_qty_negative_value':adjust_qty_negative_value,
+          #         'adjust_qty':adjust_qty,
+          #         'adjust_value':adjust_value,
+          #         'ending_qty':ending_qty,
+          #         'ending_value':ending_value,
+          #     })
+      return lst
 
         
   
@@ -876,7 +903,7 @@ class stock_summary_report_with_values(models.TransientModel):
     @api.multi
     def export_stock_ledger(self):
         workbook = xlwt.Workbook()
-        filename = 'Detailed Stock Summary Report.xls'
+        filename = 'Detailed Stock Summary Report With Values.xls'
         # Style
         main_header_style = easyxf('font:height 400;pattern: pattern solid, fore_color gray25;'
                                    'align: horiz center;font: color black; font:bold True;'
@@ -902,275 +929,277 @@ class stock_summary_report_with_values(models.TransientModel):
         for l in range(0, 3):
             worksheet.append(l)
         work=0
-        for warehouse_id in warehouse_ids:
-            worksheet[work] = workbook.add_sheet(str(warehouse_id))
-            for i in range(0,1):
-                worksheet[work].col(i).width = 140 * 30
+        # for warehouse_id in warehouse_ids:
+        worksheet[work] = workbook.add_sheet("Stock Summary")
+        for i in range(0,1):
+            worksheet[work].col(i).width = 140 * 30
 
-            worksheet[work].write_merge(0, 1, 0, 9, 'DETAILED STOCK SUMMARY REPORT', main_header_style)
+        worksheet[work].write_merge(0, 1, 0, 9, 'DETAILED STOCK SUMMARY REPORT', main_header_style)
 
-            worksheet[work].write(4, 0, 'Company', header_style)
-            worksheet[work].write(4, 1, 'Location', header_style)
-            worksheet[work].write(4, 2, 'Start Date', header_style)
-            worksheet[work].write(4, 3, 'End Date', header_style)
-            worksheet[work].write(4, 4, 'Generated By', header_style)
-            worksheet[work].write(4, 5, 'Generated Date', header_style)
-
-
-
-            worksheet[work].write(5, 0, self.company_id.name, text_center)
-            worksheet[work].write(5, 1, self.location_id.name or '', text_center)
-            start_date = datetime.strptime(str(self.start_date), '%Y-%m-%d').strftime("%d-%m-%Y")
-            worksheet[work].write(5, 2, start_date, text_center)
-            end_date = datetime.strptime(str(self.end_date), '%Y-%m-%d').strftime("%d-%m-%Y")
-            worksheet[work].write(5, 3, end_date, text_center)
-            worksheet[work].write(5, 4, self.env.user.name, text_center)
-            worksheet[work].write(5, 5, datetime.now().strftime("%d-%m-%Y %H:%M:%S"), text_center)
+        worksheet[work].write(4, 0, 'Company', header_style)
+        worksheet[work].write(4, 1, 'Location', header_style)
+        worksheet[work].write(4, 2, 'Start Date', header_style)
+        worksheet[work].write(4, 3, 'End Date', header_style)
+        worksheet[work].write(4, 4, 'Generated By', header_style)
+        worksheet[work].write(4, 5, 'Generated Date', header_style)
 
 
 
-            tags = [
-                    'Opening Stock','Opening Stock Value',
-                    'Purchased','Purchased Value',
-                    'Manufactured','Manufactured Value',
-                    'Consumed','Consumed Value',
-                    'Sales','Sales Value',
-                    'Postive Adjustment','Postive Adjustment Value',
-                    'Negative Adjustment','Negative Adjustment Value',
-                    'Closing Stock ','Closing Stock Value',]
+        worksheet[work].write(5, 0, self.company_id.name, text_center)
+        worksheet[work].write(5, 1, self.location_id.name or '', text_center)
+        start_date = datetime.strptime(str(self.start_date), '%Y-%m-%d').strftime("%d-%m-%Y")
+        worksheet[work].write(5, 2, start_date, text_center)
+        end_date = datetime.strptime(str(self.end_date), '%Y-%m-%d').strftime("%d-%m-%Y")
+        worksheet[work].write(5, 3, end_date, text_center)
+        worksheet[work].write(5, 4, self.env.user.name, text_center)
+        worksheet[work].write(5, 5, datetime.now().strftime("%d-%m-%Y %H:%M:%S"), text_center)
 
-            r = 9
-            worksheet[work].write_merge(r, r, 0, 3, 'Product' , header_style)
-            worksheet[work].write_merge(r, r, 4, 6, 'Product Category', header_style)
-            worksheet[work].write_merge(r, r, 7, 8, 'UOM', header_style)
-            # worksheet[work].write_merge(r, r, 9, 10, 'LOT Number', header_style)
-            c = 9
-            for tag in tags:
-                worksheet[work].write(r, c, tag, header_style)
-                c+=1
-            lines=self.get_lines()
-            if not self.is_group_by_category:
-                r=10
-                b_qty = r_qty =b_val= s_val=s_qty =a_qty=a_p_qty_val= a_n_qty_val=e_qty= m_qty=a_val=s_del_qty=a_p_qty=a_n_qty=r_val=s_del_val=e_val=m_val=con_qty=con_val= 0
-                for line in lines:
-                    b_qty += line.get('beginning_qty')
-                    b_val += line.get('beginning_value')
-                    r_qty += line.get('received_qty')
-                    r_val += line.get('received_value')
-                    m_qty += line.get('mrp_qty')
-                    m_val += line.get('mrp_value')
-                    con_qty += line.get('consumption_qty')
-                    con_val += line.get('consumption_value')
-                    s_del_qty += line.get('sale_del_qty')
-                    s_del_val += line.get('sale_del_qty_value')
-                    a_p_qty += line.get('adjust_qty_positive')
-                    a_p_qty_val += line.get('adjust_qty_positive_value')
-                    a_n_qty += line.get('adjust_qty_negative')
-                    a_n_qty_val += line.get('adjust_qty_negative_value')
-                    a_val += line.get('adjust_value')
-                    e_qty += line.get('ending_qty')
-                    e_val += line.get('ending_value')
-                    c = 4
-                    worksheet[work].write_merge(r, r, 0, 3, line.get('product'), text_left)
-                    worksheet[work].write_merge(r, r, 4, 6, line.get('category'), text_left)
-                    worksheet[work].write_merge(r, r, 7, 8, line.get('uom'), text_left)
-                    c = 9
-                    worksheet[work].write(r, c, line.get('beginning_qty'), text_right)
-                    c+=1
-                    worksheet[work].write(r, c, line.get('beginning_value'), text_right)
-                    c+=1
-                    worksheet[work].write(r, c, line.get('received_qty'), text_right)
-                    c+=1
-                    worksheet[work].write(r, c, line.get('received_value'), text_right)
-                    c+=1
-                    worksheet[work].write(r, c, line.get('mrp_qty'), text_right)
-                    c += 1
-                    worksheet[work].write(r, c, line.get('mrp_value'), text_right)
-                    c += 1
-                    worksheet[work].write(r, c, line.get('consumption_qty'), text_right)
-                    c += 1
-                    worksheet[work].write(r, c, line.get('consumption_value'), text_right)
-                    c += 1
-                    worksheet[work].write(r, c, line.get('sale_del_qty'), text_right)
-                    c += 1
-                    worksheet[work].write(r, c, line.get('sale_del_qty_value'), text_right)
-                    c += 1
-                    worksheet[work].write(r, c, line.get('adjust_qty_positive'), text_right)
-                    c += 1
-                    worksheet[work].write(r, c, line.get('adjust_qty_positive_value'), text_right)
-                    c += 1
-                    worksheet[work].write(r, c, line.get('adjust_qty_negative'), text_right)
-                    c += 1
-                    worksheet[work].write(r, c, line.get('adjust_qty_negative_value'), text_right)
-                    c += 1
-                    worksheet[work].write(r, c, line.get('ending_qty'), text_right)
-                    c+=1
-                    worksheet[work].write(r, c, line.get('ending_value'), text_right)
-                    r+=1
-                worksheet[work].write_merge(r, r, 0, 8, 'TOTAL', text_right_bold)
+
+
+        tags = [
+                'Opening Stock','Opening Stock Value',
+                'Purchased','Purchased Value',
+                'Manufactured','Manufactured Value',
+                'Consumed','Consumed Value',
+                'Sales','Sales Value',
+                'Postive Adjustment','Postive Adjustment Value',
+                'Negative Adjustment','Negative Adjustment Value',
+                'Closing Stock ','Closing Stock Value',]
+
+        r = 9
+        worksheet[work].write_merge(r, r, 0, 3, 'Product' , header_style)
+        worksheet[work].write_merge(r, r, 4, 6, 'Product Category', header_style)
+        worksheet[work].write_merge(r, r, 7, 8, 'UOM', header_style)
+        c = 9
+        for tag in tags:
+          worksheet[work].write(r, c, tag, header_style)
+          c+=1
+        lines=self.get_lines()
+        # print("ListSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS",lines)
+        if not self.is_group_by_category:
+            # pdb.set_trace()
+            r=10
+            b_qty = r_qty =b_val= s_val=s_qty =a_qty=a_p_qty_val= a_n_qty_val=e_qty= m_qty=a_val=s_del_qty=a_p_qty=a_n_qty=r_val=s_del_val=e_val=m_val=con_qty=con_val= 0
+            for line in lines:
+                print(line.get('product'))
+                b_qty += line.get('beginning_qty')
+                b_val += line.get('beginning_value')
+                r_qty += line.get('received_qty')
+                r_val += line.get('received_value')
+                m_qty += line.get('mrp_qty')
+                m_val += line.get('mrp_value')
+                con_qty += line.get('consumption_qty')
+                con_val += line.get('consumption_value')
+                s_del_qty += line.get('sale_del_qty')
+                s_del_val += line.get('sale_del_qty_value')
+                a_p_qty += line.get('adjust_qty_positive')
+                a_p_qty_val += line.get('adjust_qty_positive_value')
+                a_n_qty += line.get('adjust_qty_negative')
+                a_n_qty_val += line.get('adjust_qty_negative_value')
+                a_val += line.get('adjust_value')
+                e_qty += line.get('ending_qty')
+                e_val += line.get('ending_value')
+                c = 4
+                worksheet[work].write_merge(r, r, 0, 3, line.get('product'), text_left)
+                worksheet[work].write_merge(r, r, 4, 6, line.get('category'), text_left)
+                worksheet[work].write_merge(r, r, 7, 8, line.get('uom'), text_left)
                 c = 9
-                worksheet[work].write(r, c, round(b_qty,2), text_right_bold1)
+                worksheet[work].write(r, c, line.get('beginning_qty'), text_right)
+                c+=1
+                worksheet[work].write(r, c, line.get('beginning_value'), text_right)
+                c+=1
+                worksheet[work].write(r, c, line.get('received_qty'), text_right)
+                c+=1
+                worksheet[work].write(r, c, line.get('received_value'), text_right)
+                c+=1
+                worksheet[work].write(r, c, line.get('mrp_qty'), text_right)
                 c += 1
-                worksheet[work].write(r, c, round(b_val,2), text_right_bold1)
+                worksheet[work].write(r, c, line.get('mrp_value'), text_right)
                 c += 1
-                worksheet[work].write(r, c, round(r_qty,2), text_right_bold1)
+                worksheet[work].write(r, c, line.get('consumption_qty'), text_right)
                 c += 1
-                worksheet[work].write(r, c, round(r_val,2), text_right_bold1)
+                worksheet[work].write(r, c, line.get('consumption_value'), text_right)
                 c += 1
-                worksheet[work].write(r, c, round(m_qty,2), text_right_bold1)
+                worksheet[work].write(r, c, line.get('sale_del_qty'), text_right)
                 c += 1
-                worksheet[work].write(r, c, round(m_val,2), text_right_bold1)
+                worksheet[work].write(r, c, line.get('sale_del_qty_value'), text_right)
                 c += 1
-                worksheet[work].write(r, c, round(con_qty,2), text_right_bold1)
+                worksheet[work].write(r, c, line.get('adjust_qty_positive'), text_right)
                 c += 1
-                worksheet[work].write(r, c, round(con_val,2), text_right_bold1)
+                worksheet[work].write(r, c, line.get('adjust_qty_positive_value'), text_right)
                 c += 1
-                worksheet[work].write(r, c, round(s_del_qty,2), text_right_bold1)
+                worksheet[work].write(r, c, line.get('adjust_qty_negative'), text_right)
                 c += 1
-                worksheet[work].write(r, c, round(s_del_val,2), text_right_bold1)
+                worksheet[work].write(r, c, line.get('adjust_qty_negative_value'), text_right)
                 c += 1
-                worksheet[work].write(r, c, round(a_p_qty,2), text_right_bold1)
-                c += 1
-                worksheet[work].write(r, c, round(a_p_qty_val,2), text_right_bold1)
-                c += 1
-                worksheet[work].write(r, c, round(a_n_qty,2), text_right_bold1)
-                c += 1
-                worksheet[work].write(r, c, round(a_n_qty_val,2), text_right_bold1)
-                c += 1
-                worksheet[work].write(r, c, round(e_qty,2), text_right_bold1)
-                c += 1
-                worksheet[work].write(r, c, round(e_val,2), text_right_bold1)
-                r += 1
-            else:
-                lines = self.group_by_lines(lines)
-                r = 9
-                for l_val in lines:
-                    worksheet[work].write_merge(r, r, 0, 3, l_val.get('category'), group_style)
-                    r+=1
-                    b_qty =b_val= r_val=s_del_val=r_qty =e_val=a_val= s_qty=m_val= i_qty= a_qty= e_qty=m_qty=s_del_qty =a_p_qty=a_n_qty=con_qty=con_val=0
-                    for line in l_val.get('values'):
-                        b_qty += line.get('beginning_qty')
-                        b_val += line.get('beginning_value')
-                        r_qty += line.get('received_qty')
-                        r_val += line.get('received_value')
-                        # s_qty += line.get('sale_qty')
-                        m_qty += line.get('mrp_qty')
-                        m_val += line.get('mrp_value')
-                        s_del_qty += line.get('sale_del_qty')
-                        s_del_val += line.get('sale_del_qty_value')
-                        con_qty += line.get('consumption_qty')
-                        con_val += line.get('consumption_value')
-                        # s_val += lines.get('sale_value')
-                        # i_qty += line.get('internal_qty')
-                        # i_val += line.get('internal_value')
+                worksheet[work].write(r, c, line.get('ending_qty'), text_right)
+                c+=1
+                worksheet[work].write(r, c, line.get('ending_value'), text_right)
+                r+=1
+            worksheet[work].write_merge(r, r, 0, 8, 'TOTAL', text_right_bold)
+            c = 9
+            worksheet[work].write(r, c, round(b_qty,2), text_right_bold1)
+            c += 1
+            worksheet[work].write(r, c, round(b_val,2), text_right_bold1)
+            c += 1
+            worksheet[work].write(r, c, round(r_qty,2), text_right_bold1)
+            c += 1
+            worksheet[work].write(r, c, round(r_val,2), text_right_bold1)
+            c += 1
+            worksheet[work].write(r, c, round(m_qty,2), text_right_bold1)
+            c += 1
+            worksheet[work].write(r, c, round(m_val,2), text_right_bold1)
+            c += 1
+            worksheet[work].write(r, c, round(con_qty,2), text_right_bold1)
+            c += 1
+            worksheet[work].write(r, c, round(con_val,2), text_right_bold1)
+            c += 1
+            worksheet[work].write(r, c, round(s_del_qty,2), text_right_bold1)
+            c += 1
+            worksheet[work].write(r, c, round(s_del_val,2), text_right_bold1)
+            c += 1
+            worksheet[work].write(r, c, round(a_p_qty,2), text_right_bold1)
+            c += 1
+            worksheet[work].write(r, c, round(a_p_qty_val,2), text_right_bold1)
+            c += 1
+            worksheet[work].write(r, c, round(a_n_qty,2), text_right_bold1)
+            c += 1
+            worksheet[work].write(r, c, round(a_n_qty_val,2), text_right_bold1)
+            c += 1
+            worksheet[work].write(r, c, round(e_qty,2), text_right_bold1)
+            c += 1
+            worksheet[work].write(r, c, round(e_val,2), text_right_bold1)
+            r += 1
+            # else:
+            #     lines = self.group_by_lines(lines)
+            #     r = 9
+            #     for l_val in lines:
+            #         worksheet[work].write_merge(r, r, 0, 3, l_val.get('category'), group_style)
+            #         r+=1
+            #         b_qty =b_val= r_val=s_del_val=r_qty =e_val=a_val= s_qty=m_val= i_qty= a_qty= e_qty=m_qty=s_del_qty =a_p_qty=a_n_qty=con_qty=con_val=0
+            #         for line in l_val.get('values'):
+            #             b_qty += line.get('beginning_qty')
+            #             b_val += line.get('beginning_value')
+            #             r_qty += line.get('received_qty')
+            #             r_val += line.get('received_value')
+            #             # s_qty += line.get('sale_qty')
+            #             m_qty += line.get('mrp_qty')
+            #             m_val += line.get('mrp_value')
+            #             s_del_qty += line.get('sale_del_qty')
+            #             s_del_val += line.get('sale_del_qty_value')
+            #             con_qty += line.get('consumption_qty')
+            #             con_val += line.get('consumption_value')
+            #             # s_val += lines.get('sale_value')
+            #             # i_qty += line.get('internal_qty')
+            #             # i_val += line.get('internal_value')
                         
                         
-                        a_p_qty += line.get('adjust_qty_positive')
-                        a_n_qty += line.get('adjust_qty_negative')
-                        a_qty += line.get('adjust_qty')
-                        a_val += line.get('adjust_value')
-                        e_qty += line.get('ending_qty')
-                        e_val += line.get('ending_value')
-                        worksheet[work].write_merge(r, r, 0, 3, line.get('product'), text_left)
-                        c=4
-                        worksheet[work].write(r, c, line.get('beginning_qty'), text_right)
-                        c+=1
-                        worksheet[work].write(r, c, line.get('beginning_value'), text_right)
-                        c+=1
-                        worksheet[work].write(r, c, line.get('received_qty'), text_right)
-                        c+=1
-                        worksheet[work].write(r, c, line.get('received_value'), text_right)
-                        c+=1
-                        # worksheet[work].write(r, c, line.get('sale_qty'), text_right)
-                        # c += 1
-                        worksheet[work].write(r, c, line.get('mrp_qty'), text_right)
-                        c += 1
-                        worksheet[work].write(r, c, line.get('mrp_value'), text_right)
-                        c += 1
-                        worksheet[work].write(r, c, line.get('consumption_qty'), text_right)
-                        c += 1
-                        worksheet[work].write(r, c, line.get('consumption_value'), text_right)
-                        c += 1
-                        worksheet[work].write(r, c, line.get('sale_del_qty'), text_right)
-                        c += 1
-                        worksheet[work].write(r, c, line.get('sale_del_qty_value'), text_right)
-                        c += 1
-                        # worksheet[work].write(r, c, line.get('sale_value'), text_right)
-                        # c += 1
-                        # worksheet[work].write(r, c, line.get('internal_qty'), text_right)
-                        # c += 1
-                        # worksheet[work].write(r, c, line.get('internal_value'), text_right)
-                        # c += 1
-                        worksheet[work].write(r, c, line.get('adjust_qty_positive'), text_right)
-                        c += 1
-                        worksheet[work].write(r, c, line.get('adjust_qty_negative'), text_right)
-                        c += 1
-                        worksheet[work].write(r, c, line.get('adjust_qty'), text_right)
-                        c += 1
-                        worksheet[work].write(r, c, line.get('adjust_value'), text_right)
-                        c += 1
-                        worksheet[work].write(r, c, line.get('ending_qty'), text_right)
-                        c +=1
-                        worksheet[work].write(r, c, line.get('ending_value'), text_right)
-                        r+=1
-                    worksheet[work].write_merge(r, r, 0, 3, 'TOTAL', text_right_bold)
-                    c = 4
-                    worksheet[work].write(r, c, b_qty, text_right_bold1)
-                    c += 1
-                    worksheet[work].write(r, c, b_val, text_right_bold1)
-                    c += 1
-                    worksheet[work].write(r, c, r_qty, text_right_bold1)
-                    c += 1
-                    worksheet[work].write(r, c, r_val, text_right_bold1)
-                    c += 1
-                    worksheet[work].write(r, c, s_qty, text_right_bold1)
-                    c += 1
-                    worksheet[work].write(r, c, m_qty, text_right_bold1)
-                    c += 1
-                    worksheet[work].write(r, c, m_val, text_right_bold1)
-                    c += 1
-                    worksheet[work].write(r, c, con_qty, text_right_bold1)
-                    c += 1
-                    worksheet[work].write(r, c, con_val, text_right_bold1)
-                    c += 1
-                    worksheet[work].write(r, c, s_del_qty, text_right_bold1)
-                    c += 1
-                    worksheet[work].write(r, c, s_del_val, text_right_bold1)
-                    c += 1
-                    # worksheet[work].write(r, c, s_val, text_right_bold1)
-                    # c += 1
-                    worksheet[work].write(r, c, i_qty, text_right_bold1)
-                    c += 1
-                    # worksheet[work].write(r, c, i_val, text_right_bold1)
-                    # c += 1
-                    worksheet[work].write(r, c, m_val, text_right_bold1)
-                    c += 1
-                    worksheet[work].write(r, c, a_p_qty, text_right_bold1)
-                    c += 1
-                    worksheet[work].write(r, c, a_n_qty, text_right_bold1)
-                    c += 1
-                    worksheet[work].write(r, c, a_qty, text_right_bold1)
-                    c += 1
-                    worksheet[work].write(r, c, a_val, text_right_bold1)
-                    c += 1
-                    worksheet[work].write(r, c, e_qty, text_right_bold1)
-                    c += 1
-                    worksheet[work].write(r, c, e_val, text_right_bold1)
-                    r += 1
+            #             a_p_qty += line.get('adjust_qty_positive')
+            #             a_n_qty += line.get('adjust_qty_negative')
+            #             a_qty += line.get('adjust_qty')
+            #             a_val += line.get('adjust_value')
+            #             e_qty += line.get('ending_qty')
+            #             e_val += line.get('ending_value')
+            #             worksheet[work].write_merge(r, r, 0, 3, line.get('product'), text_left)
+            #             c=4
+            #             worksheet[work].write(r, c, line.get('beginning_qty'), text_right)
+            #             c+=1
+            #             worksheet[work].write(r, c, line.get('beginning_value'), text_right)
+            #             c+=1
+            #             worksheet[work].write(r, c, line.get('received_qty'), text_right)
+            #             c+=1
+            #             worksheet[work].write(r, c, line.get('received_value'), text_right)
+            #             c+=1
+            #             # worksheet[work].write(r, c, line.get('sale_qty'), text_right)
+            #             # c += 1
+            #             worksheet[work].write(r, c, line.get('mrp_qty'), text_right)
+            #             c += 1
+            #             worksheet[work].write(r, c, line.get('mrp_value'), text_right)
+            #             c += 1
+            #             worksheet[work].write(r, c, line.get('consumption_qty'), text_right)
+            #             c += 1
+            #             worksheet[work].write(r, c, line.get('consumption_value'), text_right)
+            #             c += 1
+            #             worksheet[work].write(r, c, line.get('sale_del_qty'), text_right)
+            #             c += 1
+            #             worksheet[work].write(r, c, line.get('sale_del_qty_value'), text_right)
+            #             c += 1
+            #             # worksheet[work].write(r, c, line.get('sale_value'), text_right)
+            #             # c += 1
+            #             # worksheet[work].write(r, c, line.get('internal_qty'), text_right)
+            #             # c += 1
+            #             # worksheet[work].write(r, c, line.get('internal_value'), text_right)
+            #             # c += 1
+            #             worksheet[work].write(r, c, line.get('adjust_qty_positive'), text_right)
+            #             c += 1
+            #             worksheet[work].write(r, c, line.get('adjust_qty_negative'), text_right)
+            #             c += 1
+            #             worksheet[work].write(r, c, line.get('adjust_qty'), text_right)
+            #             c += 1
+            #             worksheet[work].write(r, c, line.get('adjust_value'), text_right)
+            #             c += 1
+            #             worksheet[work].write(r, c, line.get('ending_qty'), text_right)
+            #             c +=1
+            #             worksheet[work].write(r, c, line.get('ending_value'), text_right)
+            #             r+=1
+            #         worksheet[work].write_merge(r, r, 0, 3, 'TOTAL', text_right_bold)
+            #         c = 4
+            #         worksheet[work].write(r, c, b_qty, text_right_bold1)
+            #         c += 1
+            #         worksheet[work].write(r, c, b_val, text_right_bold1)
+            #         c += 1
+            #         worksheet[work].write(r, c, r_qty, text_right_bold1)
+            #         c += 1
+            #         worksheet[work].write(r, c, r_val, text_right_bold1)
+            #         c += 1
+            #         worksheet[work].write(r, c, s_qty, text_right_bold1)
+            #         c += 1
+            #         worksheet[work].write(r, c, m_qty, text_right_bold1)
+            #         c += 1
+            #         worksheet[work].write(r, c, m_val, text_right_bold1)
+            #         c += 1
+            #         worksheet[work].write(r, c, con_qty, text_right_bold1)
+            #         c += 1
+            #         worksheet[work].write(r, c, con_val, text_right_bold1)
+            #         c += 1
+            #         worksheet[work].write(r, c, s_del_qty, text_right_bold1)
+            #         c += 1
+            #         worksheet[work].write(r, c, s_del_val, text_right_bold1)
+            #         c += 1
+            #         # worksheet[work].write(r, c, s_val, text_right_bold1)
+            #         # c += 1
+            #         worksheet[work].write(r, c, i_qty, text_right_bold1)
+            #         c += 1
+            #         # worksheet[work].write(r, c, i_val, text_right_bold1)
+            #         # c += 1
+            #         worksheet[work].write(r, c, m_val, text_right_bold1)
+            #         c += 1
+            #         worksheet[work].write(r, c, a_p_qty, text_right_bold1)
+            #         c += 1
+            #         worksheet[work].write(r, c, a_n_qty, text_right_bold1)
+            #         c += 1
+            #         worksheet[work].write(r, c, a_qty, text_right_bold1)
+            #         c += 1
+            #         worksheet[work].write(r, c, a_val, text_right_bold1)
+            #         c += 1
+            #         worksheet[work].write(r, c, e_qty, text_right_bold1)
+            #         c += 1
+            #         worksheet[work].write(r, c, e_val, text_right_bold1)
+            #         r += 1
 
-                work +=1
+                # work +=1
 
 
-            fp = BytesIO()
-            workbook.save(fp)
-            export_id = self.env['stock.inventory.withoutvalues.excel'].create(
-                {'excel_file': base64.encodestring(fp.getvalue()), 'file_name': filename})
-            fp.close()
+        fp = BytesIO()
+        workbook.save(fp)
+        export_id = self.env['stock.summary.report.excel'].create(
+            {'excel_file': base64.encodestring(fp.getvalue()), 'file_name': filename})
+        fp.close()
 
         return {
             'view_mode': 'form',
             'res_id': export_id.id,
-            'res_model': 'stock.inventory.withoutvalues.excel',
+            'res_model': 'stock.summary.report.excel',
             'view_type': 'form',
             'type': 'ir.actions.act_window',
             'target': 'new',
