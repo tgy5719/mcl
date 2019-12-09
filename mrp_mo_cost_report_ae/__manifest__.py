@@ -11,7 +11,7 @@ MRP BoM Cost Report
 -------------------
 MRP BoM Cost Report MO wise
 """,
-    'depends': ['mrp'],
+    'depends': ['mrp', 'report_xlsx'],
     'data': [
         'views/mo_bom_report_views.xml',
         'views/templates.xml',

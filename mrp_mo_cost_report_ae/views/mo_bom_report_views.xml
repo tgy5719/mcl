@@ -4,7 +4,7 @@
         <record id="action_report_mrp_bom_cost" model="ir.actions.client">
             <field name="name">MO Structure &amp; Cost</field>
             <field name="tag">mrp_production_report_ae</field>
-            <field name="context" eval="{'model': 'report.mrp_mo_cost_report_ae.report_mo_structure'}" />
+            <field name="context" eval="{'model': 'report.mrp_mo_cost_report_ae.report_mo_structure', 'active_id':'0', 'productID':'0'}" />
         </record>
 
         <menuitem id="bom_cost_report_menu"
@@ -18,6 +18,17 @@
             name="mrp_mo_cost_report_ae.report_mo_structure"
             file="mrp_mo_cost_report_ae.report_mo_structure"
             report_type="qweb-pdf"
+            print_report_name="'MO Structure and Cost - %s' % object.display_name"
+        />
+        <report
+            id="report_mo_structure_xlsx"
+            model="mrp.production"
+            string="Print to XLSX"
+            report_type="xlsx"
+            name="mrp_mo_cost_report_ae.mo_cost_xlsx"
+            file="mo_cost_xlsx.xlsx"
+            attachment_use="False"
+            menu="False"
             print_report_name="'MO Structure and Cost - %s' % object.display_name"
         />
 </data>

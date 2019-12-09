@@ -3,6 +3,8 @@
     <template id="assets_backend" name="mrp bom assets" inherit_id="web.assets_backend">
         <xpath expr="." position="inside">
             <script type="text/javascript" src="/mrp_mo_cost_report_ae/static/src/js/mrp_production_report.js"></script>
+            <script type="text/javascript" src="/mrp_mo_cost_report_ae/static/src/js/select2.min.js"></script>
+            <link rel="stylesheet" href="/mrp_mo_cost_report_ae/static/src/css/select2.min.css"/>
         </xpath>
    </template>
 </odoo>

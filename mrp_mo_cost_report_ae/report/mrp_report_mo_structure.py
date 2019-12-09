@@ -47,6 +47,8 @@ class ReportBomStructure(models.AbstractModel):
 
     @api.model
     def get_html(self, bom_id=False, searchQty=1, searchVariant=False, lot_id=False, product_id=False, product_name=False, date_from=False, date_to=False):
+        if product_id:
+            product_id = [int(p) for p in product_id if p != '0']
         res = self._get_report_data(bom_id=bom_id, searchQty=searchQty, searchVariant=searchVariant, lot_id=lot_id, product_id=product_id, product_name=product_name,  date_from=date_from, date_to=date_to)
         if res and res['lines']:
             res['lines'][0]['report_type'] = 'html'
@@ -92,8 +94,14 @@ class ReportBomStructure(models.AbstractModel):
             products[product.id] = product.display_name
 
         if product_id:
-            mos = mos.filtered(lambda m: m.product_id.id == int(product_id))
-            lot_ids = lot_ids.filtered(lambda l: l.product_id.id == int(product_id))
+            if isinstance(product_id, str):
+                mos = mos.filtered(lambda m: m.product_id.id == int(product_id))
+            if isinstance(product_id, list):
+                mos = mos.filtered(lambda m: m.product_id.id in product_id)
+            if isinstance(product_id, str):
+                lot_ids = lot_ids.filtered(lambda l: l.product_id.id == int(product_id))
+            if isinstance(product_id, list):
+                lot_ids = lot_ids.filtered(lambda l: l.product_id.id in product_id)
         else:
             mos = mos.filtered(lambda m: False)
         if product_name:
@@ -104,7 +112,6 @@ class ReportBomStructure(models.AbstractModel):
             lots[lot.id] = lot.name
         if lot_id:
             mos = mos.filtered(lambda m: m.finished_move_line_ids.filtered(lambda l: l.lot_id.id == int(lot_id)))
-        print(">>>>>>>>>>>>>>> mos", mos)
         for mo in mos.filtered(lambda m: str(m.date_finished)[:10] >= date_from and str(m.date_finished)[:10] <= date_to):
             bom = self.env['mrp.bom'].browse(mo.bom_id.id)
             bom_quantity = searchQty or bom.product_qty
@@ -121,11 +128,10 @@ class ReportBomStructure(models.AbstractModel):
             line = self._get_mo(mo, searchQty, date_from, date_to, level)
             if [mo.name] not in [l.get('child_mos').get('child_mos') and l.get('child_mos').get('child_mos').mapped('name') or [] for l in lines]:
                 lines.append(line)
-
         return {
             'lines': lines,
             'variants': bom_product_variants,
-            'is_lot_enabled': self.env.user.user_has_groups('stock.group_production_lot') and len(lots) > 0,
+            'is_lot_enabled': self.env.user.user_has_groups('stock.group_production_lot'),
             'lots': lots,
             'products': products,
             'bom_qty': bom_quantity,
@@ -469,3 +475,19 @@ class ReportBomStructure(models.AbstractModel):
         data['components'] = []
         data['lines'] = pdf_lines
         return data
+
+
+class MoCostXlsx(models.AbstractModel):
+    _name = 'report.mrp_mo_cost_report_ae.mo_cost_xlsx'
+    _inherit = 'report.report_xlsx.abstract'
+
+    def generate_xlsx_report(self, workbook, data, partners, ids=False):
+        print(">>>>>>>>>>>>>>>>>>> inn data", data)
+        print(">>>>>>>>>>>>>>>>>>> inn partners", partners)
+        print(">>>>>>>>>>>>>>>>>>> inn ids", ids)
+        for obj in partners:
+            report_name = obj.name
+            # One sheet by partner
+            sheet = workbook.add_worksheet(report_name[:31])
+            bold = workbook.add_format({'bold': True})
+            sheet.write(0, 0, obj.name, bold)

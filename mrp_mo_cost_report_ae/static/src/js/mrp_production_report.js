@@ -8,6 +8,7 @@ var stock_report_generic = require('stock.stock_report_generic');
 var QWeb = core.qweb;
 var _t = core._t;
 
+
 var MrpBomReport = stock_report_generic.extend({
     events: {
         'click .o_mrp_mo_unfoldable': '_onClickUnfold',
@@ -184,16 +185,20 @@ var MrpBomReport = stock_report_generic.extend({
         var formattedMonth = ("0" + m).slice(-2);
         var dateFrom = y + '-' + formattedMonth + '-' + '01';
         var dateTo = y + '-' + formattedMonth + '-' + lastDayOfMonth;
-
         this.$buttonPrint = $(QWeb.render('mrp_mo_cost_report_ae.button', {date_from: dateFrom, date_to: dateTo}));
         this.$buttonPrint.filter('.o_mrp_bom_print').on('click', this._onClickPrint.bind(this));
-        this.$buttonPrint.filter('.o_mrp_bom_print_unfolded').on('click', this._onClickPrint.bind(this));
+        this.$buttonPrint.filter('.o_mrp_producttion_xls_print').on('click', this._onClickXLSPrint.bind(this));
+        // this.$buttonPrint.filter('.o_mrp_bom_print_unfolded').on('click', this._onClickPrint.bind(this));
         this.$searchView = $(QWeb.render('mrp_mo_cost_report_ae.report_bom_search', _.omit(this.data, 'lines')));
         this.$searchView.find('.o_mrp_bom_report_qty').on('change', this._onChangeQty.bind(this));
         this.$searchView.find('.o_mrp_bom_report_variants').on('change', this._onChangeVariants.bind(this));
         this.$searchView.find('.o_mrp_bom_report_lots').on('change', this._onChangeLots.bind(this));
+        this.$searchView.find('.o_mrp_production_report_product').select2({
+                                                                    placeholder: "Choose Products",
+                                                                });
+
         this.$searchView.find('.o_mrp_production_report_product').on('change', this._onChangeProduct.bind(this));
-        this.$searchView.find('.o_mrp_mo_product').on('change', this._onChangeProductName.bind(this));
+        // this.$searchView.find('.o_mrp_mo_product').on('change', this._onChangeProductName.bind(this));
         this.$searchView.find('.o_mrp_bom_report_type').on('change', this._onChangeType.bind(this));
         this.$buttonPrint.filter('.o_from_date').on('change', this._onChangeFromDate.bind(this));
         this.$buttonPrint.filter('.o_to_date').on('change', this._onChangeToDate.bind(this));
@@ -202,13 +207,17 @@ var MrpBomReport = stock_report_generic.extend({
         var childBomIDs = _.map(this.$el.find('.o_mrp_mo_foldable').closest('tr'), function (el) {
             return $(el).data('id');
         });
-        framework.blockUI();
         // var reportname = 'mrp_mo_cost_report_ae.report_mo_structure?docids=' + this.given_context.active_id + '&report_type=' + this.given_context.report_type;
         var from_dt = $('.o_from_date').val();
         var to_dt = $('.o_to_date').val();
-        var o_product_id = $('.o_mrp_production_report_product').val();
+        var o_product_id = $('select.o_mrp_production_report_product').val();
         var o_product_name = $('.o_mrp_mo_product').val();
         var o_lot_id = $('.o_mrp_bom_report_lots').val();
+        debugger;
+        if (!o_product_id) {
+            return;
+        }
+        framework.blockUI();
 
         var reportname = 'mrp_mo_cost_report_ae.report_mo_structure?docids=1&report_type=' + this.given_context.report_type + '&date_from=' + from_dt + '&date_to=' + to_dt;
         if (! $(ev.currentTarget).hasClass('o_mrp_bom_print_unfolded')) {
@@ -237,6 +246,44 @@ var MrpBomReport = stock_report_generic.extend({
             framework.unblockUI();
         });
     },
+    _onClickXLSPrint: function (ev) {
+        var from_dt = $('.o_from_date').val();
+        var to_dt = $('.o_to_date').val();
+        var o_product_id = $('select.o_mrp_production_report_product').val();
+        var o_product_name = $('.o_mrp_mo_product').val();
+        var o_lot_id = $('.o_mrp_bom_report_lots').val();
+        if (!o_product_id) {
+            return;
+        }
+        framework.blockUI();
+
+        var reportname = 'mrp_mo_cost_report_ae.mo_cost_xlsx?docids=1&report_type=' + this.given_context.report_type + '&date_from=' + from_dt + '&date_to=' + to_dt;
+        if (! $(ev.currentTarget).hasClass('o_mrp_bom_print_unfolded')) {
+            reportname += '&quantity=' + (this.given_context.searchQty || 1)
+        }
+        if (this.given_context.searchVariant) {
+            reportname += '&variant=' + this.given_context.searchVariant;
+        }
+        if (o_product_id && o_product_id !== "---") {
+            reportname += '&product_id=' + o_product_id;
+        }
+        if (o_product_name) {
+            reportname += '&product_name=' + o_product_name;
+        }
+        if (o_lot_id && o_lot_id !== "---") {
+            reportname += '&lot_id=' + o_lot_id;
+        }
+        var action = {
+            'id': o_product_id,
+            'type': 'ir.actions.report',
+            'report_type': 'xlsx',
+            'report_name': reportname,
+            'report_file': 'mo_cost_xlsx.xlsx',
+        };
+        return this.do_action(action).then(function (){
+            framework.unblockUI();
+        });
+    },
     _onChangeQty: function (ev) {
         var qty = $(ev.currentTarget).val().trim();
         if (qty) {
@@ -250,7 +297,12 @@ var MrpBomReport = stock_report_generic.extend({
         this._reload_report_type();
     },
     _onChangeVariants: function (ev) {
-        this.given_context.searchVariant = $(ev.currentTarget).val();
+        var productId = $(ev.currentTarget).val();
+        if (productId === "---") {
+            delete this.given_context.searchVariant;
+        } else {
+            this.given_context.searchVariant = productId;
+        }
         this._reload();
     },
     _onChangeLots: function (ev) {
