@@ -18,6 +18,7 @@
                                         <th>MO</th>
                                         <th class="text-right">Production Qty</th>
                                         <th groups="uom.group_uom">Production UoM</th>
+                                        <th class="text-right">Production Unit Cost</th>
                                         <th class="o_mrp_bom_cost text-right">Production Cost</th>
                                         <th>Component Name</th>
                                         <th class="text-right">Consumption Qty</th>
@@ -43,6 +44,9 @@
                                         </td>
                                         <td groups="uom.group_uom">
                                             <span><t t-esc="d['mo'].product_uom_id.name"/></span>
+                                        </td>
+                                        <td class="text-right o_mrp_bom_cost">
+                                            <strong t-esc="d['mo_cost']/d['qty']" t-options='{"widget": "monetary", "display_currency": currency}'/>
                                         </td>
                                         <td class="text-right o_mrp_bom_cost">
                                             <strong t-esc="d['mo_cost']" t-options='{"widget": "monetary", "display_currency": currency}'/>
@@ -162,6 +166,7 @@
                                         <th>MO</th>
                                         <th class="text-right">Production Qty</th>
                                         <th groups="uom.group_uom">Production UoM</th>
+                                        <th class="text-right">Production Unit Cost</th>
                                         <th class="o_mrp_bom_cost text-right">Production Cost</th>
                                         <th>Component Name</th>
                                         <th class="text-right">Consumption Qty</th>
@@ -191,6 +196,9 @@
                                         </td>
                                         <td groups="uom.group_uom">
                                             <span><t t-esc="d['mo'].product_uom_id.name"/></span>
+                                        </td>
+                                        <td class="text-right">
+                                            <strong t-esc="d['mo_cost']/d['qty']" t-options='{"widget": "monetary", "display_currency": currency}'/>
                                         </td>
                                         <td class="text-right o_mrp_bom_cost" t-if="data[0]['report_structure'] != 'bom_structure'">
                                             <strong t-esc="d['mo_cost']" t-options='{"widget": "monetary", "display_currency": currency}'/>
