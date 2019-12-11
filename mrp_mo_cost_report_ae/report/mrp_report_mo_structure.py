@@ -3,8 +3,7 @@
 import json
 
 from odoo import api, models, _
-from odoo.tools import float_round
-
+from odoo.tools import float_round, formatLang
 class ReportBomStructure(models.AbstractModel):
     _name = 'report.mrp_mo_cost_report_ae.report_mo_structure'
     _description = 'MO Structure and Cost Report'
@@ -94,12 +93,15 @@ class ReportBomStructure(models.AbstractModel):
             products[product.id] = product.display_name
 
         if product_id:
-            if isinstance(product_id, str):
+            if isinstance(product_id, str) and ',' not in product_id:
                 mos = mos.filtered(lambda m: m.product_id.id == int(product_id))
+                lot_ids = lot_ids.filtered(lambda l: l.product_id.id == int(product_id))
+            if isinstance(product_id, str) and ',' in product_id:
+                product_ids = product_id.split(',')
+                mos = mos.filtered(lambda m: str(m.product_id.id) in product_ids)
+                lot_ids = lot_ids.filtered(lambda l: str(l.product_id.id) in product_ids)
             if isinstance(product_id, list):
                 mos = mos.filtered(lambda m: m.product_id.id in product_id)
-            if isinstance(product_id, str):
-                lot_ids = lot_ids.filtered(lambda l: l.product_id.id == int(product_id))
             if isinstance(product_id, list):
                 lot_ids = lot_ids.filtered(lambda l: l.product_id.id in product_id)
         else:
@@ -481,13 +483,61 @@ class MoCostXlsx(models.AbstractModel):
     _name = 'report.mrp_mo_cost_report_ae.mo_cost_xlsx'
     _inherit = 'report.report_xlsx.abstract'
 
-    def generate_xlsx_report(self, workbook, data, partners, ids=False):
-        print(">>>>>>>>>>>>>>>>>>> inn data", data)
-        print(">>>>>>>>>>>>>>>>>>> inn partners", partners)
-        print(">>>>>>>>>>>>>>>>>>> inn ids", ids)
-        for obj in partners:
-            report_name = obj.name
-            # One sheet by partner
-            sheet = workbook.add_worksheet(report_name[:31])
-            bold = workbook.add_format({'bold': True})
-            sheet.write(0, 0, obj.name, bold)
+    def generate_xlsx_report(self, workbook, data, partners):
+        date_from = data.get('date_from')
+        date_to = data.get('date_to')
+        product_ids = data.get('product_ids') and data.get('product_ids').split(',')
+        lot_ids = data.get('lot_ids') and data.get('lot_ids').split(',')
+        if product_ids:
+            product_ids = [int(p) for p in product_ids if p != '0']
+        res = self.env['report.mrp_mo_cost_report_ae.report_mo_structure']._get_report_data(bom_id=False, searchQty=False, searchVariant=False, lot_id=lot_ids, product_id=product_ids, product_name=False,  date_from=date_from, date_to=date_to)
+        report_name = 'MO Structure & Cost Report'
+        sheet = workbook.add_worksheet(report_name[:31])
+        bold = workbook.add_format({'bold': True})
+        merge_format = workbook.add_format({
+            'bold': 2,
+            'border': 1,
+            'align': 'center',
+            'valign': 'vcenter',
+            'font_size': 26,
+        })
+        right_format = workbook.add_format({'align': 'right'})
+        sheet.set_column('A:H', 17)
+        sheet.set_row(0, 30)
+        sheet.merge_range('C1:G1', report_name, merge_format)
+        sheet.write(1, 0, 'Product', bold)
+        sheet.write(1, 1, 'MO', bold)
+        sheet.write(1, 2, 'Production Qty', bold)
+        sheet.write(1, 3, 'Production Cost', bold)
+        sheet.write(1, 4, 'Component Name', bold)
+        sheet.write(1, 5, 'Consumption Qty', bold)
+        col = 6
+        if self.env.user.user_has_groups('uom.group_uom'):
+            sheet.write(1, col, 'Component UoM', bold)
+            col += 1
+        sheet.write(1, col, 'Unit Cost', bold)
+        col += 1
+        sheet.write(1, col, 'Component Cost', bold)
+        row = 2
+        for obj in res.get('lines'):
+            sheet.write(row, 0, obj.get('mo').product_id.display_name)
+            sheet.write(row, 1, obj.get('mo').name)
+            sheet.write(row, 2, obj.get('qty'))
+            currency = obj.get('currency')
+            mo_cost = formatLang(self.env, obj.get('mo_cost'), currency_obj=currency)
+            sheet.write(row, 3, mo_cost, right_format)
+            row += 1
+            for component in obj.get('components'):
+                sheet.write(row, 4, component.product_id.display_name)
+                sheet.write(row, 5, component.quantity_done)
+                col = 6
+                if self.env.user.user_has_groups('uom.group_uom'):
+                    sheet.write(row, col, component.product_uom.name)
+                    col += 1
+                price_unit = formatLang(self.env, component.price_unit, currency_obj=currency)
+                sheet.write(row, col, price_unit, right_format)
+                col += 1
+                component_cost = formatLang(self.env, abs(component.price_unit * component.quantity_done), currency_obj=currency)
+                sheet.write(row, col, component_cost, right_format)
+                row += 1
+            row += 1

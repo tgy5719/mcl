@@ -22,6 +22,7 @@
                                         <th>Component Name</th>
                                         <th class="text-right">Consumption Qty</th>
                                         <th class="text-left" groups="uom.group_uom">Component UoM</th>
+                                        <th class="text-right" >Unit Cost</th>
                                         <th class="o_mrp_prod_cost text-right" title="This is the cost defined on the product.">Component Cost</th>
                                     </tr>
                                 </thead>

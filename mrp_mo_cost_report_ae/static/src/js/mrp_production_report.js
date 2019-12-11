@@ -207,13 +207,11 @@ var MrpBomReport = stock_report_generic.extend({
         var childBomIDs = _.map(this.$el.find('.o_mrp_mo_foldable').closest('tr'), function (el) {
             return $(el).data('id');
         });
-        // var reportname = 'mrp_mo_cost_report_ae.report_mo_structure?docids=' + this.given_context.active_id + '&report_type=' + this.given_context.report_type;
         var from_dt = $('.o_from_date').val();
         var to_dt = $('.o_to_date').val();
         var o_product_id = $('select.o_mrp_production_report_product').val();
         var o_product_name = $('.o_mrp_mo_product').val();
         var o_lot_id = $('.o_mrp_bom_report_lots').val();
-        debugger;
         if (!o_product_id) {
             return;
         }
@@ -255,24 +253,19 @@ var MrpBomReport = stock_report_generic.extend({
         if (!o_product_id) {
             return;
         }
-        framework.blockUI();
 
-        var reportname = 'mrp_mo_cost_report_ae.mo_cost_xlsx?docids=1&report_type=' + this.given_context.report_type + '&date_from=' + from_dt + '&date_to=' + to_dt;
-        if (! $(ev.currentTarget).hasClass('o_mrp_bom_print_unfolded')) {
-            reportname += '&quantity=' + (this.given_context.searchQty || 1)
-        }
+        var reportname = 'mrp_mo_cost_report_ae.mo_cost_xlsx?docids=1&date_from=' + from_dt + '&date_to=' + to_dt;
         if (this.given_context.searchVariant) {
             reportname += '&variant=' + this.given_context.searchVariant;
         }
         if (o_product_id && o_product_id !== "---") {
-            reportname += '&product_id=' + o_product_id;
-        }
-        if (o_product_name) {
-            reportname += '&product_name=' + o_product_name;
+            reportname += '&product_ids=' + o_product_id;
         }
         if (o_lot_id && o_lot_id !== "---") {
-            reportname += '&lot_id=' + o_lot_id;
+            reportname += '&lot_ids=' + o_lot_id;
         }
+
+        framework.blockUI();
         var action = {
             'id': o_product_id,
             'type': 'ir.actions.report',
