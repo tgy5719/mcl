@@ -29,7 +29,7 @@
             file="mo_cost_xlsx.xlsx"
             attachment_use="False"
             menu="False"
-            print_report_name="'MO Structure and Cost - %s' % object.display_name"
+            print_report_name="'MO Structure and Cost'"
         />
 </data>
 </odoo>
