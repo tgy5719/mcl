@@ -254,7 +254,7 @@ var MrpBomReport = stock_report_generic.extend({
             return;
         }
 
-        var reportname = 'mrp_mo_cost_report_ae.mo_cost_xlsx?docids=1&date_from=' + from_dt + '&date_to=' + to_dt;
+        var reportname = 'mrp_mo_cost_report_ae.mo_cost_xlsx?docids=0&date_from=' + from_dt + '&date_to=' + to_dt;
         if (this.given_context.searchVariant) {
             reportname += '&variant=' + this.given_context.searchVariant;
         }
