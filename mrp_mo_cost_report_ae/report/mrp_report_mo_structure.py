@@ -508,9 +508,10 @@ class MoCostXlsx(models.AbstractModel):
         sheet.write(1, 0, 'Product', bold)
         sheet.write(1, 1, 'MO', bold)
         sheet.write(1, 2, 'Production Qty', bold)
-        sheet.write(1, 3, 'Production Cost', bold)
-        sheet.write(1, 4, 'Component Name', bold)
-        sheet.write(1, 5, 'Consumption Qty', bold)
+        sheet.write(1, 3, 'Production Unit Cost', bold)
+        sheet.write(1, 4, 'Production Cost', bold)
+        sheet.write(1, 5, 'Component Name', bold)
+        sheet.write(1, 6, 'Consumption Qty', bold)
         col = 6
         if self.env.user.user_has_groups('uom.group_uom'):
             sheet.write(1, col, 'Component UoM', bold)
@@ -525,12 +526,15 @@ class MoCostXlsx(models.AbstractModel):
             sheet.write(row, 2, obj.get('qty'))
             currency = obj.get('currency')
             mo_cost = formatLang(self.env, obj.get('mo_cost'), currency_obj=currency)
-            sheet.write(row, 3, mo_cost, right_format)
+            unit_cost = obj.get('mo_cost') / obj.get('qty')
+            mo_unit_cost = formatLang(self.env, unit_cost, currency_obj=currency)
+            sheet.write(row, 3, mo_unit_cost, right_format)
+            sheet.write(row, 4, mo_cost, right_format)
             row += 1
             for component in obj.get('components'):
-                sheet.write(row, 4, component.product_id.display_name)
-                sheet.write(row, 5, component.quantity_done)
-                col = 6
+                sheet.write(row, 5, component.product_id.display_name)
+                sheet.write(row, 6, component.quantity_done)
+                col = 7
                 if self.env.user.user_has_groups('uom.group_uom'):
                     sheet.write(row, col, component.product_uom.name)
                     col += 1
